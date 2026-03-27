@@ -1,6 +1,6 @@
 <div align="center">
 
-# Emma Bee Clothing — Fashion App
+# DRSSED — Fashion App
 
 Custom Ghanaian fashion marketplace built with React, Vite, Tailwind CSS, and Firebase.
 

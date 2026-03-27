@@ -21,11 +21,11 @@ export default function Splash() {
       </div>
 
       <h1 className="text-2xl font-bold text-center">
-        Emma Bee Clothing
+        DRSSED
       </h1>
 
       <p className="mt-3 text-center text-sm opacity-90">
-        Custom Fashion, Stitched with Care
+        Where Fashion Meets Art
       </p>
 
     </div>

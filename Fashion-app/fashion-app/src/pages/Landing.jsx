@@ -12,10 +12,10 @@ export default function Landing() {
         </div>
       <div className="text-center mt-10 ">
         <h2 className="text-3xl font-bold text-yellow-500 mb-4">
-          Emma Bee Clothing
+          DRSSED
         </h2>
         <h3 className="text-textSecondary text-lg font-semibold mb-12">
-          Custom Fashion, Stitched with Care
+          Where fashion Meets Art
         </h3>
         <p className="text-textSecondary mb-10 max-w-md mx-auto">
           Your gateway to Ghana's finest custom fashion designers and tailors.
@@ -55,7 +55,7 @@ export default function Landing() {
 
   
        <div className="bg-white p-3 rounded-2xl shadow-sm hover:shadow-md transition shadow-sm">
-         <MessageCircle className="text-yellow-500 mb-3" size={20} />
+         <MessageCircle className="text-primary-500 mb-3" size={20} />
          <h3 className="font-semibold text-sm">Direct Chat</h3>
          <p className="text-gray-500 text-xs">
            Communicate directly with your designer

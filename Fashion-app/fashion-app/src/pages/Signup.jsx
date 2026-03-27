@@ -134,7 +134,7 @@ export default function Signup() {
         <div className="w-full text-left">
           <h2 className="text-3xl font-bold text-textPrimary mb-2">Create Account</h2>
           <h3 className="font-semibold text-textSecondary mb-8">
-            Join Emma Bee Clothing today
+            Join DRSSED today
           </h3>
         </div>
 
