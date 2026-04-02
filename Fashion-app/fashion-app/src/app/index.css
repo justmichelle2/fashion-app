@@ -1,0 +1,59 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------
+   Custom Base Styles
+   ------------------------ */
+@layer base {
+  html {
+    font-size: var(--font-size);
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+  }
+
+  h1 { font-weight: var(--font-weight-medium); line-height: 1.5; }
+  h2 { font-weight: var(--font-weight-medium); line-height: 1.5; }
+  h3 { font-weight: var(--font-weight-medium); line-height: 1.5; font-family: var(--font-body); }
+  h4 { font-weight: var(--font-weight-medium); line-height: 1.5; }
+
+  label, button {
+    font-weight: var(--font-weight-medium);
+  }
+
+  input {
+    font-weight: var(--font-weight-normal);
+  }
+}
+
+/* ------------------------
+   Custom Utility Classes
+   ------------------------ */
+@layer utilities {
+  /* Hide scrollbars */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
+
+  /* Safe area padding for bottom (iPhone notch etc.) */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
