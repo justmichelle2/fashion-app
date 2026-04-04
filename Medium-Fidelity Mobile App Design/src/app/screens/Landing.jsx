@@ -38,17 +38,17 @@ export function Landing() {
         <div className="flex flex-col items-center gap-6 mb-12">
           <DrssedLogo size={120} />
           <div className="text-center">
-            <h1 className="text-[#2D2D2D] mb-2" style={{ fontSize: "56px", fontWeight: "700", fontFamily: "var(--font-heading)", letterSpacing: "0.02em" }}>
+            <h1 className="text-[#2D2D2D] mb-2 text-[56px] font-bold font-['Playfair_Display'] tracking-wide">
               drssed
             </h1>
-            <p className="text-[#6B6B6B]" style={{ fontSize: "18px", fontFamily: "var(--font-accent)", letterSpacing: "0.08em", fontWeight: "500" }}>
+            <p className="text-[#6B6B6B] text-lg font-['Raleway'] tracking-[0.08em] font-medium">
               Where Fashion Meets Art
             </p>
           </div>
         </div>
 
         {/* Tagline */}
-        <p className="text-center text-[#2D2D2D] mb-12 px-4" style={{ fontSize: "15px", lineHeight: "1.7", fontFamily: "var(--font-body)" }}>
+        <p className="text-center text-[#2D2D2D] mb-12 px-4 text-[15px] leading-relaxed font-['Raleway']">
           Your gateway to Ghana's finest custom fashion designers and tailors.<br/>
           Bespoke elegance, crafted to perfection.
         </p>
@@ -63,10 +63,10 @@ export function Landing() {
               <div className="text-[#E76F51] mb-3">
                 {feature.icon}
               </div>
-              <h3 className="mb-1" style={{ fontSize: "14px", fontWeight: "600", fontFamily: "var(--font-body)" }}>
+              <h3 className="mb-1 text-sm font-semibold font-['Raleway']">
                 {feature.title}
               </h3>
-              <p className="text-[#6B6B6B]" style={{ fontSize: "12px", lineHeight: "1.4", fontFamily: "var(--font-body)" }}>
+              <p className="text-[#6B6B6B] text-xs leading-snug font-['Raleway']">
                 {feature.description}
               </p>
             </div>
@@ -80,23 +80,21 @@ export function Landing() {
           <>
             <Button
               onClick={() => navigate("/signup")}
-              className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg"
-              style={{ fontSize: "16px", fontWeight: "600", fontFamily: "var(--font-body)" }}
+              className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-base font-semibold font-['Raleway']"
             >
               Get Started
             </Button>
             <Button
               onClick={() => setShowRoleSelection(true)}
               variant="outline"
-              className="w-full h-14 border-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D]/5 rounded-full"
-              style={{ fontSize: "16px", fontWeight: "600", fontFamily: "var(--font-body)" }}
+              className="w-full h-14 border-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D]/5 rounded-full text-base font-semibold font-['Raleway']"
             >
               Sign In
             </Button>
           </>
         ) : (
           <div className="space-y-3 animate-fade-in">
-            <p className="text-center text-[#6B6B6B] mb-4" style={{ fontSize: "14px", fontFamily: "var(--font-body)" }}>
+            <p className="text-center text-[#6B6B6B] mb-4 text-sm font-['Raleway']">
               Choose your account type
             </p>
             
@@ -111,10 +109,10 @@ export function Landing() {
                     <Shirt className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-[#2D2D2D] mb-1" style={{ fontSize: "16px", fontWeight: "600", fontFamily: "var(--font-body)" }}>
+                    <h3 className="text-[#2D2D2D] mb-1 text-base font-semibold font-['Raleway']">
                       I'm a Customer
                     </h3>
-                    <p className="text-[#6B6B6B]" style={{ fontSize: "13px", fontFamily: "var(--font-body)" }}>
+                    <p className="text-[#6B6B6B] text-[13px] font-['Raleway']">
                       Browse and order custom designs
                     </p>
                   </div>
@@ -134,10 +132,10 @@ export function Landing() {
                     <Scissors className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-[#2D2D2D] mb-1" style={{ fontSize: "16px", fontWeight: "600", fontFamily: "var(--font-body)" }}>
+                    <h3 className="text-[#2D2D2D] mb-1 text-base font-semibold font-['Raleway']">
                       I'm a Designer
                     </h3>
-                    <p className="text-[#6B6B6B]" style={{ fontSize: "13px", fontFamily: "var(--font-body)" }}>
+                    <p className="text-[#6B6B6B] text-[13px] font-['Raleway']">
                       Manage orders and grow your business
                     </p>
                   </div>
@@ -149,8 +147,7 @@ export function Landing() {
             <Button
               onClick={() => setShowRoleSelection(false)}
               variant="ghost"
-              className="w-full text-[#6B6B6B] hover:text-[#2D2D2D]"
-              style={{ fontSize: "14px", fontFamily: "var(--font-body)" }}
+              className="w-full text-[#6B6B6B] hover:text-[#2D2D2D] text-sm font-['Raleway']"
             >
               Back
             </Button>

@@ -27,16 +27,16 @@ export function Login() {
       {/* Content */}
       <div className="flex-1 px-6 py-8 max-w-md mx-auto w-full">
         <div className="mb-8">
-          <h1 className="text-[#2D2D2D] mb-2" style={{ fontSize: "32px", fontWeight: "700", fontFamily: "var(--font-heading)" }}>
+          <h1 className="text-[#2D2D2D] mb-2 text-[32px] font-bold font-['Playfair_Display']">
             Welcome Back
           </h1>
-          <p className="text-[#6B6B6B]" style={{ fontFamily: "var(--font-body)" }}>Sign in to continue to drssed</p>
+          <p className="text-[#6B6B6B] font-['Raleway']">Sign in to continue to drssed</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-[#2D2D2D] mb-2" style={{ fontFamily: "var(--font-body)", fontWeight: "500" }}>
+            <label htmlFor="email" className="block text-[#2D2D2D] mb-2 font-['Raleway'] font-medium">
               Email or Phone
             </label>
             <div className="relative">
@@ -45,15 +45,14 @@ export function Login() {
                 id="email"
                 type="text"
                 placeholder="Enter email or phone"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
-                style={{ fontFamily: "var(--font-body)" }}
+                className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent font-['Raleway']"
               />
             </div>
           </div>
 
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-[#2D2D2D] mb-2" style={{ fontFamily: "var(--font-body)", fontWeight: "500" }}>
+            <label htmlFor="password" className="block text-[#2D2D2D] mb-2 font-['Raleway'] font-medium">
               Password
             </label>
             <div className="relative">
@@ -62,15 +61,14 @@ export function Login() {
                 id="password"
                 type="password"
                 placeholder="Enter password"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
-                style={{ fontFamily: "var(--font-body)" }}
+                className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent font-['Raleway']"
               />
             </div>
           </div>
 
           {/* Forgot Password */}
           <div className="text-right">
-            <button type="button" className="text-[#E76F51] text-sm" style={{ fontFamily: "var(--font-body)", fontWeight: "500" }}>
+            <button type="button" className="text-[#E76F51] text-sm font-['Raleway'] font-medium">
               Forgot Password?
             </button>
           </div>
@@ -78,8 +76,7 @@ export function Login() {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm"
-            style={{ fontWeight: "600", fontFamily: "var(--font-body)" }}
+            className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold font-['Raleway']"
           >
             Sign In
           </button>
@@ -88,7 +85,7 @@ export function Login() {
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-[#E76F51]/10"></div>
-          <span className="text-[#6B6B6B] text-sm" style={{ fontFamily: "var(--font-body)" }}>Or continue with</span>
+          <span className="text-[#6B6B6B] text-sm font-['Raleway']">Or continue with</span>
           <div className="flex-1 h-px bg-[#E76F51]/10"></div>
         </div>
 
@@ -96,18 +93,18 @@ export function Login() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <button className="flex items-center justify-center gap-2 py-3 bg-white border border-[#E76F51]/20 rounded-lg hover:bg-[#FAFAF8] transition-colors">
             <Chrome size={20} className="text-[#2D2D2D]" />
-            <span className="text-[#2D2D2D]" style={{ fontFamily: "var(--font-body)" }}>Google</span>
+            <span className="text-[#2D2D2D] font-['Raleway']">Google</span>
           </button>
           <button className="flex items-center justify-center gap-2 py-3 bg-white border border-[#E76F51]/20 rounded-lg hover:bg-[#FAFAF8] transition-colors">
             <Apple size={20} className="text-[#2D2D2D]" />
-            <span className="text-[#2D2D2D]" style={{ fontFamily: "var(--font-body)" }}>Apple</span>
+            <span className="text-[#2D2D2D] font-['Raleway']">Apple</span>
           </button>
         </div>
 
         {/* Sign Up Link */}
         <div className="text-center">
-          <span className="text-[#6B6B6B]" style={{ fontFamily: "var(--font-body)" }}>Don't have an account? </span>
-          <Link to="/signup" className="text-[#E76F51]" style={{ fontWeight: "600", fontFamily: "var(--font-body)" }}>
+          <span className="text-[#6B6B6B] font-['Raleway']">Don't have an account? </span>
+          <Link to="/signup" className="text-[#E76F51] font-semibold font-['Raleway']">
             Sign Up
           </Link>
         </div>

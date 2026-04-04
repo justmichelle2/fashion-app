@@ -18,10 +18,10 @@ export function Splash() {
       <div className="flex flex-col items-center gap-8 animate-fade-in">
         <DrssedLogo size={140} className="drop-shadow-2xl" />
         <div className="text-center">
-          <h1 className="text-[#F5E6D3] mb-2" style={{ fontSize: "48px", fontWeight: "700", fontFamily: "var(--font-heading)", letterSpacing: "0.02em" }}>
+          <h1 className="text-[#F5E6D3] mb-2 text-5xl font-bold font-['Playfair_Display'] tracking-wide">
             drssed
           </h1>
-          <p className="text-[#F5E6D3]/80" style={{ fontSize: "16px", fontFamily: "var(--font-accent)", letterSpacing: "0.05em" }}>
+          <p className="text-[#F5E6D3]/80 text-base font-['Raleway'] tracking-widest">
             Where Fashion Meets Art
           </p>
         </div>

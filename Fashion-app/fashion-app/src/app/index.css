@@ -1,58 +1,65 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap");
 
-/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ------------------------
-   Custom Base Styles
-   ------------------------ */
+:root {
+  --font-size: 16px;
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Raleway", sans-serif;
+  --font-accent: "Cormorant", serif;
+  --background: #fafaf8;
+  --foreground: #2d2d2d;
+  --primary: #e76f51;
+  --muted: #f5e6d3;
+  --muted-foreground: #6b6b6b;
+  --accent: #f4a261;
+  --border: rgba(45, 45, 45, 0.1);
+  --ring: #e76f51;
+}
+
 @layer base {
   html {
     font-size: var(--font-size);
   }
 
   body {
+    margin: 0;
     font-family: var(--font-body);
-    background-color: var(--background);
+    background: var(--background);
     color: var(--foreground);
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-heading);
   }
 
-  h1 { font-weight: var(--font-weight-medium); line-height: 1.5; }
-  h2 { font-weight: var(--font-weight-medium); line-height: 1.5; }
-  h3 { font-weight: var(--font-weight-medium); line-height: 1.5; font-family: var(--font-body); }
-  h4 { font-weight: var(--font-weight-medium); line-height: 1.5; }
-
-  label, button {
-    font-weight: var(--font-weight-medium);
+  * {
+    box-sizing: border-box;
   }
 
-  input {
-    font-weight: var(--font-weight-normal);
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
   }
 }
 
-/* ------------------------
-   Custom Utility Classes
-   ------------------------ */
 @layer utilities {
-  /* Hide scrollbars */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;             /* Chrome, Safari, Opera */
+    display: none;
   }
 
-  /* Safe area padding for bottom (iPhone notch etc.) */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }

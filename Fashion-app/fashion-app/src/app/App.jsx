@@ -1,18 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Splash from "./pages/Splash";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes.jsx";
+import MobileViewport from "./components/MobileViewport";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Splash />} />
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="min-h-screen bg-[#F2F2EF] flex items-center justify-center">
+      <MobileViewport>
+        <RouterProvider router={router} />
+      </MobileViewport>
+    </div>
   );
 }

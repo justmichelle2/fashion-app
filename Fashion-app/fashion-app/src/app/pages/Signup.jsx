@@ -8,20 +8,19 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from "react-icons/fa";
-
-const ROLE_OPTIONS = ["Customer", "Designer"];
+import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import DrssedLogo from "../components/DressedLogo";
+import SocialButtons from "../components/SocialButtons";
 
 export default function Signup() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const role = "Customer";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,10 +38,6 @@ export default function Signup() {
     }
     if (!phone.trim()) {
       setError("Phone number is required.");
-      return false;
-    }
-    if (!role) {
-      setError("Please select your role.");
       return false;
     }
     return true;
@@ -80,8 +75,8 @@ export default function Signup() {
   };
 
   const handleProviderSignup = async (Provider) => {
-    if (!phone.trim() || !role) {
-      setError("Phone and role are required for social signup.");
+    if (!phone.trim()) {
+      setError("Phone number is required.");
       return;
     }
     try {
@@ -99,153 +94,134 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-[85vh] bg-gray-100 px-4 py-10 flex items-center justify-center">
-      <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl p-8 md:p-10 flex flex-col">
-        <div className="flex flex-col items-center w-full mb-4">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-logoSpinFade">
-            <span className="text-3xl">🐝</span>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAF8] to-[#F5E6D3]/20 flex flex-col items-center justify-center px-6 py-8 relative">
+      <div className="relative z-10 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+        <div className="flex flex-col items-center mb-10">
+          <DrssedLogo size={84} className="drop-shadow-lg mb-4" />
+          <h1 className="text-[#2D2D2D] mb-1 text-4xl font-bold font-['Playfair_Display'] tracking-wide">drssed</h1>
+          <p className="text-[#6B6B6B] text-sm font-['Raleway'] tracking-[0.08em]">Create Your Account</p>
         </div>
 
-        <hr className="w-full border-gray-200 mb-6" />
-
-        <div className="w-full text-left mb-6">
-          <h2 className="text-3xl font-bold text-textPrimary mb-2">Create Account</h2>
-          <h3 className="font-semibold text-textSecondary">Join DRSSED today</h3>
-        </div>
-
-        <form onSubmit={handleSignup} className="flex flex-col w-full">
-          {/* Name */}
-          <div className="relative mb-4">
-            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Full Name"
-              className="w-full border rounded-lg p-4 pl-10"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="relative mb-4">
-            <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className="w-full border rounded-lg p-4 pl-10"
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="relative mb-4">
-            <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-black" />
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+233 xx xxx xxxx"
-              className="w-full border rounded-lg p-4 pl-10"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="relative mb-4">
-            <input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Password"
-              className="w-full border rounded-lg p-4 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
-
-          {/* Confirm Password */}
-          <div className="relative mb-4">
-            <input
-              name="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              value={form.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm Password"
-              className="w-full border rounded-lg p-4 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
-
-          {/* Role */}
-          <div className="mb-4">
-            <p className="mb-2 font-medium">I am a:</p>
-            <div className="flex gap-3">
-              {ROLE_OPTIONS.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => setRole(opt)}
-                  className={`flex-1 rounded-2xl py-3 font-semibold transition-all ${
-                    role === opt ? "bg-yellow-500 text-white shadow-sm" : "bg-white border border-gray-300 text-black"
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
+        <div className="bg-white rounded-3xl shadow-xl p-8 border border-[#E76F51]/10">
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="relative">
+              <User className="absolute left-4 top-4 w-5 h-5 text-[#E76F51]" />
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Full Name"
+                className="w-full bg-[#F5E6D3]/30 text-[#2D2D2D] placeholder-[#6B6B6B]/60 rounded-xl p-4 pl-12 border border-[#E76F51]/20 focus:border-[#E76F51] focus:outline-none transition"
+              />
             </div>
-          </div>
 
-          {/* Submit */}
-          {error && <p className="text-red-500 mb-2">{error}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-primary text-white py-3 rounded-2xl font-semibold mb-4"
-          >
-            {submitting ? "Creating Account..." : "Sign Up"}
-          </button>
+            <div className="relative">
+              <Mail className="absolute left-4 top-4 w-5 h-5 text-[#E76F51]" />
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Email address"
+                className="w-full bg-[#F5E6D3]/30 text-[#2D2D2D] placeholder-[#6B6B6B]/60 rounded-xl p-4 pl-12 border border-[#E76F51]/20 focus:border-[#E76F51] focus:outline-none transition"
+              />
+            </div>
 
-          {/* Social login */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 border-t border-gray-200" />
-            <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">or sign up with</span>
-            <div className="flex-1 border-t border-gray-200" />
-          </div>
-          <div className="flex gap-4">
+            <div className="relative">
+              <Phone className="absolute left-4 top-4 w-5 h-5 text-[#E76F51]" />
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+233 xx xxx xxxx"
+                className="w-full bg-[#F5E6D3]/30 text-[#2D2D2D] placeholder-[#6B6B6B]/60 rounded-xl p-4 pl-12 border border-[#E76F51]/20 focus:border-[#E76F51] focus:outline-none transition"
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute left-4 top-4 w-5 h-5 text-[#E76F51]" />
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Password"
+                className="w-full bg-[#F5E6D3]/30 text-[#2D2D2D] placeholder-[#6B6B6B]/60 rounded-xl p-4 pl-12 pr-12 border border-[#E76F51]/20 focus:border-[#E76F51] focus:outline-none transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-4 text-[#6B6B6B] hover:text-[#E76F51] transition"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute left-4 top-4 w-5 h-5 text-[#E76F51]" />
+              <input
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+                className="w-full bg-[#F5E6D3]/30 text-[#2D2D2D] placeholder-[#6B6B6B]/60 rounded-xl p-4 pl-12 pr-12 border border-[#E76F51]/20 focus:border-[#E76F51] focus:outline-none transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-4 text-[#6B6B6B] hover:text-[#E76F51] transition"
+              >
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {error && (
+              <div className="flex gap-2 items-start bg-red-500/15 border border-red-500/30 rounded-lg p-3 mt-4">
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-red-700 text-sm font-['Raleway']">{error}</p>
+              </div>
+            )}
+
             <button
-              type="button"
-              onClick={() => handleProviderSignup(GoogleAuthProvider)}
-              className="flex-1 flex items-center justify-center gap-2 border rounded-2xl p-2 shadow hover:bg-gray-100"
+              type="submit"
+              disabled={submitting}
+              className="w-full h-14 bg-gradient-to-r from-[#E76F51] to-[#F4A261] hover:from-[#D55B3A] hover:to-[#DB9149] text-white rounded-full font-['Raleway'] font-semibold text-lg shadow-lg hover:shadow-xl transition disabled:opacity-60 disabled:cursor-not-allowed mt-4"
             >
-              <FcGoogle size={28} /> Google
+              {submitting ? "Creating Account..." : "Sign Up"}
             </button>
-            <button
-              type="button"
-              onClick={() => handleProviderSignup(FacebookAuthProvider)}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#1877F2] text-white border rounded-2xl p-2 shadow hover:opacity-90"
-            >
-              <FaFacebook size={28} /> Facebook
-            </button>
-          </div>
 
-          <p className="text-center mt-6 text-textSecondary">
-            Already have an account? <Link to="/login" className="text-teal font-semibold">Login</Link>
-          </p>
-        </form>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#E76F51]/20" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-[#6B6B6B] font-['Raleway']">or continue with</span>
+              </div>
+            </div>
+
+            <SocialButtons
+              variant="light"
+              onGoogle={() => handleProviderSignup(GoogleAuthProvider)}
+              onFacebook={() => handleProviderSignup(FacebookAuthProvider)}
+            />
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-[#6B6B6B] font-['Raleway']">
+              Already have an account?{" "}
+              <Link to="/login/customer" className="text-[#E76F51] hover:text-[#D55B3A] font-semibold transition">
+                Sign in
+              </Link>
+            </p>
+            <p className="text-[#6B6B6B] font-['Raleway'] text-sm mt-2">
+              Designer?{" "}
+              <Link to="/signup/designer" className="text-[#E76F51] hover:text-[#D55B3A] font-semibold transition">
+                Create designer account
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
