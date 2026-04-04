@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, authPersistenceReady, db } from "../firebase";
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signInWithPopup,
+  getRedirectResult,
 } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import DrssedLogo from "../components/DressedLogo";
 import SocialButtons from "../components/SocialButtons";
+import { signInWithPopupOrRedirect } from "../utils/socialAuth";
 
 export default function DesignerLogin() {
   const navigate = useNavigate();
@@ -37,17 +39,83 @@ export default function DesignerLogin() {
     }
   };
 
-  const handleProviderLogin = async (Provider) => {
+  const upsertOAuthUser = async (user, provider) => {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        name: user.displayName || "",
+        email: user.email || "",
+        photo: user.photoURL || "",
+        provider,
+        role: "Designer",
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const handleRedirect = async () => {
+      try {
+        await authPersistenceReady;
+        const result = await getRedirectResult(auth);
+        if (!result?.user || cancelled) return;
+
+        const provider = result.providerId?.includes("facebook") ? "facebook" : "google";
+        await upsertOAuthUser(result.user, provider);
+        sessionStorage.removeItem("designerLoginSocialRedirect");
+        navigate("/designer-dashboard");
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Redirect auth error:", error);
+          setError(error.message?.replace("Firebase: ", "") || "Authentication failed");
+        }
+      }
+    };
+
+    handleRedirect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  const handleGoogleAuth = async () => {
+    setError("");
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: "select_account",
+    });
     try {
-      setSubmitting(true);
-      setError("");
-      const provider = new Provider();
-      await signInWithPopup(auth, provider);
-      navigate("/designer-dashboard");
-    } catch (err) {
-      setError(err.message.replace("Firebase: ", ""));
-    } finally {
-      setSubmitting(false);
+      const outcome = await signInWithPopupOrRedirect(auth, provider, {
+        redirectStateKey: "designerLoginSocialRedirect",
+      });
+      if (outcome.mode === "popup") {
+        await upsertOAuthUser(outcome.result.user, "google");
+        navigate("/designer-dashboard");
+      }
+    } catch (error) {
+      console.error("Google auth error:", error);
+      setError(error.message?.replace("Firebase: ", "") || "Google authentication failed");
+    }
+  };
+
+  const handleFacebookAuth = async () => {
+    setError("");
+    const provider = new FacebookAuthProvider();
+    try {
+      const outcome = await signInWithPopupOrRedirect(auth, provider, {
+        redirectStateKey: "designerLoginSocialRedirect",
+      });
+      if (outcome.mode === "popup") {
+        await upsertOAuthUser(outcome.result.user, "facebook");
+        navigate("/designer-dashboard");
+      }
+    } catch (error) {
+      console.error("Facebook auth error:", error);
+      setError(error.message?.replace("Firebase: ", "") || "Facebook authentication failed");
     }
   };
 
@@ -116,13 +184,15 @@ export default function DesignerLogin() {
                 <span className="px-2 bg-[#3D3D3D] text-white/60 font-['Raleway']">or continue with</span>
               </div>
             </div>
+          </form>
 
+          <div className="mt-6 social-auth">
             <SocialButtons
               variant="dark"
-              onGoogle={() => handleProviderLogin(GoogleAuthProvider)}
-              onFacebook={() => handleProviderLogin(FacebookAuthProvider)}
+              onGoogle={handleGoogleAuth}
+              onFacebook={handleFacebookAuth}
             />
-          </form>
+          </div>
 
           <div className="mt-8 text-center space-y-2">
             <p className="text-white/80 font-['Raleway']">

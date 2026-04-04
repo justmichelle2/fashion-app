@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "dev": "npm --prefix ./fashion-app run dev",
+    "build": "npm --prefix ./fashion-app run build",
+    "preview": "npm --prefix ./fashion-app run preview",
+    "lint": "npm --prefix ./fashion-app run lint"
+  },
   "dependencies": {
     "prop-types": "^15.8.1"
   }

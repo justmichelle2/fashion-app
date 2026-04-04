@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase";
+import { auth, authPersistenceReady, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signInWithPopup,
+  getRedirectResult,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import DrssedLogo from "../components/DressedLogo";
 import SocialButtons from "../components/SocialButtons";
+import { signInWithPopupOrRedirect } from "../utils/socialAuth";
 
 export default function DesignerSignup() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function DesignerSignup() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const role = "Designer";
+  const [authMethod, setAuthMethod] = useState("manual");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +30,9 @@ export default function DesignerSignup() {
   };
 
   const validateFields = () => {
+    if (authMethod !== "manual") {
+      return true;
+    }
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
       setError("All fields are required.");
       return false;
@@ -59,6 +64,7 @@ export default function DesignerSignup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setAuthMethod("manual");
     if (!validateFields()) return;
 
     try {
@@ -74,22 +80,85 @@ export default function DesignerSignup() {
     }
   };
 
-  const handleProviderSignup = async (Provider) => {
-    if (!phone.trim()) {
-      setError("Phone number is required.");
-      return;
-    }
+  const upsertOAuthUser = async (user, provider) => {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        name: user.displayName || "",
+        email: user.email || "",
+        photo: user.photoURL || "",
+        provider,
+        role,
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const handleRedirect = async () => {
+      try {
+        await authPersistenceReady;
+        const result = await getRedirectResult(auth);
+        if (!result?.user || cancelled) return;
+
+        const provider = result.providerId?.includes("facebook") ? "facebook" : "google";
+        await upsertOAuthUser(result.user, provider);
+        sessionStorage.removeItem("designerSignupSocialRedirect");
+        navigate("/designer-dashboard");
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Redirect auth error:", error);
+          setError(error.message?.replace("Firebase: ", "") || "Authentication failed");
+        }
+      }
+    };
+
+    handleRedirect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  const handleGoogleAuth = async () => {
+    setAuthMethod("oauth");
+    setError("");
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: "select_account",
+    });
     try {
-      setSubmitting(true);
-      setError("");
-      const provider = new Provider();
-      const result = await signInWithPopup(auth, provider);
-      await saveUserProfile(result.user, { name: result.user.displayName, email: result.user.email });
-      navigate("/designer-dashboard");
-    } catch (err) {
-      setError(err.message.replace("Firebase: ", ""));
-    } finally {
-      setSubmitting(false);
+      const outcome = await signInWithPopupOrRedirect(auth, provider, {
+        redirectStateKey: "designerSignupSocialRedirect",
+      });
+      if (outcome.mode === "popup") {
+        await upsertOAuthUser(outcome.result.user, "google");
+        navigate("/designer-dashboard");
+      }
+    } catch (error) {
+      console.error("Google auth error:", error);
+      setError(error.message?.replace("Firebase: ", "") || "Google authentication failed");
+    }
+  };
+
+  const handleFacebookAuth = async () => {
+    setAuthMethod("oauth");
+    setError("");
+    const provider = new FacebookAuthProvider();
+    try {
+      const outcome = await signInWithPopupOrRedirect(auth, provider, {
+        redirectStateKey: "designerSignupSocialRedirect",
+      });
+      if (outcome.mode === "popup") {
+        await upsertOAuthUser(outcome.result.user, "facebook");
+        navigate("/designer-dashboard");
+      }
+    } catch (error) {
+      console.error("Facebook auth error:", error);
+      setError(error.message?.replace("Firebase: ", "") || "Facebook authentication failed");
     }
   };
 
@@ -201,13 +270,15 @@ export default function DesignerSignup() {
                 <span className="px-2 bg-[#3D3D3D] text-white/60 font-['Raleway']">or continue with</span>
               </div>
             </div>
+          </form>
 
+          <div className="mt-6 social-auth">
             <SocialButtons
               variant="dark"
-              onGoogle={() => handleProviderSignup(GoogleAuthProvider)}
-              onFacebook={() => handleProviderSignup(FacebookAuthProvider)}
+              onGoogle={handleGoogleAuth}
+              onFacebook={handleFacebookAuth}
             />
-          </form>
+          </div>
 
           <div className="mt-8 text-center space-y-2">
             <p className="text-white/80 font-['Raleway']">

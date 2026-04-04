@@ -36,6 +36,7 @@ export const router = createBrowserRouter([
   { path: "/signup/customer", element: <Signup />, errorElement },
   { path: "/signup/designer", element: <DesignerSignup />, errorElement },
   { path: "/home", element: <Home />, errorElement },
+  { path: "/dashboard", element: <Navigate to="/home" replace />, errorElement },
   { path: "/designer-home", element: <DesignerHome />, errorElement },
   { path: "/designers", element: <DesignerList />, errorElement },
   { path: "/designer/:id", element: <DesignerProfile />, errorElement },
