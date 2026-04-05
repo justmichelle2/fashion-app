@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, MapPin, Star, Filter } from "lucide-react";
+import { auth } from "../firebase";
 import { mockDesigners } from "../data/mockData";
+import { getUserRole } from "../utils/authRedirect";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -9,11 +11,57 @@ export default function Home() {
   const [filtered, setFiltered] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Check role on mount
   useEffect(() => {
-    setDesigners(mockDesigners);
-    setFiltered(mockDesigners);
-  }, []);
+    let cancelled = false;
+
+    const checkRoleAndLoad = async () => {
+      try {
+        // Wait for auth to be ready
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (!cancelled) {
+            if (!user) {
+              // Not authenticated, redirect to login
+              navigate("/login/customer", { replace: true });
+              return;
+            }
+
+            // Check role
+            const role = await getUserRole(user.uid);
+            
+            if (!cancelled) {
+              if (role === "Designer") {
+                // Designer should not be here, redirect to designer home
+                navigate("/designer-home", { replace: true });
+              } else {
+                // Customer - load data
+                setDesigners(mockDesigners);
+                setFiltered(mockDesigners);
+                setIsLoading(false);
+              }
+            }
+          }
+        });
+
+        return unsubscribe;
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Error checking role:", err);
+          setError("Failed to load page");
+          setIsLoading(false);
+        }
+      }
+    };
+
+    const unsubPromise = checkRoleAndLoad();
+    return () => {
+      cancelled = true;
+      unsubPromise.then((unsub) => unsub?.());
+    };
+  }, [navigate]);
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -26,6 +74,34 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] pb-20">
+      {/* Loading state */}
+      {isLoading && (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-[#E76F51] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-[#6B6B6B] font-['Raleway'] text-sm">Loading designers...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && !isLoading && (
+        <div className="p-6 mt-10">
+          <div className="bg-red-500/15 border border-red-500/30 rounded-lg p-4 text-center">
+            <p className="text-red-700 font-['Raleway']">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-['Raleway'] hover:bg-red-600 transition"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main content */}
+      {!isLoading && !error && (
+      <div className="min-h-screen bg-[#FAFAF8] pb-20">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white shadow-sm p-6 space-y-4">
         <div>
@@ -130,6 +206,8 @@ export default function Home() {
             </button>
           ))
         )}
+      </div>
+      )}
       </div>
     </div>
   );

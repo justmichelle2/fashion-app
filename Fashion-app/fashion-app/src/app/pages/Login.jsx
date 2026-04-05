@@ -7,12 +7,12 @@ import {
   FacebookAuthProvider,
   getRedirectResult,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import DrssedLogo from "../components/DressedLogo";
 import SocialButtons from "../components/SocialButtons";
-import { db } from "../firebase";
 import { signInWithPopupOrRedirect } from "../utils/socialAuth";
+import { syncUserToFirestore } from "../utils/firestoreSync";
+import { redirectByRole } from "../utils/authRedirect";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [authMethod, setAuthMethod] = useState("manual");
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -42,20 +43,6 @@ export default function Login() {
     }
   };
 
-  const upsertOAuthUser = async (user, provider) => {
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
-        name: user.displayName || "",
-        email: user.email || "",
-        photo: user.photoURL || "",
-        provider,
-        createdAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
-  };
-
   useEffect(() => {
     let cancelled = false;
 
@@ -66,9 +53,14 @@ export default function Login() {
         if (!result?.user || cancelled) return;
 
         const provider = result.providerId?.includes("facebook") ? "facebook" : "google";
-        await upsertOAuthUser(result.user, provider);
+        await syncUserToFirestore(result.user, provider, { role: "Customer" });
         sessionStorage.removeItem("loginSocialRedirect");
-        navigate("/dashboard");
+        
+        // Use role-aware redirect
+        await redirectByRole(result.user, navigate, {
+          defaultRole: "Customer",
+          onLoading: (loading) => !cancelled && setIsRedirecting(loading),
+        });
       } catch (error) {
         if (!cancelled) {
           console.error("Redirect auth error:", error);
@@ -96,8 +88,12 @@ export default function Login() {
         redirectStateKey: "loginSocialRedirect",
       });
       if (outcome.mode === "popup") {
-        await upsertOAuthUser(outcome.result.user, "google");
-        navigate("/dashboard");
+        await syncUserToFirestore(outcome.result.user, "google", { role: "Customer" });
+        // Use role-aware redirect
+        await redirectByRole(outcome.result.user, navigate, {
+          defaultRole: "Customer",
+          onLoading: setIsRedirecting,
+        });
       }
     } catch (error) {
       console.error("Google auth error:", error);
@@ -114,8 +110,12 @@ export default function Login() {
         redirectStateKey: "loginSocialRedirect",
       });
       if (outcome.mode === "popup") {
-        await upsertOAuthUser(outcome.result.user, "facebook");
-        navigate("/dashboard");
+        await syncUserToFirestore(outcome.result.user, "facebook", { role: "Customer" });
+        // Use role-aware redirect
+        await redirectByRole(outcome.result.user, navigate, {
+          defaultRole: "Customer",
+          onLoading: setIsRedirecting,
+        });
       }
     } catch (error) {
       console.error("Facebook auth error:", error);
@@ -172,9 +172,16 @@ export default function Login() {
               </div>
             )}
 
+            {isRedirecting && (
+              <div className="flex gap-2 items-center justify-center bg-[#E76F51]/20 border border-[#E76F51]/50 rounded-lg p-3">
+                <div className="w-4 h-4 border-2 border-[#E76F51] border-t-transparent rounded-full animate-spin" />
+                <p className="text-[#E76F51] text-sm font-['Raleway']">Completing sign in...</p>
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || isRedirecting}
               className="w-full h-14 bg-gradient-to-r from-[#E76F51] to-[#F4A261] hover:from-[#D55B3A] hover:to-[#DB9149] text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {submitting ? "Signing In..." : "Sign In"}
