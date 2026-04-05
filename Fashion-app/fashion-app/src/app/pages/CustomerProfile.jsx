@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { db } from "../firebaseConfig";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { FaUser, FaEnvelope, FaPhone, FaEdit2, FaSave, FaTimes, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave, FaTimes, FaSignOutAlt } from "react-icons/fa";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -123,7 +123,7 @@ export default function CustomerProfile() {
                 onClick={() => setIsEditing(true)}
                 className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
               >
-                <FaEdit2 /> Edit
+                <FaEdit /> Edit
               </button>
             )}
           </div>
