@@ -3,7 +3,7 @@ import Logo from "../../assets/logo.png";
 
 const getNumericSize = (value) => (typeof value === "number" ? value : parseFloat(value) || 120);
 
-export default function DrssedLogo({ size = 120, className = "" }) {
+export default function DressedLogo({ size = 120, className = "" }) {
   const numericSize = getNumericSize(size);
   const dimension = typeof size === "number" ? `${size}px` : size;
   const brandFontSize = `${Math.max(18, Math.round(numericSize * 0.26))}px`;
@@ -36,7 +36,7 @@ export default function DrssedLogo({ size = 120, className = "" }) {
   );
 }
 
-DrssedLogo.propTypes = {
+DressedLogo.propTypes = {
   size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   className: PropTypes.string,
 };

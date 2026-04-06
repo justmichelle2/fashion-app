@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { db } from "../firebaseConfig";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave, FaTimes, FaSignOutAlt } from "react-icons/fa";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
-  const { currentUser, userProfile, loading, logout, refetchUserProfile } = useAuth();
+  const { currentUser, userProfile, loading, logout, updateUserProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    role: "",
+    role: "customer",
     address: "",
     city: "",
     country: "",
@@ -29,11 +27,17 @@ export default function CustomerProfile() {
         name: userProfile.name || "",
         email: userProfile.email || currentUser?.email || "",
         phone: userProfile.phone || "",
-        role: userProfile.role || "",
+        role: userProfile.role || "customer",
         address: userProfile.address || "",
         city: userProfile.city || "",
         country: userProfile.country || "",
       });
+    } else if (currentUser) {
+      // First time user
+      setFormData(prev => ({
+        ...prev,
+        email: currentUser.email || "",
+      }));
     }
   }, [userProfile, currentUser]);
 
@@ -63,22 +67,23 @@ export default function CustomerProfile() {
       setSaving(true);
       setError("");
 
-      const userDocRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userDocRef, {
+      const result = await updateUserProfile({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
         city: formData.city,
         country: formData.country,
-        updatedAt: serverTimestamp(),
+        role: formData.role,
       });
 
-      setSuccess("Profile updated successfully!");
-      setIsEditing(false);
-      await refetchUserProfile();
-
-      setTimeout(() => setSuccess(""), 3000);
+      if (result.success) {
+        setSuccess("Profile updated successfully!");
+        setIsEditing(false);
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setError("Failed to update profile: " + result.error);
+      }
     } catch (err) {
       setError("Failed to update profile: " + err.message);
     } finally {
