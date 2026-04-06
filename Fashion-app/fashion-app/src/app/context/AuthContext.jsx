@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { auth, db } from "../firebaseConfig";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export const AuthContext = createContext();
 
@@ -24,6 +24,30 @@ export function AuthProvider({ children }) {
     } catch (err) {
       setError(err.message);
       setUserProfile(null);
+    }
+  };
+
+  // Update user profile in Firestore
+  const updateUserProfile = async (profileData) => {
+    try {
+      if (!currentUser) throw new Error("No user logged in");
+      
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const dataToUpdate = {
+        ...profileData,
+        updatedAt: serverTimestamp(),
+      };
+      
+      // Try to update, if document doesn't exist, create it
+      await setDoc(userDocRef, dataToUpdate, { merge: true });
+      
+      // Update local state
+      setUserProfile(prev => ({ ...prev, ...profileData }));
+      setError("");
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      return { success: false, error: err.message };
     }
   };
 
@@ -59,6 +83,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     logout,
+    updateUserProfile,
     refetchUserProfile: () => {
       if (currentUser) {
         fetchUserProfile(currentUser.uid);
