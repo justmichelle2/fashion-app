@@ -6,18 +6,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Root CSS Variables */
+:root {
+  --font-size: 16px;
+  --font-body: 'Raleway', sans-serif;
+  --font-heading: 'Playfair Display', serif;
+  --font-accent: 'Cormorant', serif;
+  --background: #ffffff;
+  --foreground: #000000;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 /* ------------------------
    Custom Base Styles
    ------------------------ */
 @layer base {
   html {
     font-size: var(--font-size);
+    height: 100%;
   }
 
   body {
     font-family: var(--font-body);
-    background-color: var(--background);
     color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    height: 100%;
   }
 
   h1, h2, h3, h4 {

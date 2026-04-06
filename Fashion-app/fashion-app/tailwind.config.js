@@ -57,9 +57,14 @@ module.exports = {
           '0%': { opacity: 0, transform: 'rotate(-180deg) scale(0.9)' },
           '100%': { opacity: 1, transform: 'rotate(360deg) scale(1)' },
         },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
       },
       animation: {
         logoSpinFade: 'logoSpinFade 1.5s ease-out forwards',
+        'fade-in': 'fadeIn 1s ease-out forwards',
       },
       borderRadius: {
         DEFAULT: '0.5rem',

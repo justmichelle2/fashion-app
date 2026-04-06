@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DrssedLogo from "../components/DressedLogo";
+import DressedLogo from "../components/DressedLogo";
 import { Sparkles, Users, Shirt, MessageCircle, ArrowRight, Scissors } from "lucide-react";
 
 export default function Landing() {
@@ -36,7 +36,7 @@ export default function Landing() {
       <div className="w-full max-w-sm bg-white shadow-2xl p-8 md:p-10 rounded-2xl flex flex-col items-center">
 
         {/* Logo */}
-        <DrssedLogo size={80} className="mb-4" />
+        <DressedLogo size={80} className="mb-4" />
 
         {/* Title */}
         <div className="text-center">

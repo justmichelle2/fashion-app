@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DrssedLogo from "../components/DressedLogo";
+import DressedLogo from "../components/DressedLogo";
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -14,9 +14,9 @@ export default function Splash() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#2D2D2D] via-[#3D3D3D] to-[#2D2D2D] p-6">
+    <div className="min-h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="flex flex-col items-center gap-8 animate-fade-in">
-        <DrssedLogo size={140} className="drop-shadow-2xl" />
+        <DressedLogo size={140} className="drop-shadow-2xl" />
 
         <div className="text-center">
           <h1
