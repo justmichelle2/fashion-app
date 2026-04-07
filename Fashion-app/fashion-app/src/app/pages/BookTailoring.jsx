@@ -1,56 +1,100 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { createOrder } from "../services/ordersApi";
-import { FaArrowLeft, FaCalendar, FaDollarSign, FaCheckCircle } from "react-icons/fa";
+import { ArrowLeft, MessageSquare, AlertCircle, CheckCircle } from "lucide-react";
+import { auth } from "../firebaseConfig";
+import { getDesignerProfile, createBookingInquiry } from "../utils/customerUtils";
 import BottomNav from "../components/BottomNav";
 
 export default function BookTailoring() {
   const { designerId } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
 
-  const [step, setStep] = useState("details"); // details | review | success
+  const [step, setStep] = useState("booking"); // booking, review, success
   const [loading, setLoading] = useState(false);
+  const [designer, setDesigner] = useState(null);
   const [error, setError] = useState("");
-  const [orderId, setOrderId] = useState("");
+  const [successId, setSuccessId] = useState("");
 
   const [formData, setFormData] = useState({
+    title: "",
     description: "",
-    notes: "",
-    price: "",
-    deadlineDate: "",
+    garmentType: "custom",
+    budget: "",
+    preferredDeadline: "",
+    specifications: {
+      color: "",
+      fabric: "",
+      style: "",
+      additionalNotes: "",
+    },
   });
 
-  // Mock designer data - in production, fetch from Firestore
-  const [designerInfo] = useState({
-    name: "Designer " + (designerId?.slice(0, 4) || ""),
-    specialization: "Custom Tailoring",
-    averagePrice: 500,
-  });
+  useEffect(() => {
+    if (!auth.currentUser) {
+      navigate("/login");
+      return;
+    }
 
-  const handleChange = (e) => {
+    loadDesignerProfile();
+  }, [designerId, navigate]);
+
+  const loadDesignerProfile = async () => {
+    if (!designerId) {
+      setError("Designer not found");
+      return;
+    }
+
+    try {
+      const result = await getDesignerProfile(designerId);
+      if (result.success) {
+        setDesigner(result.designer);
+      } else {
+        setError("Failed to load designer profile");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name.startsWith("spec_")) {
+      const specKey = name.replace("spec_", "");
+      setFormData((prev) => ({
+        ...prev,
+        specifications: {
+          ...prev.specifications,
+          [specKey]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
     setError("");
   };
 
   const validateForm = () => {
+    if (!formData.title.trim()) {
+      setError("Please enter a title for your project");
+      return false;
+    }
     if (!formData.description.trim()) {
-      setError("Please describe what you want tailored");
+      setError("Please describe your design requirements");
       return false;
     }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      setError("Please enter a valid price");
+    if (!formData.budget || parseFloat(formData.budget) <= 0) {
+      setError("Please enter a valid budget");
       return false;
     }
-    if (!formData.deadlineDate) {
+    if (!formData.preferredDeadline) {
       setError("Please select a deadline");
       return false;
     }
 
-    // Check deadline is in the future
-    const deadline = new Date(formData.deadlineDate);
+    const deadline = new Date(formData.preferredDeadline);
     if (deadline < new Date()) {
       setError("Deadline must be in the future");
       return false;
@@ -58,6 +102,47 @@ export default function BookTailoring() {
 
     return true;
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await createBookingInquiry({
+        designerId,
+        ...formData,
+        budget: parseFloat(formData.budget),
+      });
+
+      if (result.success) {
+        setSuccessId(result.inquiryId);
+        setStep("success");
+      } else {
+        setError(result.error || "Failed to create booking inquiry");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const garmentTypes = [
+    "custom",
+    "dress",
+    "suit",
+    "traditional",
+    "casual",
+    "wedding",
+    "formal",
+    "alterations",
+  ];
 
   const handleSubmitOrder = async () => {
     if (!validateForm()) return;

@@ -24,12 +24,12 @@ const firebaseConfig = {
 };
 
 // Reuse existing app instance to avoid duplicate initialization in HMR/multiple imports.
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 const authPersistenceReady = setPersistence(auth, browserSessionPersistence).catch((error) => {
   console.error("Auth persistence setup error:", error);
 });
 
-export { app, auth, db, authPersistenceReady };
+export { auth, authPersistenceReady };

@@ -1,13 +1,55 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import logo from "../../assets/drssed.jpg";
+import { handleLogin, handleGoogleSignIn } from "../utils/authUtils";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/home");
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await handleLogin(email, password);
+      
+      if (result.success) {
+        console.log("Login successful");
+        navigate("/home");
+      } else {
+        setError(result.error || "Login failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await handleGoogleSignIn();
+      
+      if (result.success) {
+        console.log("Google login successful");
+        navigate("/home");
+      } else {
+        setError(result.error || "Google sign-in failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during Google sign-in");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,19 +72,29 @@ export default function Login() {
             <p className="text-[#6B6B6B] font-medium">Sign in to continue to drssed</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm font-medium">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
               <label htmlFor="email" className="block text-[#2D2D2D] mb-2 font-medium">
-                Email or Phone
+                Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B]" size={20} />
                 <input
                   id="email"
-                  type="text"
-                  placeholder="Enter email or phone"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -58,7 +110,10 @@ export default function Login() {
                   id="password"
                   type="password"
                   placeholder="Enter password"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -73,9 +128,20 @@ export default function Login() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold text-[16px] mt-4"
+              disabled={loading}
+              className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold text-[16px] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+
+            {/* Google Sign In */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Loading..." : "Sign in with Google"}
             </button>
           </form>
 

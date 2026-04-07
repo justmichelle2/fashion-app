@@ -1,312 +1,337 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave, FaTimes, FaSignOutAlt } from "react-icons/fa";
+import { User, Mail, Phone, MapPin, Edit2, Save, X, LogOut, Heart } from "lucide-react";
+import { auth } from "../firebaseConfig";
+import { getCustomerProfile, updateCustomerProfile, getFavoriteDesigners } from "../utils/customerUtils";
+import { handleLogout } from "../utils/authUtils";
 import BottomNav from "../components/BottomNav";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
-  const { currentUser, userProfile, loading, logout, updateUserProfile } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [favorites, setFavorites] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [formData, setFormData] = useState({
-    name: "",
+    displayName: "",
     email: "",
     phone: "",
-    role: "customer",
     address: "",
     city: "",
     country: "",
+    photoURL: "",
   });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [saving, setSaving] = useState(false);
 
-  // Initialize form with user profile data
   useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        name: userProfile.name || "",
-        email: userProfile.email || currentUser?.email || "",
-        phone: userProfile.phone || "",
-        role: userProfile.role || "customer",
-        address: userProfile.address || "",
-        city: userProfile.city || "",
-        country: userProfile.country || "",
-      });
-    } else if (currentUser) {
-      // First time user
-      setFormData(prev => ({
-        ...prev,
-        email: currentUser.email || "",
-      }));
-    }
-  }, [userProfile, currentUser]);
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!loading && !currentUser) {
+    if (!auth.currentUser) {
       navigate("/login");
-    }
-  }, [currentUser, loading, navigate]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError("");
-  };
-
-  const handleSave = async () => {
-    if (!currentUser) return;
-
-    // Validation
-    if (!formData.name.trim() || !formData.phone.trim()) {
-      setError("Name and phone are required");
       return;
     }
 
+    loadProfile();
+    loadFavorites();
+  }, [navigate]);
+
+  const loadProfile = async () => {
     try {
-      setSaving(true);
-      setError("");
+      const result = await getCustomerProfile();
+      if (result.success) {
+        setProfile(result.profile);
+        setFormData({
+          displayName: result.profile.displayName || "",
+          email: result.profile.email || "",
+          phone: result.profile.phone || "",
+          address: result.profile.address || "",
+          city: result.profile.city || "",
+          country: result.profile.country || "",
+          photoURL: result.profile.photoURL || "",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      const result = await updateUserProfile({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        country: formData.country,
-        role: formData.role,
-      });
+  const loadFavorites = async () => {
+    try {
+      const result = await getFavoriteDesigners();
+      if (result.success) {
+        setFavorites(result.designers || []);
+      }
+    } catch (err) {
+      console.error("Failed to load favorites:", err);
+    }
+  };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setError("");
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await updateCustomerProfile(formData);
       if (result.success) {
         setSuccess("Profile updated successfully!");
         setIsEditing(false);
-        setTimeout(() => setSuccess(""), 3000);
+        loadProfile();
       } else {
-        setError("Failed to update profile: " + result.error);
+        setError(result.error || "Failed to update profile");
       }
     } catch (err) {
-      setError("Failed to update profile: " + err.message);
+      setError(err.message);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogoutClick = async () => {
     try {
-      await logout();
-      navigate("/landing");
+      await handleLogout();
+      navigate("/login");
     } catch (err) {
-      setError("Failed to logout: " + err.message);
+      setError(err.message);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-20 pb-20">
+        <p className="text-gray-600">Loading profile...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Header */}
+    <div className="min-h-screen bg-gray-50 pt-20 pb-20">
+      <div className="max-w-2xl mx-auto px-4">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">My Profile</h1>
-              <p className="text-white/90 mt-1">
-                {formData.role && `${formData.role} Account`}
-              </p>
+              <p className="text-white/80 mt-1">Customer Account</p>
             </div>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-[#FAFAF8] transition"
+                className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
               >
-                <FaEdit /> Edit
+                <Edit2 size={18} /> Edit
               </button>
             )}
           </div>
 
-          {/* Content */}
+          {/* Profile Content */}
           <div className="p-6">
             {error && (
-              <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                {success}
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                ✓ {success}
               </div>
             )}
 
-            {/* Profile Fields */}
-            <div className="space-y-6">
+            <form onSubmit={handleSaveProfile} className="space-y-6">
               {/* Name */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaUser /> Full Name
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#2D2D2D] mb-2">
+                  <User size={18} /> Full Name
                 </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
-                    placeholder="Enter your full name"
-                  />
-                ) : (
-                  <p className="text-gray-800 text-lg">{formData.name || "Not provided"}</p>
-                )}
+                <input
+                  type="text"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                />
               </div>
 
               {/* Email */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaEnvelope /> Email
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#2D2D2D] mb-2">
+                  <Mail size={18} /> Email
                 </label>
-                {isEditing ? (
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    disabled
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                  />
-                ) : (
-                  <p className="text-gray-800 text-lg">{formData.email}</p>
-                )}
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  disabled
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                />
                 <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaPhone /> Phone Number
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#2D2D2D] mb-2">
+                  <Phone size={18} /> Phone
                 </label>
-                {isEditing ? (
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
-                    placeholder="+233 xx xxx xxxx"
-                  />
-                ) : (
-                  <p className="text-gray-800 text-lg">{formData.phone || "Not provided"}</p>
-                )}
-              </div>
-
-              {/* Role */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Account Type
-                </label>
-                <p className="text-gray-800 text-lg capitalize">
-                  {formData.role || "Not specified"}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">Account type cannot be changed</p>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="+233..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                />
               </div>
 
               {/* Address */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Address
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#2D2D2D] mb-2">
+                  <MapPin size={18} /> Address
                 </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
-                    placeholder="Enter your address"
-                  />
-                ) : (
-                  <p className="text-gray-800 text-lg">{formData.address || "Not provided"}</p>
-                )}
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="Street address"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                />
               </div>
 
-              {/* City and Country */}
+              {/* City & Country */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    City
-                  </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
-                      placeholder="Enter your city"
-                    />
-                  ) : (
-                    <p className="text-gray-800">{formData.city || "Not provided"}</p>
-                  )}
+                  <label className="text-sm font-semibold text-[#2D2D2D] mb-2 block">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="City"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                  />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Country
-                  </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
-                      placeholder="Enter your country"
-                    />
-                  ) : (
-                    <p className="text-gray-800">{formData.country || "Not provided"}</p>
-                  )}
+                  <label className="text-sm font-semibold text-[#2D2D2D] mb-2 block">Country</label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="Country"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex gap-4">
-              {isEditing ? (
-                <>
+              {/* Action Buttons */}
+              {isEditing && (
+                <div className="flex gap-3 pt-4">
                   <button
-                    onClick={handleSave}
+                    type="submit"
                     disabled={saving}
-                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#E76F51] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50"
                   >
-                    <FaSave /> {saving ? "Saving..." : "Save"}
+                    <Save size={18} /> {saving ? "Saving..." : "Save Changes"}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setIsEditing(false)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-gray-400 hover:bg-gray-500 text-white py-3 rounded-lg font-semibold transition"
+                    className="flex-1 flex items-center justify-center gap-2 border border-gray-300 text-[#2D2D2D] py-3 rounded-lg font-semibold hover:bg-gray-50 transition"
                   >
-                    <FaTimes /> Cancel
+                    <X size={18} /> Cancel
                   </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition"
-                >
-                  <FaSignOutAlt /> Logout
-                </button>
+                </div>
               )}
-            </div>
+            </form>
           </div>
         </div>
+
+        {/* Favorite Designers */}
+        {favorites.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6 p-6">
+            <h2 className="text-xl font-bold text-[#2D2D2D] mb-4 flex items-center gap-2">
+              <Heart size={24} className="text-[#E76F51] fill-[#E76F51]" /> Favorite Designers ({favorites.length})
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {favorites.map((designer) => (
+                <div
+                  key={designer.portfolioId}
+                  className="p-4 border border-gray-100 rounded-lg hover:border-[#E76F51]/30 transition cursor-pointer"
+                  onClick={() => navigate(`/designer/${designer.designerId}`)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-[#2D2D2D]">{designer.title}</h3>
+                      <p className="text-sm text-gray-600">{designer.specialty}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[#E76F51] font-semibold">⭐ {designer.rating || "N/A"}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-[#2D2D2D] mb-4">Quick Actions</h2>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate("/measurements")}
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+            >
+              <p className="font-semibold text-[#2D2D2D]">Upload Measurements</p>
+              <p className="text-sm text-gray-600">Store your body measurements</p>
+            </button>
+            <button
+              onClick={() => navigate("/orders")}
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+            >
+              <p className="font-semibold text-[#2D2D2D]">View Orders</p>
+              <p className="text-sm text-gray-600">Track your design orders</p>
+            </button>
+            <button
+              onClick={() => navigate("/chat")}
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+            >
+              <p className="font-semibold text-[#2D2D2D]">Messages</p>
+              <p className="text-sm text-gray-600">Chat with designers</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Logout */}
+        <div className="mt-6 pt-6 border-t">
+          <button
+            onClick={handleLogoutClick}
+            className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 p-4 rounded-lg font-semibold hover:bg-red-100 transition"
+          >
+            <LogOut size={20} /> Logout
+          </button>
+        </div>
       </div>
+
       <BottomNav />
     </div>
   );

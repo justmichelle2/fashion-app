@@ -1,99 +1,216 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Upload, Camera } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Upload, Save, ArrowLeft, AlertCircle } from "lucide-react";
+import { auth } from "../firebaseConfig";
+import { uploadCustomerMeasurements } from "../utils/customerUtils";
 import BottomNav from "../components/BottomNav";
 
 export default function UploadMeasurements() {
-  const [unit, setUnit] = useState("inches");
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [measurements, setMeasurements] = useState({
     chest: "",
     waist: "",
     hips: "",
     shoulder: "",
-    wrist: "",
+    sleeveLength: "",
+    torsoLength: "",
+    inseam: "",
     height: "",
+    neck: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Measurements saved successfully!");
-  };
+  const [unit, setUnit] = useState("cm");
+  const [notes, setNotes] = useState("");
 
-  return (
-    <div className="min-h-screen bg-[#FDFDFD] pb-20">
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Link to="/home" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ArrowLeft size={24} className="text-[#111827]" />
-          </Link>
-          <h1 className="text-[#111827] text-[24px] font-bold">Upload Measurements</h1>
+  if (!auth.currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-20 pb-20">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please log in to upload measurements</p>
+          <button
+            onClick={() => navigate("/login")}
+            className="bg-[#E76F51] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A]"
+          >
+            Go to Login
+          </button>
         </div>
       </div>
+    );
+  }
 
-      <div className="px-6 py-6">
-        <div className="mb-6 p-4 bg-[#006D5B]/10 border border-[#006D5B]/20 rounded-xl">
-          <p className="text-[#006D5B] text-sm">Accurate measurements ensure the perfect fit. You can also upload photos for reference.</p>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setMeasurements((prev) => ({
+      ...prev,
+      [name]: value === "" ? "" : parseFloat(value),
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    // Validate at least one measurement is provided
+    if (Object.values(measurements).every((val) => val === "")) {
+      setError("Please enter at least one measurement");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await uploadCustomerMeasurements({
+        ...measurements,
+        unit,
+        notes,
+      });
+
+      if (result.success) {
+        setSuccess("Measurements uploaded successfully!");
+        setTimeout(() => {
+          navigate("/profile");
+        }, 1500);
+      } else {
+        setError(result.error || "Failed to upload measurements");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const measurementFields = [
+    { name: "chest", label: "Chest" },
+    { name: "waist", label: "Waist" },
+    { name: "hips", label: "Hips" },
+    { name: "shoulder", label: "Shoulder" },
+    { name: "sleeveLength", label: "Sleeve Length" },
+    { name: "torsoLength", label: "Torso Length" },
+    { name: "inseam", label: "Inseam" },
+    { name: "height", label: "Height" },
+    { name: "neck", label: "Neck" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20 pb-20">
+      <div className="max-w-2xl mx-auto px-4">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-white rounded-lg">
+            <ArrowLeft size={24} className="text-[#2D2D2D]" />
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-[#2D2D2D]">Upload Measurements</h1>
+            <p className="text-gray-600 text-sm mt-1">Help designers create perfect fits</p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-[#111827] mb-3 font-semibold">Measurement Unit</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button type="button" onClick={() => setUnit("inches")} className={`py-3 px-4 rounded-xl border-2 transition-all ${unit === "inches" ? "bg-[#EAB308] text-white border-[#EAB308]" : "bg-white text-[#111827] border-gray-200"}`}>Inches</button>
-              <button type="button" onClick={() => setUnit("cm")} className={`py-3 px-4 rounded-xl border-2 transition-all ${unit === "cm" ? "bg-[#EAB308] text-white border-[#EAB308]" : "bg-white text-[#111827] border-gray-200"}`}>Centimeters</button>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
+              <AlertCircle className="text-red-700 flex-shrink-0" size={20} />
+              <p className="text-red-700">{error}</p>
             </div>
-          </div>
+          )}
 
-          <div className="space-y-4">
-            {Object.entries(measurements).map(([key, value]) => (
-              <div key={key}>
-                <label htmlFor={key} className="block text-[#111827] mb-2 capitalize">{key}</label>
-                <div className="relative">
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+              ✓ {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Unit Selection */}
+            <div>
+              <label className="text-sm font-semibold text-[#2D2D2D] mb-3 block">
+                Measurement Unit
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
-                    id={key}
-                    type="number"
-                    step="0.1"
-                    placeholder={`Enter ${key} in ${unit}`}
-                    value={value}
-                    onChange={(e) => setMeasurements({ ...measurements, [key]: e.target.value })}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EAB308] focus:border-transparent"
+                    type="radio"
+                    value="cm"
+                    checked={unit === "cm"}
+                    onChange={(e) => setUnit(e.target.value)}
+                    className="w-4 h-4"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4B5563]">{unit}</span>
-                </div>
+                  <span className="text-[#2D2D2D]">Centimeters (cm)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="inches"
+                    checked={unit === "inches"}
+                    onChange={(e) => setUnit(e.target.value)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-[#2D2D2D]">Inches (in)</span>
+                </label>
               </div>
-            ))}
-          </div>
-
-          <div>
-            <label className="block text-[#111827] mb-3 font-semibold">Reference Photos (Optional)</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button type="button" className="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-[#EAB308] hover:bg-[#EAB308]/5 transition-all">
-                <Camera size={32} className="text-gray-400" />
-                <span className="text-[#4B5563] text-sm">Take Photo</span>
-              </button>
-              <button type="button" className="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-[#EAB308] hover:bg-[#EAB308]/5 transition-all">
-                <Upload size={32} className="text-gray-400" />
-                <span className="text-[#4B5563] text-sm">Upload Photo</span>
-              </button>
             </div>
-          </div>
 
-          <div className="p-4 bg-white border border-gray-200 rounded-xl">
-            <h3 className="text-[#111827] mb-2 font-semibold">Measurement Guide</h3>
-            <ul className="space-y-2 text-[#4B5563] text-sm">
-              <li>• <strong>Chest:</strong> Measure around the fullest part</li>
-              <li>• <strong>Waist:</strong> Measure around natural waistline</li>
-              <li>• <strong>Hips:</strong> Measure around the fullest part</li>
-              <li>• <strong>Shoulder:</strong> Measure across back from shoulder to shoulder</li>
-              <li>• <strong>Wrist:</strong> Measure around wrist bone</li>
-              <li>• <strong>Height:</strong> Measure from top of head to floor</li>
-            </ul>
-          </div>
+            {/* Measurements Grid */}
+            <div>
+              <label className="text-sm font-semibold text-[#2D2D2D] mb-4 block">
+                Body Measurements
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                {measurementFields.map((field) => (
+                  <div key={field.name}>
+                    <label className="text-sm text-gray-600 mb-1 block">
+                      {field.label}
+                    </label>
+                    <input
+                      type="number"
+                      name={field.name}
+                      value={measurements[field.name]}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      step="0.1"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
 
-          <button type="submit" className="w-full py-3 bg-[#EAB308] text-white rounded-xl hover:bg-[#CA9A04] transition-colors font-semibold">
-            Save Measurements
-          </button>
-        </form>
+            {/* Help Text */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Tip:</strong> Take measurements while wearing light clothing. For best results, have someone help you measure.
+              </p>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="text-sm font-semibold text-[#2D2D2D] mb-2 block">
+                Additional Notes
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Any special considerations or preferences..."
+                rows="4"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-[#E76F51] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50"
+            >
+              <Save size={20} /> {loading ? "Uploading..." : "Save Measurements"}
+            </button>
+          </form>
+        </div>
       </div>
 
       <BottomNav />

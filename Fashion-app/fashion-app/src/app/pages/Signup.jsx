@@ -1,13 +1,80 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, Phone, ArrowLeft, AlertCircle } from "lucide-react";
+import { useState } from "react";
 import logo from "../../assets/drssed.jpg";
+import { handleSignup, handleValidatePassword } from "../utils/authUtils";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState([]);
 
-  const handleSignup = (e) => {
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handlePasswordChange = async (e) => {
+    const password = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      password
+    }));
+
+    if (password) {
+      const validation = await handleValidatePassword(password);
+      setPasswordErrors(validation.issues);
+    } else {
+      setPasswordErrors([]);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/home");
+    setError("");
+
+    // Validate all fields
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    // Check password validation
+    if (passwordErrors.length > 0) {
+      setError("Please fix password requirements");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await handleSignup(formData.email, formData.password, {
+        name: formData.name,
+        phone: formData.phone,
+        userType: "customer"
+      });
+
+      if (result.success) {
+        console.log("Signup successful");
+        navigate("/home");
+      } else {
+        setError(result.error || "Signup failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during signup");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,11 +97,19 @@ export default function Signup() {
             <p className="text-[#6B6B6B] font-medium">Join drssed today</p>
           </div>
 
-          <form onSubmit={handleSignup} className="space-y-5">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
+              <AlertCircle className="text-red-700 flex-shrink-0" size={18} />
+              <p className="text-red-700 text-sm font-medium">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Input */}
             <div>
               <label htmlFor="name" className="block text-[#2D2D2D] mb-2 font-medium">
-                Full Name
+                Full Name *
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B]" size={20} />
@@ -42,7 +117,11 @@ export default function Signup() {
                   id="name"
                   type="text"
                   placeholder="Enter your full name"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -50,7 +129,7 @@ export default function Signup() {
             {/* Email Input */}
             <div>
               <label htmlFor="email" className="block text-[#2D2D2D] mb-2 font-medium">
-                Email
+                Email *
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B]" size={20} />
@@ -58,7 +137,11 @@ export default function Signup() {
                   id="email"
                   type="email"
                   placeholder="Enter email"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -66,7 +149,7 @@ export default function Signup() {
             {/* Phone Input */}
             <div>
               <label htmlFor="phone" className="block text-[#2D2D2D] mb-2 font-medium">
-                Phone Number
+                Phone Number (Optional)
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B]" size={20} />
@@ -74,7 +157,10 @@ export default function Signup() {
                   id="phone"
                   type="tel"
                   placeholder="+233 XX XXX XXXX"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -82,7 +168,7 @@ export default function Signup() {
             {/* Password Input */}
             <div>
               <label htmlFor="password" className="block text-[#2D2D2D] mb-2 font-medium">
-                Password
+                Password *
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B]" size={20} />
@@ -90,37 +176,57 @@ export default function Signup() {
                   id="password"
                   type="password"
                   placeholder="Create password"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                  value={formData.password}
+                  onChange={handlePasswordChange}
+                  disabled={loading}
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
                 />
               </div>
+              
+              {/* Password Requirements */}
+              {formData.password && passwordErrors.length > 0 && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800 font-medium mb-2">Password requirements:</p>
+                  <ul className="text-xs text-yellow-700 space-y-1">
+                    {passwordErrors.map((issue, idx) => (
+                      <li key={idx} className="flex gap-2">
+                        <span>•</span>
+                        <span>{issue}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Role Selection */}
-            <div className="mt-2">
-              <label className="block text-[#2D2D2D] mb-3 font-medium">I am a:</label>
+            <div className="mt-4">
+              <label className="block text-[#2D2D2D] mb-3 font-medium">Account Type:</label>
               <div className="bg-[#E76F51]/10 border border-[#E76F51]/30 rounded-lg p-3">
                 <p className="text-sm text-center text-[#6B6B6B]">
-                  Signing up as <span className="text-[#E76F51] font-semibold">Customer</span>
+                  Creating account as <span className="text-[#E76F51] font-semibold">Customer</span>
                 </p>
               </div>
               <p className="text-xs text-[#6B6B6B] mt-3 text-center font-medium">
-                Designer? <Link to="/designer-signup" className="text-[#2D2D2D] font-bold hover:underline">Register here</Link>
+                Designer? <Link to="/signup/designer" className="text-[#E76F51] font-bold hover:underline">Register as designer</Link>
               </p>
             </div>
 
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold mt-4"
+              disabled={loading || passwordErrors.length > 0}
+              className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           {/* Login Link */}
           <div className="text-center mt-8">
             <span className="text-[#6B6B6B] font-medium">Already have an account? </span>
-            <Link to="/login" className="text-[#E76F51] font-semibold hover:underline">
+            <Link to="/login/customer" className="text-[#E76F51] font-semibold hover:underline">
               Sign In
             </Link>
           </div>
