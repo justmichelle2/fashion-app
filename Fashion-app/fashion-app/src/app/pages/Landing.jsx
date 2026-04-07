@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DressedLogo from "../components/DressedLogo";
-import { Sparkles, Users, Shirt, MessageCircle, ArrowRight, Scissors } from "lucide-react";
+import { ArrowRight, MessageCircle, Scissors, Shirt, Sparkles, Users } from "lucide-react";
+import { useState } from "react";
+import logo from "../../assets/drssed.jpg"; // Wait, pages is inside src/app/pages/ so it's ../../assets/drssed.jpg
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -31,186 +31,121 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAFAF8] to-[#F5E6D3]/20 flex items-center justify-center px-4 py-10">
-      
-      <div className="w-full max-w-sm bg-white shadow-2xl p-8 md:p-10 rounded-2xl flex flex-col items-center">
-
-        {/* Logo */}
-        <DressedLogo size={80} className="mb-4" />
-
-        {/* Title */}
-        <div className="text-center">
-          <h1
-            className="text-[#2D2D2D] mb-2"
-            style={{
-              fontSize: "56px",
-              fontWeight: "700",
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "0.02em"
-            }}
-          >
-            drssed
-          </h1>
-
-          <p
-            className="text-[#6B6B6B]"
-            style={{
-              fontSize: "18px",
-              fontFamily: "var(--font-accent)",
-              letterSpacing: "0.08em",
-              fontWeight: "500"
-            }}
-          >
-            Where Fashion Meets Art
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col p-6 border border-[#E76F51]/10 h-[90vh] sm:h-auto overflow-y-auto">
+        <div className="flex flex-col items-center gap-6 mb-8 mt-4">
+          <img src={logo} alt="Drssed Logo" className="w-[120px] h-[120px] object-cover rounded-full shadow-md" />
+          <div className="text-center">
+            <h1 className="text-[#2D2D2D] mb-2 text-5xl font-bold tracking-tight">
+              drssed
+            </h1>
+            <p className="text-[#6B6B6B] text-lg font-medium tracking-wide">
+              Where Fashion Meets Art
+            </p>
+          </div>
         </div>
 
-        {/* Tagline */}
-        <p
-          className="text-center text-[#2D2D2D] mt-6 mb-8"
-          style={{
-            fontSize: "15px",
-            lineHeight: "1.7",
-            fontFamily: "var(--font-body)"
-          }}
-        >
-          Your gateway to Ghana's finest custom fashion designers and tailors.
-          <br />
+        <p className="text-center text-[#2D2D2D] mb-8 px-2 text-[15px] leading-relaxed">
+          Your gateway to Ghana's finest custom fashion designers and tailors.<br/>
           Bespoke elegance, crafted to perfection.
         </p>
 
-        {/* Features Grid */}
         <div className="grid grid-cols-2 gap-4 w-full mb-8">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-4 shadow-sm border border-[#E76F51]/10 hover:shadow-md transition-shadow hover:border-[#E76F51]/30"
+              className="bg-white rounded-xl p-5 shadow-sm border border-[#E76F51]/10 hover:shadow-md transition-shadow hover:border-[#E76F51]/30"
             >
-              <div className="text-[#E76F51] mb-2">{feature.icon}</div>
-              <h3
-                className="mb-1"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  fontFamily: "var(--font-body)"
-                }}
-              >
+              <div className="text-[#E76F51] mb-3">
+                {feature.icon}
+              </div>
+              <h3 className="mb-1 text-[14px] font-semibold text-[#2D2D2D]">
                 {feature.title}
               </h3>
-              <p
-                className="text-[#6B6B6B]"
-                style={{
-                  fontSize: "12px",
-                  lineHeight: "1.4",
-                  fontFamily: "var(--font-body)"
-                }}
-              >
+              <p className="text-[#6B6B6B] text-[12px] leading-relaxed">
                 {feature.description}
               </p>
             </div>
           ))}
         </div>
 
-        {/* CTA Buttons */}
-        <div className="w-full space-y-3">
+        <div className="w-full space-y-3 mb-4 mt-auto">
           {!showRoleSelection ? (
             <>
               <button
-                type="button"
                 onClick={() => navigate("/signup")}
-                className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  fontFamily: "var(--font-body)"
-                }}
+                className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
               >
                 Get Started
               </button>
-
               <button
-                type="button"
                 onClick={() => setShowRoleSelection(true)}
-                className="w-full h-14 border-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D]/5 rounded-full"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  fontFamily: "var(--font-body)"
-                }}
+                className="w-full h-14 border-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D]/5 rounded-full text-[16px] font-semibold transition-colors"
               >
                 Sign In
               </button>
             </>
           ) : (
-            <div className="space-y-3">
-              <p
-                className="text-center text-[#6B6B6B] mb-2"
-                style={{
-                  fontSize: "14px",
-                  fontFamily: "var(--font-body)"
-                }}
-              >
+            <div className="space-y-3 animate-fade-in w-full">
+              <p className="text-center text-[#6B6B6B] mb-4 text-[14px]">
                 Choose your account type
               </p>
-
-              {/* Customer */}
+              
               <button
                 onClick={() => navigate("/login")}
-                className="w-full bg-white border-2 border-[#E76F51] rounded-2xl p-4 hover:bg-[#E76F51]/5 transition-all shadow-sm hover:shadow-md"
+                className="w-full bg-white border-2 border-[#E76F51] rounded-2xl p-5 hover:bg-[#E76F51]/5 transition-all shadow-sm hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#E76F51] rounded-full flex items-center justify-center">
-                      <Shirt className="w-5 h-5 text-white" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#E76F51] rounded-full flex items-center justify-center">
+                      <Shirt className="w-6 h-6 text-white" />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-[#2D2D2D] text-sm font-semibold">
+                      <h3 className="text-[#2D2D2D] mb-1 text-[16px] font-semibold">
                         I'm a Customer
                       </h3>
-                      <p className="text-[#6B6B6B] text-xs">
+                      <p className="text-[#6B6B6B] text-[13px]">
                         Browse and order custom designs
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-[#E76F51]" />
+                  <ArrowRight className="w-5 h-5 text-[#E76F51]" />
                 </div>
               </button>
 
-              {/* Designer */}
               <button
                 onClick={() => navigate("/designer-login")}
-                className="w-full bg-white border-2 border-[#2D2D2D] rounded-2xl p-4 hover:bg-[#2D2D2D]/5 transition-all shadow-sm hover:shadow-md"
+                className="w-full bg-white border-2 border-[#2D2D2D] rounded-2xl p-5 hover:bg-[#2D2D2D]/5 transition-all shadow-sm hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#2D2D2D] rounded-full flex items-center justify-center">
-                      <Scissors className="w-5 h-5 text-white" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#2D2D2D] rounded-full flex items-center justify-center">
+                      <Scissors className="w-6 h-6 text-white" />
                     </div>
                     <div className="text-left">
-                      <h3 className="text-[#2D2D2D] text-sm font-semibold">
+                      <h3 className="text-[#2D2D2D] mb-1 text-[16px] font-semibold">
                         I'm a Designer
                       </h3>
-                      <p className="text-[#6B6B6B] text-xs">
+                      <p className="text-[#6B6B6B] text-[13px]">
                         Manage orders and grow your business
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-[#2D2D2D]" />
+                  <ArrowRight className="w-5 h-5 text-[#2D2D2D]" />
                 </div>
               </button>
 
               <button
-                type="button"
                 onClick={() => setShowRoleSelection(false)}
-                className="w-full text-[#6B6B6B] hover:text-[#2D2D2D] text-sm"
+                className="w-full text-[#6B6B6B] hover:text-[#2D2D2D] text-[14px] py-2 mt-2 font-semibold"
               >
                 Back
               </button>
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
 }
+

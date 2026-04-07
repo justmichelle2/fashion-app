@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { createOrder } from "../utils/ordersService";
+import { createOrder } from "../services/ordersApi";
 import { FaArrowLeft, FaCalendar, FaDollarSign, FaCheckCircle } from "react-icons/fa";
+import BottomNav from "../components/BottomNav";
 
 export default function BookTailoring() {
   const { designerId } = useParams();
@@ -97,22 +98,22 @@ export default function BookTailoring() {
 
   if (step === "details") {
     return (
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6 font-semibold"
+            className="flex items-center gap-2 text-[#E76F51] hover:text-[#D55B3A] mb-6 font-semibold"
           >
             <FaArrowLeft /> Back
           </button>
 
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {/* Designer Info */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 text-white">
+            <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white">
               <h1 className="text-3xl font-bold mb-2">{designerInfo.name}</h1>
-              <p className="text-blue-100">{designerInfo.specialization}</p>
-              <p className="text-blue-100 mt-2">
+              <p className="text-white/90">{designerInfo.specialization}</p>
+              <p className="text-white/90 mt-2">
                 Average Price: GHS {designerInfo.averagePrice}
               </p>
             </div>
@@ -135,7 +136,7 @@ export default function BookTailoring() {
                   value={formData.description}
                   onChange={handleChange}
                   rows="4"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                   placeholder="Describe the tailoring work in detail..."
                 />
               </div>
@@ -152,7 +153,7 @@ export default function BookTailoring() {
                   onChange={handleChange}
                   min="0"
                   step="0.01"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                   placeholder="Enter price"
                 />
               </div>
@@ -167,7 +168,7 @@ export default function BookTailoring() {
                   name="deadlineDate"
                   value={formData.deadlineDate}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                 />
               </div>
 
@@ -181,7 +182,7 @@ export default function BookTailoring() {
                   value={formData.notes}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                   placeholder="Any special requests or details..."
                 />
               </div>
@@ -190,24 +191,25 @@ export default function BookTailoring() {
               <button
                 onClick={handleSubmitOrder}
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50"
+                className="w-full bg-[#EAB308] hover:bg-[#CA9A04] text-white py-3 rounded-lg font-semibold transition disabled:opacity-50"
               >
                 {loading ? "Creating Order..." : "Review Order"}
               </button>
             </div>
           </div>
         </div>
+        <BottomNav />
       </div>
     );
   }
 
   if (step === "review") {
     return (
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-8 text-white">
+            <div className="bg-gradient-to-r from-[#10B981] to-[#059669] px-6 py-8 text-white">
               <div className="flex items-center gap-2 mb-2">
                 <FaCheckCircle className="text-2xl" />
                 <h1 className="text-3xl font-bold">Order Created!</h1>
@@ -243,9 +245,9 @@ export default function BookTailoring() {
               </div>
 
               {/* Next Steps */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-                <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
+              <div className="bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-lg p-4 mb-8">
+                <h3 className="font-semibold text-[#2D2D2D] mb-2">What happens next?</h3>
+                <ul className="text-sm text-[#4B5563] space-y-1">
                   <li>✓ Your order has been sent to the designer</li>
                   <li>✓ Designer will review and respond within 24 hours</li>
                   <li>✓ You'll receive a notification once accepted</li>
@@ -263,7 +265,7 @@ export default function BookTailoring() {
                 </button>
                 <button
                   onClick={handleProceedToPayment}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+                  className="flex-1 bg-[#EAB308] hover:bg-[#CA9A04] text-white py-3 rounded-lg font-semibold transition"
                 >
                   Proceed to Payment
                 </button>
@@ -271,6 +273,7 @@ export default function BookTailoring() {
             </div>
           </div>
         </div>
+        <BottomNav />
       </div>
     );
   }

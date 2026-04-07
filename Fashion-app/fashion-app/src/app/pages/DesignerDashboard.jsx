@@ -1,10 +1,514 @@
+import { Link } from "react-router-dom";
+import { ArrowLeft, Upload, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet } from "lucide-react";
+import { useState } from "react";
+
 export default function DesignerDashboard() {
+  const [activeTab, setActiveTab] = useState<"progress" | "orders" | "messages">("progress");
+
+  const portfolioImages = [
+    "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
+    "https://images.unsplash.com/photo-1763823132521-72f373850de2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
+    "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
+  ];
+
+  const weeklyEarnings = [
+    { day: "Mon", amount: 350 },
+    { day: "Tue", amount: 520 },
+    { day: "Wed", amount: 280 },
+    { day: "Thu", amount: 650 },
+    { day: "Fri", amount: 420 },
+    { day: "Sat", amount: 180 },
+    { day: "Sun", amount: 0 },
+  ];
+
+  const incomingOrders = [
+    { id: "ORD004", customer: "Efua Mensah", style: "Ankara Dress", amount: 280, date: "2026-03-05" },
+    { id: "ORD005", customer: "Yaw Ofori", style: "Custom Suit", amount: 520, date: "2026-03-06" },
+    { id: "ORD006", customer: "Ama Boateng", style: "Kente Gown", amount: 450, date: "2026-03-07" },
+  ];
+
+  const activeOrders = [
+    { id: "ORD001", customer: "Akosua Owusu", style: "Kente Dress", status: "Sewing", amount: 350, progress: 60 },
+    { id: "ORD002", customer: "Kofi Asante", style: "Traditional Wear", status: "Ready", amount: 420, progress: 100 },
+    { id: "ORD003", customer: "Abena Mensah", style: "Ankara Suit", status: "Measuring", amount: 380, progress: 25 },
+  ];
+
+  const customerMessages = [
+    { 
+      id: "1", 
+      customer: "Akosua Owusu", 
+      lastMessage: "When will my dress be ready?", 
+      timestamp: "2h ago", 
+      unread: 2,
+      orderId: "ORD001"
+    },
+    { 
+      id: "2", 
+      customer: "Kofi Asante", 
+      lastMessage: "Thank you for the quick response!", 
+      timestamp: "5h ago", 
+      unread: 0,
+      orderId: "ORD002"
+    },
+    { 
+      id: "3", 
+      customer: "Efua Mensah", 
+      lastMessage: "Can we adjust the measurements?", 
+      timestamp: "1d ago", 
+      unread: 1,
+      orderId: "ORD004"
+    },
+  ];
+
+  const maxEarnings = Math.max(...weeklyEarnings.map(e => e.amount), 1);
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Designer Dashboard</h1>
-        <p className="text-gray-600">Coming soon...</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden h-[90vh] sm:h-auto pb-4 overflow-y-auto w-full relative">
+      {/* Clean Header */}
+      <div className="bg-white px-6 py-6 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <Link to="/home" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
+            <ArrowLeft size={24} className="text-[#2D2D2D]" />
+          </Link>
+          <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>
+            Dashboard
+          </h1>
+          <Link to="/designer-settings" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
+            <Settings size={24} className="text-[#2D2D2D]" />
+          </Link>
+        </div>
+
+        {/* Profile Info */}
+        <div className="bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-3xl p-6 mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-white flex-shrink-0">
+              <img
+                src="https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200"
+                alt="Designer"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-white mb-1" style={{ fontSize: "20px", fontWeight: "700" }}>
+                Akosua Mensah
+              </h2>
+              <p className="text-white/90 text-sm">Designer • Accra, Ghana</p>
+            </div>
+          </div>
+          
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
+              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                8
+              </p>
+              <p className="text-white/90 text-xs">Active</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
+              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                4.8
+              </p>
+              <p className="text-white/90 text-xs">Rating</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
+              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                3.2K
+              </p>
+              <p className="text-white/90 text-xs">This Month</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Pills */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab("progress")}
+            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+              activeTab === "progress"
+                ? "bg-[#E76F51] text-white"
+                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+            }`}
+            style={{ fontWeight: "600" }}
+          >
+            Progress
+          </button>
+          <button
+            onClick={() => setActiveTab("orders")}
+            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+              activeTab === "orders"
+                ? "bg-[#E76F51] text-white"
+                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+            }`}
+            style={{ fontWeight: "600" }}
+          >
+            Orders
+          </button>
+          <button
+            onClick={() => setActiveTab("messages")}
+            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+              activeTab === "messages"
+                ? "bg-[#E76F51] text-white"
+                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+            }`}
+            style={{ fontWeight: "600" }}
+          >
+            Messages
+          </button>
+        </div>
       </div>
+
+      {/* Content */}
+      <div className="px-6 py-6 space-y-4">
+        {/* Progress Tab */}
+        {activeTab === "progress" && (
+          <>
+            {/* This Week Earnings Chart */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-[#2D2D2D] mb-4" style={{ fontSize: "18px", fontWeight: "700" }}>
+                This week
+              </h3>
+              
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                  <p className="text-[#4B5563] text-xs mb-1">Revenue</p>
+                  <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                    GH₵2.4K
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[#4B5563] text-xs mb-1">Orders</p>
+                  <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                    12
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[#4B5563] text-xs mb-1">Avg. Value</p>
+                  <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
+                    GH₵200
+                  </p>
+                </div>
+              </div>
+
+              {/* Earnings Chart */}
+              <div className="relative h-40 flex items-end justify-between gap-2">
+                {weeklyEarnings.map((stat, index) => (
+                  <div key={stat.day} className="flex-1 flex flex-col items-center gap-2">
+                    <div className="w-full flex flex-col justify-end h-32">
+                      <div
+                        className="w-full bg-gradient-to-t from-[#E76F51] to-[#F4A261] rounded-t-lg transition-all relative group"
+                        style={{ height: `${(stat.amount / maxEarnings) * 100}%`, minHeight: stat.amount > 0 ? '15%' : '0%' }}
+                      >
+                        {stat.amount > 0 && (
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="bg-[#2D2D2D] text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap">
+                              GH₵{stat.amount}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-[#4B5563] text-xs">{stat.day}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Goals */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
+                  Goals
+                </h3>
+                <button className="text-[#E76F51] text-sm" style={{ fontWeight: "600" }}>
+                  See all →
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#E76F51]/10 flex items-center justify-center flex-shrink-0">
+                    <DollarSign size={20} className="text-[#E76F51]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
+                        Earn GH₵5,000 this month
+                      </p>
+                      <span className="text-[#E76F51] text-sm" style={{ fontWeight: "700" }}>GH₵3.2K</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261]" style={{ width: "64%" }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center flex-shrink-0">
+                    <Star size={20} className="text-[#10B981]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
+                        Maintain 4.8+ rating
+                      </p>
+                      <span className="text-[#10B981] text-sm" style={{ fontWeight: "700" }}>4.8</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#10B981]" style={{ width: "96%" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio Showcase */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
+                  Portfolio
+                </h3>
+                <button className="text-[#E76F51] text-sm" style={{ fontWeight: "600" }}>
+                  View all →
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {portfolioImages.map((image, index) => (
+                  <div key={index} className="aspect-square rounded-2xl overflow-hidden bg-gray-100">
+                    <img
+                      src={image}
+                      alt={`Portfolio ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Orders Tab */}
+        {activeTab === "orders" && (
+          <>
+            {/* New Orders */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
+                  New Orders
+                </h3>
+                <span className="px-3 py-1 bg-[#F97316] text-white rounded-full text-xs" style={{ fontWeight: "600" }}>
+                  {incomingOrders.length} Pending
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {incomingOrders.map((order, index) => (
+                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                          {order.customer}
+                        </p>
+                        <p className="text-[#4B5563] text-sm">{order.style}</p>
+                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                          GH₵{order.amount}
+                        </p>
+                        <p className="text-[#4B5563] text-xs">{order.date}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button className="flex-1 py-2 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition-all flex items-center justify-center gap-2">
+                        <CheckCircle size={16} />
+                        <span style={{ fontWeight: "600" }}>Accept</span>
+                      </button>
+                      <button className="flex-1 py-2 bg-white border border-[#EF4444]/20 text-[#EF4444] rounded-xl hover:bg-[#EF4444]/5 transition-all flex items-center justify-center gap-2">
+                        <XCircle size={16} />
+                        <span style={{ fontWeight: "600" }}>Decline</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Active Orders */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-[#2D2D2D] mb-4" style={{ fontSize: "18px", fontWeight: "700" }}>
+                Active Orders
+              </h3>
+
+              <div className="space-y-3">
+                {activeOrders.map((order, index) => (
+                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                          {order.customer}
+                        </p>
+                        <p className="text-[#4B5563] text-sm">{order.style}</p>
+                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`px-3 py-1 rounded-full text-xs mb-1 inline-block ${
+                          order.status === "Ready"
+                            ? "bg-[#10B981]/10 text-[#10B981]"
+                            : order.status === "Sewing"
+                            ? "bg-[#F4A261]/10 text-[#F4A261]"
+                            : "bg-[#E76F51]/10 text-[#E76F51]"
+                        }`} style={{ fontWeight: "600" }}>
+                          {order.status}
+                        </span>
+                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                          GH₵{order.amount}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[#4B5563] text-xs">Progress</span>
+                        <span className="text-[#2D2D2D] text-xs" style={{ fontWeight: "600" }}>{order.progress}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] transition-all"
+                          style={{ width: `${order.progress}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <button className="w-full py-2 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all" style={{ fontWeight: "600" }}>
+                      Update Status
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === "messages" && (
+          <>
+            {/* Customer Conversations */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
+                  Conversations
+                </h3>
+                <span className="px-3 py-1 bg-[#F97316] text-white rounded-full text-xs" style={{ fontWeight: "600" }}>
+                  {customerMessages.filter(m => m.unread > 0).length} Unread
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {customerMessages.map((message, index) => (
+                  <Link
+                    key={message.id}
+                    to={`/chat/${message.id}`}
+                    className="block p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 hover:border-[#E76F51]/30 transition-all"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                            {message.customer.charAt(0)}
+                          </span>
+                        </div>
+                        {message.unread > 0 && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#F97316] rounded-full flex items-center justify-center border-2 border-white">
+                            <span className="text-white text-xs" style={{ fontWeight: "700" }}>
+                              {message.unread}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-1">
+                          <p className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
+                            {message.customer}
+                          </p>
+                          <span className="text-[#4B5563] text-xs flex-shrink-0 ml-2">{message.timestamp}</span>
+                        </div>
+                        <p className="text-[#4B5563] text-sm mb-1 truncate">{message.lastMessage}</p>
+                        <p className="text-[#E76F51] text-xs" style={{ fontWeight: "600" }}>Order #{message.orderId}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Reply Templates */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-[#2D2D2D] mb-4" style={{ fontSize: "18px", fontWeight: "700" }}>
+                Quick Replies
+              </h3>
+              <div className="space-y-2">
+                <button className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-left hover:border-[#E76F51]/30 transition-all">
+                  <p className="text-[#2D2D2D] text-sm" style={{ fontWeight: "600" }}>
+                    "Your order is ready for pickup!"
+                  </p>
+                </button>
+                <button className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-left hover:border-[#E76F51]/30 transition-all">
+                  <p className="text-[#2D2D2D] text-sm" style={{ fontWeight: "600" }}>
+                    "I've received your measurements"
+                  </p>
+                </button>
+                <button className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-left hover:border-[#E76F51]/30 transition-all">
+                  <p className="text-[#2D2D2D] text-sm" style={{ fontWeight: "600" }}>
+                    "Expected completion: [date]"
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            {/* Message Stats */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-[#2D2D2D] mb-4" style={{ fontSize: "18px", fontWeight: "700" }}>
+                Statistics
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                  <span className="text-[#4B5563] text-sm">Response Time</span>
+                  <span className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                    2.5h
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                  <span className="text-[#4B5563] text-sm">Messages/Week</span>
+                  <span className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                    47
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                  <span className="text-[#4B5563] text-sm">Satisfaction</span>
+                  <span className="text-[#10B981] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                    98%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave, FaTimes, FaSignOutAlt } from "react-icons/fa";
+import BottomNav from "../components/BottomNav";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -102,9 +103,9 @@ export default function CustomerProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading profile...</p>
         </div>
       </div>
@@ -112,21 +113,21 @@ export default function CustomerProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 text-white flex justify-between items-center">
+          <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">My Profile</h1>
-              <p className="text-blue-100 mt-1">
+              <p className="text-white/90 mt-1">
                 {formData.role && `${formData.role} Account`}
               </p>
             </div>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
+                className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-[#FAFAF8] transition"
               >
                 <FaEdit /> Edit
               </button>
@@ -160,7 +161,7 @@ export default function CustomerProfile() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                     placeholder="Enter your full name"
                   />
                 ) : (
@@ -198,7 +199,7 @@ export default function CustomerProfile() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                     placeholder="+233 xx xxx xxxx"
                   />
                 ) : (
@@ -228,7 +229,7 @@ export default function CustomerProfile() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                     placeholder="Enter your address"
                   />
                 ) : (
@@ -248,7 +249,7 @@ export default function CustomerProfile() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                       placeholder="Enter your city"
                     />
                   ) : (
@@ -266,7 +267,7 @@ export default function CustomerProfile() {
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                       placeholder="Enter your country"
                     />
                   ) : (
@@ -306,6 +307,7 @@ export default function CustomerProfile() {
           </div>
         </div>
       </div>
+      <BottomNav />
     </div>
   );
 }

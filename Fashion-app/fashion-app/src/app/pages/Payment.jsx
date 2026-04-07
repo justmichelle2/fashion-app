@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { getOrderById, updateOrderStatus } from "../utils/ordersService";
-import { processPayment, formatCardNumber, formatExpiryDate } from "../utils/paymentService";
+import { getOrderById, updateOrderStatus } from "../services/ordersApi";
+import { processPayment } from "../services/paymentsApi";
+import { formatCardNumber, formatExpiryDate } from "../utils/paymentService";
 import { FaCreditCard, FaLock, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
+import BottomNav from "../components/BottomNav";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
@@ -127,9 +129,9 @@ export default function Payment() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading payment details...</p>
         </div>
       </div>
@@ -138,12 +140,12 @@ export default function Payment() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow p-8 text-center">
           <p className="text-red-600 mb-4">{error || "Order not found"}</p>
           <button
             onClick={() => navigate("/orders")}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-6 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D55B3A]"
           >
             Back to Orders
           </button>
@@ -154,7 +156,7 @@ export default function Payment() {
 
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-[#FDFDFD] py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Success Header */}
@@ -211,7 +213,7 @@ export default function Payment() {
                 </button>
                 <button
                   onClick={() => navigate("/home")}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+                    className="flex-1 bg-[#E76F51] hover:bg-[#D55B3A] text-white py-3 rounded-lg font-semibold transition"
                 >
                   Back to Home
                 </button>
@@ -224,12 +226,12 @@ export default function Payment() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
       <div className="max-w-2xl mx-auto">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6 font-semibold"
+          className="flex items-center gap-2 text-[#E76F51] hover:text-[#D55B3A] mb-6 font-semibold"
         >
           <FaArrowLeft /> Back
         </button>
@@ -249,7 +251,7 @@ export default function Payment() {
 
             {step === "processing" ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
                 <p className="text-gray-600">Processing your payment...</p>
               </div>
             ) : (
@@ -271,7 +273,7 @@ export default function Payment() {
                     value={paymentData.cardName}
                     onChange={handleChange}
                     placeholder="John Doe"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                   />
                 </div>
 
@@ -286,7 +288,7 @@ export default function Payment() {
                     onChange={handleCardNumberChange}
                     placeholder="1234 5678 9012 3456"
                     maxLength="19"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 font-mono"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51] font-mono"
                   />
                 </div>
 
@@ -302,7 +304,7 @@ export default function Payment() {
                       onChange={handleExpiryChange}
                       placeholder="MM/YY"
                       maxLength="5"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                     />
                   </div>
                   <div>
@@ -316,13 +318,13 @@ export default function Payment() {
                       onChange={handleChange}
                       placeholder="123"
                       maxLength="4"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#E76F51]"
                     />
                   </div>
                 </div>
 
                 {/* Security Notice */}
-                <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                <div className="flex items-start gap-2 p-3 bg-[#E76F51]/10 border border-[#E76F51]/20 rounded text-sm text-[#2D2D2D]">
                   <FaLock className="mt-0.5 flex-shrink-0" />
                   <p>Your payment information is secure and encrypted.</p>
                 </div>
@@ -331,7 +333,7 @@ export default function Payment() {
                 <button
                   type="submit"
                   disabled={processing}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                  className="w-full bg-[#E76F51] hover:bg-[#D55B3A] text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                 >
                   {processing ? "Processing..." : "Complete Payment"}
                 </button>
@@ -381,7 +383,7 @@ export default function Payment() {
               </div>
               <div className="border-t pt-2 mt-2 flex justify-between items-center">
                 <span className="font-bold text-gray-800">Total Amount</span>
-                <span className="text-2xl font-bold text-green-600">
+                <span className="text-2xl font-bold text-[#E76F51]">
                   GHS {order.price.toFixed(2)}
                 </span>
               </div>
@@ -389,6 +391,7 @@ export default function Payment() {
           </div>
         </div>
       </div>
+      <BottomNav />
     </div>
   );
 }

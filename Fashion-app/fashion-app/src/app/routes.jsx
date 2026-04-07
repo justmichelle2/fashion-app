@@ -10,11 +10,12 @@ import Home from "./pages/Home";
 import DesignerHome from "./pages/DesignerHome";
 import DesignerList from "./pages/DesignerList";
 import DesignerProfile from "./pages/DesignerProfile";
-import UploadMeasurements from "./pages/UploadMeasurements";
+import UploadMeasurements from "./pages/UploadMeasurements.jsx";
 import BookTailoring from "./pages/BookTailoring";
 import Payment from "./pages/Payment";
 import OrderTracking from "./pages/OrderTracking";
 import Chat from "./pages/Chat";
+import Conversation from "./pages/Conversation";
 import CustomerProfile from "./pages/CustomerProfile";
 import DesignerDashboard from "./pages/DesignerDashboard";
 import AminDashboard from "./pages/AminDashboard";
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
   { path: "/payment", element: <ProtectedRoute><Payment /></ProtectedRoute> },
   { path: "/orders", element: <ProtectedRoute><OrderTracking /></ProtectedRoute> },
   { path: "/chat", element: <ProtectedRoute><Chat /></ProtectedRoute> },
+  { path: "/chat/:id", element: <ProtectedRoute><Conversation /></ProtectedRoute> },
   { path: "/profile", element: <ProtectedRoute><CustomerProfile /></ProtectedRoute> },
   { path: "/settings", element: <ProtectedRoute><CustomerProfile /></ProtectedRoute> },
   { path: "/designer-dashboard", element: <ProtectedRoute><DesignerDashboard /></ProtectedRoute> },

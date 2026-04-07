@@ -1,25 +1,35 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { browserSessionPersistence, getAuth, setPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAXNSgViiorRBNB11VgZozq2fWNtZt8jig",
-  authDomain: "fashion-app-a5b92.firebaseapp.com",
-  projectId: "fashion-app-a5b92",
-  storageBucket: "fashion-app-a5b92.firebasestorage.app",
-  messagingSenderId: "396549646617",
-  appId: "1:396549646617:web:e26dffc72f0c59ee9abd88",
-  measurementId: "G-LZR6C7GQ37"
+const envConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Fallback keeps the app running if .env is not configured yet.
+const firebaseConfig = {
+  apiKey: envConfig.apiKey || "AIzaSyAXNSgViiorRBNB11VgZozq2fWNtZt8jig",
+  authDomain: envConfig.authDomain || "fashion-app-a5b92.firebaseapp.com",
+  projectId: envConfig.projectId || "fashion-app-a5b92",
+  storageBucket: envConfig.storageBucket || "fashion-app-a5b92.firebasestorage.app",
+  messagingSenderId: envConfig.messagingSenderId || "396549646617",
+  appId: envConfig.appId || "1:396549646617:web:e26dffc72f0c59ee9abd88",
+  measurementId: envConfig.measurementId || "G-LZR6C7GQ37",
+};
+
+// Reuse existing app instance to avoid duplicate initialization in HMR/multiple imports.
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db };
+const authPersistenceReady = setPersistence(auth, browserSessionPersistence).catch((error) => {
+  console.error("Auth persistence setup error:", error);
+});
+
+export { app, auth, db, authPersistenceReady };

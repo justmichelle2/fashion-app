@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { getCustomerOrders, updateOrderStatus } from "../utils/ordersService";
+import { getCustomerOrders } from "../services/ordersApi";
 import { FaBox, FaClock, FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
+import BottomNav from "../components/BottomNav";
 
 const STATUS_COLORS = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: FaClock },
-  accepted: { bg: "bg-blue-100", text: "text-blue-800", icon: FaCheckCircle },
-  tailoring: { bg: "bg-purple-100", text: "text-purple-800", icon: FaSpinner },
+  accepted: { bg: "bg-[#E76F51]/10", text: "text-[#E76F51]", icon: FaCheckCircle },
+  tailoring: { bg: "bg-[#F4A261]/10", text: "text-[#F4A261]", icon: FaSpinner },
   completed: { bg: "bg-green-100", text: "text-green-800", icon: FaCheckCircle },
   cancelled: { bg: "bg-red-100", text: "text-red-800", icon: FaTimesCircle },
 };
@@ -55,9 +56,9 @@ export default function OrderTracking() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your orders...</p>
         </div>
       </div>
@@ -65,7 +66,7 @@ export default function OrderTracking() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-[#FDFDFD] py-8 px-4 pb-24">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -90,8 +91,8 @@ export default function OrderTracking() {
                 onClick={() => setFilter(status)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap transition capitalize ${
                   filter === status
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700 border border-gray-300 hover:border-blue-500"
+                    ? "bg-[#E76F51] text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:border-[#E76F51]"
                 }`}
               >
                 {status}
@@ -146,7 +147,7 @@ export default function OrderTracking() {
                     <div className="mb-4">
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          className="bg-[#E76F51] h-2 rounded-full transition-all"
                           style={{ width: `${getStatusProgress(order.status)}%` }}
                         ></div>
                       </div>
@@ -221,6 +222,7 @@ export default function OrderTracking() {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import Logo from "../../assets/logo.png";
+import logo from "../../assets/drssed.jpg";
 
 const getNumericSize = (value) => (typeof value === "number" ? value : parseFloat(value) || 120);
 
@@ -15,7 +15,7 @@ export default function DressedLogo({ size = 120, className = "" }) {
       style={{ gap: `${Math.max(12, Math.round(numericSize * 0.12))}px` }}
     >
       <img
-        src={Logo}
+        src={logo}
         alt="Drssed logo"
         className="w-20 h-20 mb-3 object-contain"
         style={{ width: dimension, height: dimension }}
