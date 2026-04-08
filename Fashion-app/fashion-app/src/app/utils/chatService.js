@@ -195,17 +195,24 @@ export const getUserConversations = async (userId) => {
     }
 
     const conversationsRef = collection(db, "conversations");
-    const q = query(
-      conversationsRef,
-      where(`participants.${userId}`, "!=", null),
-      orderBy("updatedAt", "desc")
-    );
+    const q = query(conversationsRef, orderBy("updatedAt", "desc"));
 
     const snapshot = await getDocs(q);
-    const conversations = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const conversations = snapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((conversation) => {
+        const participantIds = conversation.participantIds || [];
+        const participants = conversation.participants || {};
+
+        if (Array.isArray(participantIds) && participantIds.includes(userId)) {
+          return true;
+        }
+
+        return Boolean(participants?.[userId]);
+      });
 
     return {
       success: true,
@@ -254,14 +261,12 @@ export const searchConversations = async (userId, searchTerm) => {
       throw new Error("userId is required");
     }
 
-    const conversationsRef = collection(db, "conversations");
-    const q = query(conversationsRef, where(`participants.${userId}`, "!=", null));
+    const conversationsResult = await getUserConversations(userId);
+    if (!conversationsResult.success) {
+      return conversationsResult;
+    }
 
-    const snapshot = await getDocs(q);
-    const allConversations = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const allConversations = conversationsResult.conversations || [];
 
     // Filter by search term (case-insensitive)
     const filtered = allConversations.filter((conv) => {
