@@ -1,8 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet, Ruler, LogOut, Bell } from "lucide-react";
+import { Package, CheckCircle, DollarSign, Star, TrendingUp, Clock, MessageCircle, ChevronRight, LogOut, Bell } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
-import CustomerMeasurements from "../components/CustomerMeasurements";
-import { NotificationCenter } from "../components/NotificationCenter";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
 import { getUnreadCount } from "../services/notificationsService";
@@ -17,7 +15,6 @@ export default function DesignerDashboard() {
   const [activeOrders, setActiveOrders] = useState([]);
   const [incomingOrders, setIncomingOrders] = useState([]);
   const [customerMessages, setCustomerMessages] = useState([]);
-  const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogoutClick = async () => {
@@ -142,142 +139,107 @@ export default function DesignerDashboard() {
   const maxEarnings = Math.max(...weeklyEarnings.map(e => e.amount), 1);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      {!currentUser ? (
-        <div className="w-full max-w-md bg-white rounded-3xl p-12 text-center shadow-lg">
-          <p className="text-[#4B5563] mb-4">Please log in as a designer to view your dashboard</p>
-          <Link to="/designer/login" className="px-6 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D35F41] transition-all">
-            Go to Login
-          </Link>
-        </div>
-      ) : (
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden h-[90vh] sm:h-auto pb-4 overflow-y-auto w-full relative">
-      {/* Clean Header */}
-      <div className="bg-white px-6 py-6 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-6">
-          <Link to="/designer/home" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
-            <ArrowLeft size={24} className="text-[#2D2D2D]" />
-          </Link>
-          <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>
-            Dashboard
-          </h1>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setNotificationOpen(true)}
-              className="p-2 hover:bg-gray-50 rounded-xl transition-all relative"
-            >
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="bg-white px-6 py-6 border-b border-gray-100 rounded-b-3xl shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[#4B5563] mb-1 text-sm">Operations Hub</p>
+              <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>
+                {userProfile?.businessName || userProfile?.name || "Dashboard"}
+              </h1>
+            </div>
+            <Link to="/designer/messages" className="p-2 hover:bg-gray-50 rounded-xl transition-all relative">
               <Bell size={24} className="text-[#2D2D2D]" />
               {unreadCount > 0 && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-[#E76F51] rounded-full border-2 border-white flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">{Math.min(unreadCount, 9)}</span>
-                </div>
+                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#F97316] rounded-full border-2 border-white"></div>
               )}
-            </button>
-            <Link to="/designer-settings" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
-              <Settings size={24} className="text-[#2D2D2D]" />
             </Link>
           </div>
-        </div>
 
-        {/* Profile Info */}
-        <div className="bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-3xl p-6 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-white flex-shrink-0">
-              <img
-                src={currentUser?.photoURL || "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200"}
-                alt="Designer"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-white mb-1" style={{ fontSize: "20px", fontWeight: "700" }}>
-                {userProfile?.businessName || userProfile?.name || "Designer"}
-              </h2>
-              <p className="text-white/90 text-sm">Designer • {userProfile?.location || "Location"}</p>
+          {/* Stats Overview */}
+          <div className="bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-3xl p-6">
+            <div className="grid grid-cols-4 gap-3">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
+                  <Package size={20} className="text-white" />
+                </div>
+                <p className="text-white font-['Playfair_Display']" style={{ fontSize: "20px", fontWeight: "700" }}>
+                  {activeOrders.length}
+                </p>
+                <p className="text-white/90 text-xs">Active</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
+                  <Clock size={20} className="text-white" />
+                </div>
+                <p className="text-white font-['Playfair_Display']" style={{ fontSize: "20px", fontWeight: "700" }}>
+                  {incomingOrders.length}
+                </p>
+                <p className="text-white/90 text-xs">Pending</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
+                  <MessageCircle size={20} className="text-white" />
+                </div>
+                <p className="text-white font-['Playfair_Display']" style={{ fontSize: "20px", fontWeight: "700" }}>
+                  {customerMessages.length}
+                </p>
+                <p className="text-white/90 text-xs">Messages</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
+                  <Star size={20} className="text-white" />
+                </div>
+                <p className="text-white font-['Playfair_Display']" style={{ fontSize: "20px", fontWeight: "700" }}>
+                  {userProfile?.rating?.toFixed(1) || "0.0"}
+                </p>
+                <p className="text-white/90 text-xs">Rating</p>
+              </div>
             </div>
           </div>
-          
-          {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
-              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                {activeOrders.length}
-              </p>
-              <p className="text-white/90 text-xs">Active</p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
-              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                {userProfile?.rating?.toFixed(1) || "0.0"}
-              </p>
-              <p className="text-white/90 text-xs">Rating</p>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
-              <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                GH₵0
-              </p>
-              <p className="text-white/90 text-xs">This Month</p>
-            </div>
+
+          {/* Tab Pills */}
+          <div className="flex gap-2 overflow-x-auto pb-2 mt-6">
+            <button
+              onClick={() => setActiveTab("progress")}
+              className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
+                activeTab === "progress"
+                  ? "bg-[#E76F51] text-white"
+                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+              }`}
+              style={{ fontWeight: "600" }}
+            >
+              Progress
+            </button>
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
+                activeTab === "orders"
+                  ? "bg-[#E76F51] text-white"
+                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+              }`}
+              style={{ fontWeight: "600" }}
+            >
+              Orders
+            </button>
+            <button
+              onClick={() => setActiveTab("messages")}
+              className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
+                activeTab === "messages"
+                  ? "bg-[#E76F51] text-white"
+                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+              }`}
+              style={{ fontWeight: "600" }}
+            >
+              Messages
+            </button>
           </div>
         </div>
 
-        {/* Tab Pills */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          <button
-            onClick={() => setActiveTab("progress")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
-              activeTab === "progress"
-                ? "bg-[#E76F51] text-white"
-                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
-            }`}
-            style={{ fontWeight: "600" }}
-          >
-            Progress
-          </button>
-          <Link
-            to="/designer-portfolio"
-            className="px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap bg-gray-100 text-[#4B5563] hover:bg-gray-200"
-            style={{ fontWeight: "600" }}
-          >
-            Portfolio
-          </Link>
-          <button
-            onClick={() => setActiveTab("orders")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
-              activeTab === "orders"
-                ? "bg-[#E76F51] text-white"
-                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
-            }`}
-            style={{ fontWeight: "600" }}
-          >
-            Orders
-          </button>
-          <button
-            onClick={() => setActiveTab("messages")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
-              activeTab === "messages"
-                ? "bg-[#E76F51] text-white"
-                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
-            }`}
-            style={{ fontWeight: "600" }}
-          >
-            Messages
-          </button>
-          <button
-            onClick={() => setActiveTab("measurements")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
-              activeTab === "measurements"
-                ? "bg-[#E76F51] text-white"
-                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
-            }`}
-            style={{ fontWeight: "600" }}
-          >
-            Measurements
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="px-6 py-6 space-y-4">
+        {/* Content */}
+        <div className="px-6 py-6 space-y-4">
         {/* Progress Tab */}
         {activeTab === "progress" && (
           <>
@@ -414,41 +376,49 @@ export default function DesignerDashboard() {
               </div>
 
               <div className="space-y-3">
-                {incomingOrders.map((order, index) => (
-                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
-                          {order.customer}
-                        </p>
-                        <p className="text-[#4B5563] text-sm">{order.style}</p>
-                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
-                          GH₵{order.amount}
-                        </p>
-                        <p className="text-[#4B5563] text-xs">{order.date}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button className="flex-1 py-2 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition-all flex items-center justify-center gap-2">
-                        <CheckCircle size={16} />
-                        <span style={{ fontWeight: "600" }}>Accept</span>
-                      </button>
-                      <button className="flex-1 py-2 bg-white border border-[#EF4444]/20 text-[#EF4444] rounded-xl hover:bg-[#EF4444]/5 transition-all flex items-center justify-center gap-2">
-                        <XCircle size={16} />
-                        <span style={{ fontWeight: "600" }}>Decline</span>
-                      </button>
-                    </div>
+                {incomingOrders.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <Package size={40} className="text-[#D1D5DB] mx-auto mb-3" />
+                    <p className="text-[#4B5563] text-sm">No new orders yet</p>
+                    <p className="text-[#9CA3AF] text-xs mt-1">When customers book your services, they'll appear here</p>
                   </div>
-                ))}
+                ) : (
+                  incomingOrders.map((order, index) => (
+                    <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                            {order.customer}
+                          </p>
+                          <p className="text-[#4B5563] text-sm">{order.style}</p>
+                          <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                            GH₵{order.amount}
+                          </p>
+                          <p className="text-[#4B5563] text-xs">{order.date}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button className="flex-1 py-2 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition-all flex items-center justify-center gap-2">
+                          <CheckCircle size={16} />
+                          <span style={{ fontWeight: "600" }}>Accept</span>
+                        </button>
+                        <button className="flex-1 py-2 bg-white border border-[#EF4444]/20 text-[#EF4444] rounded-xl hover:bg-[#EF4444]/5 transition-all flex items-center justify-center gap-2">
+                          <XCircle size={16} />
+                          <span style={{ fontWeight: "600" }}>Decline</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -459,56 +429,64 @@ export default function DesignerDashboard() {
               </h3>
 
               <div className="space-y-3">
-                {activeOrders.map((order, index) => (
-                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
-                          {order.customer}
-                        </p>
-                        <p className="text-[#4B5563] text-sm">{order.style}</p>
-                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className={`px-3 py-1 rounded-full text-xs mb-1 inline-block ${
-                          order.status === "Ready"
-                            ? "bg-[#10B981]/10 text-[#10B981]"
-                            : order.status === "Sewing"
-                            ? "bg-[#F4A261]/10 text-[#F4A261]"
-                            : "bg-[#E76F51]/10 text-[#E76F51]"
-                        }`} style={{ fontWeight: "600" }}>
-                          {order.status}
-                        </span>
-                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
-                          GH₵{order.amount}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="mb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[#4B5563] text-xs">Progress</span>
-                        <span className="text-[#2D2D2D] text-xs" style={{ fontWeight: "600" }}>{order.progress}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] transition-all"
-                          style={{ width: `${order.progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <button className="w-full py-2 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all" style={{ fontWeight: "600" }}>
-                      Update Status
-                    </button>
+                {activeOrders.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <CheckCircle size={40} className="text-[#D1D5DB] mx-auto mb-3" />
+                    <p className="text-[#4B5563] text-sm">No active orders</p>
+                    <p className="text-[#9CA3AF] text-xs mt-1">Orders you accept will appear here</p>
                   </div>
-                ))}
+                ) : (
+                  activeOrders.map((order, index) => (
+                    <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                            {order.customer}
+                          </p>
+                          <p className="text-[#4B5563] text-sm">{order.style}</p>
+                          <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className={`px-3 py-1 rounded-full text-xs mb-1 inline-block ${
+                            order.status === "Ready"
+                              ? "bg-[#10B981]/10 text-[#10B981]"
+                              : order.status === "Sewing"
+                              ? "bg-[#F4A261]/10 text-[#F4A261]"
+                              : "bg-[#E76F51]/10 text-[#E76F51]"
+                          }`} style={{ fontWeight: "600" }}>
+                            {order.status}
+                          </span>
+                          <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                            GH₵{order.amount}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[#4B5563] text-xs">Progress</span>
+                          <span className="text-[#2D2D2D] text-xs" style={{ fontWeight: "600" }}>{order.progress}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] transition-all"
+                            style={{ width: `${order.progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <button className="w-full py-2 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all" style={{ fontWeight: "600" }}>
+                        Update Status
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </>
@@ -656,20 +634,7 @@ export default function DesignerDashboard() {
           <LogOut size={20} /> Logout
         </button>
       </div>
-
-      {/* Notification Center */}
-      {currentUser && (
-        <NotificationCenter 
-          userId={currentUser.uid}
-          isOpen={notificationOpen}
-          onClose={() => {
-            setNotificationOpen(false);
-            loadUnreadCount(); // Refresh count when closed
-          }}
-        />
-      )}
     </div>
-      )}
     </div>
   );
 }
