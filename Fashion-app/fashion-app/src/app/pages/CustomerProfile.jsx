@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Phone, MapPin, Edit2, Save, X, LogOut, Heart } from "lucide-react";
+import { User, Mail, Phone, MapPin, Edit2, Save, X, LogOut, Heart, Upload } from "lucide-react";
 import { auth } from "../firebaseConfig";
+import { useAuth } from "../hooks/useAuth";
 import { getCustomerProfile, updateCustomerProfile, getFavoriteDesigners } from "../utils/customerUtils";
 import { handleLogout } from "../utils/authUtils";
+import { uploadProfilePicture } from "../utils/storageService";
 import BottomNav from "../components/BottomNav";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -23,7 +27,7 @@ export default function CustomerProfile() {
     address: "",
     city: "",
     country: "",
-    photoURL: "",
+    profilePicture: "",
   });
 
   useEffect(() => {
@@ -42,13 +46,13 @@ export default function CustomerProfile() {
       if (result.success) {
         setProfile(result.profile);
         setFormData({
-          displayName: result.profile.displayName || "",
+          displayName: result.profile.name || "",
           email: result.profile.email || "",
           phone: result.profile.phone || "",
           address: result.profile.address || "",
           city: result.profile.city || "",
           country: result.profile.country || "",
-          photoURL: result.profile.photoURL || "",
+          profilePicture: result.profile.profilePicture || "",
         });
       }
     } catch (err) {
@@ -76,6 +80,41 @@ export default function CustomerProfile() {
       [name]: value,
     }));
     setError("");
+  };
+
+  const handleProfilePictureUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) {
+      setError("Please select an image file");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setError("");
+
+      const result = await uploadProfilePicture(currentUser.uid, file);
+
+      if (result.success) {
+        setFormData((prev) => ({
+          ...prev,
+          profilePicture: result.url,
+        }));
+        setSuccess("Profile picture updated!");
+        
+        // Auto-save profile picture
+        await updateCustomerProfile({
+          ...formData,
+          profilePicture: result.url,
+        });
+      } else {
+        setError(result.error || "Failed to upload image");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveProfile = async (e) => {
@@ -152,6 +191,31 @@ export default function CustomerProfile() {
             )}
 
             <form onSubmit={handleSaveProfile} className="space-y-6">
+              {/* Profile Picture */}
+              <div className="flex justify-center mb-6">
+                <div className="relative group">
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#E76F51] to-[#F4A261] flex items-center justify-center text-white text-4xl font-bold">
+                    {formData.profilePicture ? (
+                      <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      profile?.name?.[0]?.toUpperCase() || "U"
+                    )}
+                  </div>
+                  {isEditing && (
+                    <label className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Upload size={20} className="text-white" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfilePictureUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
               {/* Name */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-[#2D2D2D] mb-2">
