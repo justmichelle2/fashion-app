@@ -16,6 +16,7 @@ import DesignerProfile from "./pages/DesignerProfile";
 import DesignerPortfolio from "./pages/DesignerPortfolio";
 import DesignerProgress from "./pages/DesignerProgress";
 import DesignerOrders from "./pages/DesignerOrders";
+import DesignerOrderDetail from "./pages/DesignerOrderDetail";
 import DesignerMessages from "./pages/DesignerMessages";
 import DesignerMeasurements from "./pages/DesignerMeasurements";
 import UploadMeasurements from "./pages/UploadMeasurements.jsx";
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
   { path: "/designer/dashboard", element: designerRoute(<DesignerDashboard />) },
   { path: "/designer/portfolio", element: designerRoute(<DesignerPortfolio />) },
   { path: "/designer/orders", element: designerRoute(<DesignerOrders />) },
+  { path: "/designer/order/:orderId", element: designerRoute(<DesignerOrderDetail />) },
   { path: "/designer/progress", element: designerRoute(<DesignerProgress />) },
   { path: "/designer/messages", element: designerRoute(<DesignerMessages />) },
   { path: "/designer/measurements", element: designerRoute(<DesignerMeasurements />) },
