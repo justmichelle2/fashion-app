@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, AlertCircle } from "lucide-react";
+import { ArrowLeft, Check, AlertCircle, Upload, Image as ImageIcon, X } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { getDesignerById } from "../services/designerService";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { BottomNav } from "../components/BottomNav";
+import { uploadImage } from "../utils/storageService";
 
 export default function BookTailoring() {
   const { designerId } = useParams();
@@ -15,9 +15,12 @@ export default function BookTailoring() {
   const [step, setStep] = useState("booking"); // booking, review, success
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingInspo, setUploadingInspo] = useState(false);
   const [designer, setDesigner] = useState(null);
   const [error, setError] = useState("");
   const [successId, setSuccessId] = useState("");
+  const [inspoFiles, setInspoFiles] = useState([]);
+  const [inspoPreviewNames, setInspoPreviewNames] = useState([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -82,6 +85,53 @@ export default function BookTailoring() {
     setError("");
   };
 
+  const handleInspoFilesChange = (e) => {
+    const files = Array.from(e.target.files || []);
+
+    if (files.length === 0) {
+      setInspoFiles([]);
+      setInspoPreviewNames([]);
+      return;
+    }
+
+    setInspoFiles(files);
+    setInspoPreviewNames(files.map((file) => file.name));
+    setError("");
+  };
+
+  const removeInspoFile = (fileIndex) => {
+    const nextFiles = inspoFiles.filter((_, index) => index !== fileIndex);
+    setInspoFiles(nextFiles);
+    setInspoPreviewNames(nextFiles.map((file) => file.name));
+  };
+
+  const uploadInspirationImages = async () => {
+    if (!inspoFiles.length || !currentUser?.uid) {
+      return [];
+    }
+
+    setUploadingInspo(true);
+    const uploaded = [];
+
+    try {
+      for (const file of inspoFiles) {
+        const result = await uploadImage(file, `orders/inspiration/${currentUser.uid}/${designerId}`);
+        if (!result.success) {
+          throw new Error(result.error || "Failed to upload inspiration image");
+        }
+
+        uploaded.push({
+          url: result.url,
+          fileName: result.fileName,
+        });
+      }
+
+      return uploaded;
+    } finally {
+      setUploadingInspo(false);
+    }
+  };
+
   const validateForm = () => {
     if (!formData.title.trim()) {
       setError("Please enter a title for your project");
@@ -120,8 +170,30 @@ export default function BookTailoring() {
     setError("");
 
     try {
+      const uploadedInspirationImages = await uploadInspirationImages();
+
+      const orderRef = collection(db, "orders");
+      const orderDocRef = await addDoc(orderRef, {
+        customerId: currentUser.uid,
+        designerId,
+        designerName: designer?.businessName || designer?.name || "Designer",
+        customerName: currentUser.displayName || "Customer",
+        title: formData.title,
+        description: formData.description,
+        garmentType: formData.garmentType,
+        price: parseFloat(formData.budget),
+        budget: parseFloat(formData.budget),
+        deadlineDate: new Date(formData.preferredDeadline),
+        specifications: formData.specifications,
+        inspirationImages: uploadedInspirationImages,
+        notes: formData.specifications?.additionalNotes || "",
+        status: "pending",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
       const inquiryRef = collection(db, "bookingInquiries");
-      const docRef = await addDoc(inquiryRef, {
+      await addDoc(inquiryRef, {
         customerId: currentUser.uid,
         designerId: designerId,
         designerName: designer?.businessName || designer?.name || "Designer",
@@ -131,13 +203,15 @@ export default function BookTailoring() {
         garmentType: formData.garmentType,
         budget: parseFloat(formData.budget),
         preferredDeadline: new Date(formData.preferredDeadline),
+        inspirationImages: uploadedInspirationImages,
         specifications: formData.specifications,
+        linkedOrderId: orderDocRef.id,
         status: "pending",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      setSuccessId(docRef.id);
+      setSuccessId(orderDocRef.id);
       setStep("success");
     } catch (err) {
       console.error("Error creating booking inquiry:", err);
@@ -192,20 +266,19 @@ export default function BookTailoring() {
 
           <div className="space-y-3">
             <button
-              onClick={() => navigate("/home")}
+              onClick={() => navigate("/customer/home")}
               className="w-full bg-[#E76F51] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition"
             >
               Back to Home
             </button>
             <button
-              onClick={() => navigate("/orders")}
+              onClick={() => navigate("/customer/orders")}
               className="w-full border-2 border-[#E76F51] text-[#E76F51] py-3 rounded-lg font-semibold hover:bg-[#E76F51]/5 transition"
             >
               View My Orders
             </button>
           </div>
         </div>
-        <BottomNav />
       </div>
     );
   }
@@ -362,19 +435,55 @@ export default function BookTailoring() {
               />
             </div>
 
+            {/* Inspiration Images */}
+            <div className="space-y-3">
+              <h3 className="text-[#2D2D2D] font-semibold">Upload Inspiration (Optional)</h3>
+              <label className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center gap-3 cursor-pointer hover:border-[#E76F51] transition">
+                <Upload size={18} className="text-[#E76F51]" />
+                <span className="text-sm text-[#4B5563]">Upload inspo images (max 5MB each)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleInspoFilesChange}
+                  className="hidden"
+                  disabled={submitting || uploadingInspo}
+                />
+              </label>
+
+              {inspoPreviewNames.length > 0 && (
+                <div className="space-y-2">
+                  {inspoPreviewNames.map((fileName, index) => (
+                    <div key={`${fileName}-${index}`} className="flex items-center justify-between gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <ImageIcon size={16} className="text-[#E76F51] flex-shrink-0" />
+                        <span className="text-sm text-[#2D2D2D] truncate">{fileName}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeInspoFile(index)}
+                        className="p-1 rounded hover:bg-gray-200 transition"
+                        aria-label={`Remove ${fileName}`}
+                      >
+                        <X size={14} className="text-[#4B5563]" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || uploadingInspo}
               className="w-full bg-[#E76F51] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Sending..." : "Send Inquiry"}
+              {submitting || uploadingInspo ? "Sending..." : "Send Inquiry"}
             </button>
           </form>
         </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

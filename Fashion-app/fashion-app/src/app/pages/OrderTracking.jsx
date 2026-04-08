@@ -5,13 +5,75 @@ import { FaBox, FaClock, FaCheckCircle, FaTimesCircle, FaSpinner } from "react-i
 
 const STATUS_COLORS = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: FaClock },
+  confirmed: { bg: "bg-blue-100", text: "text-blue-800", icon: FaCheckCircle },
   accepted: { bg: "bg-blue-100", text: "text-blue-800", icon: FaCheckCircle },
+  in_progress: { bg: "bg-purple-100", text: "text-purple-800", icon: FaSpinner },
   tailoring: { bg: "bg-purple-100", text: "text-purple-800", icon: FaSpinner },
   completed: { bg: "bg-green-100", text: "text-green-800", icon: FaCheckCircle },
   cancelled: { bg: "bg-red-100", text: "text-red-800", icon: FaTimesCircle },
 };
 
 const STATUS_STEPS = ["pending", "accepted", "tailoring", "completed"];
+
+const normalizeStatus = (status) => {
+  if (status === "confirmed") {
+    return "accepted";
+  }
+
+  if (status === "in_progress") {
+    return "tailoring";
+  }
+
+  return status || "pending";
+};
+
+const toDateValue = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value?.toDate === "function") {
+    return value.toDate();
+  }
+
+  if (value instanceof Date) {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    return new Date(value);
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed;
+};
+
+const formatMoney = (order) => {
+  const amount = Number(order.price ?? order.total ?? order.budget ?? 0);
+  return Number.isFinite(amount) ? amount.toFixed(2) : "0.00";
+};
+
+const getInspirationImageUrls = (order) => {
+  const images = Array.isArray(order?.inspirationImages) ? order.inspirationImages : [];
+
+  return images
+    .map((item) => {
+      if (typeof item === "string") {
+        return item;
+      }
+
+      if (item && typeof item === "object") {
+        return item.url || "";
+      }
+
+      return "";
+    })
+    .filter(Boolean);
+};
 
 export default function OrderTracking() {
   const { currentUser, loading: authLoading } = useAuth();
@@ -47,10 +109,11 @@ export default function OrderTracking() {
   };
 
   const filteredOrders =
-    filter === "all" ? orders : orders.filter((order) => order.status === filter);
+    filter === "all" ? orders : orders.filter((order) => normalizeStatus(order.status) === filter);
 
   const getStatusProgress = (status) => {
-    return (STATUS_STEPS.indexOf(status) + 1) / STATUS_STEPS.length * 100;
+    const normalizedStatus = normalizeStatus(status);
+    return ((STATUS_STEPS.indexOf(normalizedStatus) + 1) / STATUS_STEPS.length) * 100;
   };
 
   if (authLoading || loading) {
@@ -114,8 +177,12 @@ export default function OrderTracking() {
         ) : (
           <div className="space-y-4">
             {filteredOrders.map((order) => {
-              const StatusIcon = STATUS_COLORS[order.status]?.icon || FaBox;
-              const statusColor = STATUS_COLORS[order.status] || STATUS_COLORS.pending;
+              const normalizedStatus = normalizeStatus(order.status);
+              const StatusIcon = STATUS_COLORS[normalizedStatus]?.icon || FaBox;
+              const statusColor = STATUS_COLORS[normalizedStatus] || STATUS_COLORS.pending;
+              const deadlineDate = toDateValue(order.deadlineDate || order.preferredDeadline);
+              const createdDate = toDateValue(order.createdAt);
+              const inspirationImageUrls = getInspirationImageUrls(order);
 
               return (
                 <div
@@ -131,13 +198,13 @@ export default function OrderTracking() {
                           Order #{order.id.slice(0, 8).toUpperCase()}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          Designer: {order.designerName}
+                          Designer: {order.designerName || "Designer"}
                         </p>
                       </div>
                       <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${statusColor.bg}`}>
                         <StatusIcon className={statusColor.text} />
                         <span className={`font-semibold capitalize ${statusColor.text}`}>
-                          {order.status}
+                          {normalizedStatus.replace("_", " ")}
                         </span>
                       </div>
                     </div>
@@ -156,12 +223,12 @@ export default function OrderTracking() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-600">Price:</span>
-                        <p className="font-semibold text-gray-800">GHS {order.price.toFixed(2)}</p>
+                        <p className="font-semibold text-gray-800">GHS {formatMoney(order)}</p>
                       </div>
                       <div>
                         <span className="text-gray-600">Deadline:</span>
                         <p className="font-semibold text-gray-800">
-                          {new Date(order.deadlineDate.seconds * 1000).toLocaleDateString()}
+                          {deadlineDate ? deadlineDate.toLocaleDateString() : "Not set"}
                         </p>
                       </div>
                     </div>
@@ -184,11 +251,35 @@ export default function OrderTracking() {
                         </div>
                       )}
 
+                      {inspirationImageUrls.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-800 mb-2">Inspiration Images</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {inspirationImageUrls.map((imageUrl, index) => (
+                              <a
+                                key={`${order.id}-inspo-${index}`}
+                                href={imageUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block rounded-lg overflow-hidden border border-gray-200 hover:opacity-90 transition"
+                              >
+                                <img
+                                  src={imageUrl}
+                                  alt={`Inspiration ${index + 1}`}
+                                  className="w-full h-24 object-cover"
+                                  loading="lazy"
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Created Date */}
                       <div>
                         <span className="text-gray-600">Order Date:</span>
                         <p className="font-semibold text-gray-800">
-                          {new Date(order.createdAt.seconds * 1000).toLocaleString()}
+                          {createdDate ? createdDate.toLocaleString() : "Just now"}
                         </p>
                       </div>
 
