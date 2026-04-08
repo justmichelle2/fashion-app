@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Send, Image as ImageIcon, Paperclip, MoreVertical } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { mockDesigners } from "../data/mockData";
 import { sendMessage, subscribeToMessages, createConversation } from "../utils/chatService";
 import { uploadImage } from "../utils/storageService";
+import { db } from "../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Conversation() {
   const { id } = useParams();
@@ -21,9 +22,6 @@ export default function Conversation() {
   const [designer, setDesigner] = useState(null);
   const [unsubscribe, setUnsubscribe] = useState(null);
 
-  // Mock designer fallback
-  const mockDesigner = mockDesigners.find((d) => d.id === id) || mockDesigners[0];
-
   const designerPhotos = [
     "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
     "https://images.unsplash.com/photo-1765910083971-aa0e3688be46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
@@ -37,15 +35,32 @@ export default function Conversation() {
 
     const initializeConversation = async () => {
       try {
-        // For now, use mock designer - in production, fetch from Firestore
-        setDesigner(mockDesigner);
+        // Fetch designer info from Firestore
+        const designerRef = doc(db, "users", id);
+        const designerSnap = await getDoc(designerRef);
         
-        // Create or get conversation
+        if (!designerSnap.exists()) {
+          setError("Designer not found");
+          setLoading(false);
+          return;
+        }
+
+        const designerData = designerSnap.data();
+        setDesigner({
+          id: id,
+          name: designerData.name || designerData.businessName || "Designer",
+          avatar: designerData.avatar || designerData.profilePicture || "",
+          bio: designerData.bio || "",
+          rating: designerData.rating || 4.5,
+          location: designerData.location || ""
+        });
+        
+        // Create or get conversation with real designer name
         const convResult = await createConversation(
           currentUser.uid,
           id,
           userProfile.name || currentUser.displayName || "Customer",
-          mockDesigner.name
+          designerData.name || designerData.businessName || "Designer"
         );
 
         if (convResult.success) {

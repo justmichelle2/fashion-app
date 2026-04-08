@@ -64,16 +64,14 @@ export default function DesignerDashboard() {
         const ordersRef = collection(db, "orders");
         const ordersQuery = query(
           ordersRef,
-          where("designerId", "==", currentUser.uid),
-          orderBy("createdAt", "desc"),
-          limit(20)
+          where("designerId", "==", currentUser.uid)
         );
         const ordersSnap = await getDocs(ordersQuery);
         
         const orders = ordersSnap.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
+        })).sort((a, b) => (b.createdAt?.toDate?.() || new Date()) - (a.createdAt?.toDate?.() || new Date()));
 
         // Separate into pending and active
         const pending = orders.filter(o => o.status === "pending").slice(0, 3);
@@ -100,9 +98,7 @@ export default function DesignerDashboard() {
         const conversationsRef = collection(db, "conversations");
         const convQuery = query(
           conversationsRef,
-          where("participants", "array-contains", currentUser.uid),
-          orderBy("updatedAt", "desc"),
-          limit(5)
+          where("participants", "array-contains", currentUser.uid)
         );
         const convSnap = await getDocs(convQuery);
         
@@ -115,9 +111,10 @@ export default function DesignerDashboard() {
             lastMessage: data.lastMessage || "No messages yet",
             timestamp: data.updatedAt?.toDate?.()?.toLocaleTimeString() || "just now",
             unread: data.unreadCount?.[currentUser.uid] || 0,
-            orderId: data.orderId || ""
+            orderId: data.orderId || "",
+            updatedAt: data.updatedAt?.toDate?.() || new Date()
           };
-        });
+        }).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
         
         setCustomerMessages(messages);
 

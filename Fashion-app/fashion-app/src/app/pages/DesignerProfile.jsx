@@ -1,39 +1,102 @@
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Star, MessageCircle, Heart } from "lucide-react";
-import { mockDesigners } from "../data/mockData";
+import { useState, useEffect } from "react";
+import { db } from "../firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function DesignerProfile() {
   const { id } = useParams();
-  const designer = mockDesigners.find(d => d.id === id) || mockDesigners[0];
+  const [designer, setDesigner] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const designerPhotos = [
-    "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBZnJpY2FuJTIwd29tYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NzI2MDU2OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1765910083971-aa0e3688be46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBZnJpY2FuJTIwbWFuJTIwdGFpbG9yJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzcyNjI0MTk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-  ];
+  useEffect(() => {
+    const fetchDesigner = async () => {
+      try {
+        const designerRef = doc(db, "users", id);
+        const designerSnap = await getDoc(designerRef);
+        
+        if (!designerSnap.exists()) {
+          setError("Designer not found");
+          setLoading(false);
+          return;
+        }
 
-  const portfolioImages = [
-    "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBZnJpY2FuJTIwZmFzaGlvbiUyMGRlc2lnbiUyMHBvcnRmb2xpb3xlbnwxfHx8fDE3NzI2MjQyMjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1763823132521-72f373850de2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMEFmcmljYW4lMjBjbG90aGluZyUyMHN0eWxlfGVufDF8fHx8MTc3MjYyNDIyMXww&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1760907949889-eb62b7fd9f75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBBZnJpY2FuJTIwZHJlc3MlMjBkZXNpZ258ZW58MXx8fHwxNzcyNjI0MjIxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1661332517932-2d441bfb2994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBZnJpY2FuJTIwd2VkZGluZyUyMGF0dGlyZXxlbnwxfHx8fDE3NzI2MjQyMjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1710559056465-6a71e5089342?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBZnJpY2FuJTIwZmFzaGlvbiUyMGtlbnRlJTIwZHJlc3N8ZW58MXx8fHwxNzcyNjI0MTcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-    "https://images.unsplash.com/photo-1621945094361-aed061046504?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXN0b20lMjB0YWlsb3JlZCUyMHN1aXQlMjBHaGFuYXxlbnwxfHx8fDE3NzI2MjQxNzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  ];
+        const data = designerSnap.data();
+        setDesigner({
+          id: id,
+          name: data.name || data.businessName || "Designer",
+          businessName: data.businessName || "",
+          location: data.location || "",
+          rating: data.rating || 4.5,
+          reviews: data.reviews || 0,
+          bio: data.bio || "Professional tailor and designer",
+          specialties: data.specialties || ["Custom Tailoring"],
+          priceRange: data.priceRange || "GHS 100 - 500",
+          profilePicture: data.profilePicture || data.avatar || "",
+          portfolioImages: data.portfolioImages || []
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching designer:", err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
 
-  const reviews = [
-    { id: 1, name: "Kwame A.", rating: 5, comment: "Excellent work! Very professional and timely.", date: "2 weeks ago" },
-    { id: 2, name: "Ama K.", rating: 5, comment: "Beautiful designs. Highly recommend!", date: "1 month ago" },
-    { id: 3, name: "Kofi M.", rating: 4, comment: "Great quality, would use again.", date: "2 months ago" },
-  ];
+    if (id) {
+      fetchDesigner();
+    }
+  }, [id]);
+
+  const designerPhotos = designer?.profilePicture 
+    ? [designer.profilePicture] 
+    : [
+        "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1765910083971-aa0e3688be46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+      ];
+
+  const portfolioImages = designer?.portfolioImages && designer.portfolioImages.length > 0
+    ? designer.portfolioImages
+    : [
+        "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1763823132521-72f373850de2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1760907949889-eb62b7fd9f75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1661332517932-2d441bfb2994?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1710559056465-6a71e5089342?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+        "https://images.unsplash.com/photo-1621945094361-aed061046504?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+      ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden h-[90vh] sm:h-auto pb-4 overflow-y-auto w-full relative">
+      
+      {loading && (
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="text-center">
+            <p className="text-[#4B5563]">Loading designer profile...</p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="text-center p-6">
+            <p className="text-[#EF4444]">{error}</p>
+            <Link to="/designers" className="text-[#E76F51] mt-4 inline-block hover:underline">
+              Back to Designers
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {designer && (
+        <>
       {/* Header with Photo */}
       <div className="relative">
         <div className="h-72 bg-gradient-to-br from-[#E76F51] to-[#F4A261]">
           <img
-            src={designerPhotos[parseInt(id || "0") % 2]}
+            src={designerPhotos[0]}
             alt={designer.name}
             className="w-full h-full object-cover opacity-80"
           />
@@ -119,31 +182,6 @@ export default function DesignerProfile() {
             ))}
           </div>
         </div>
-
-        {/* Reviews */}
-        <div>
-          <h2 className="text-[#111827] mb-4" style={{ fontSize: "20px", fontWeight: "700" }}>
-            Reviews ({designer.reviews})
-          </h2>
-          <div className="space-y-4">
-            {reviews.map((review) => (
-              <div key={review.id} className="p-4 bg-white border border-gray-200 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[#111827]" style={{ fontWeight: "600" }}>
-                    {review.name}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star key={i} size={14} className="text-[#F4A261] fill-[#F4A261]" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-[#4B5563] text-sm mb-2">{review.comment}</p>
-                <span className="text-[#4B5563] text-xs">{review.date}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Fixed Bottom Actions */}
@@ -164,6 +202,8 @@ export default function DesignerProfile() {
           </Link>
         </div>
       </div>
+        </>
+      )}
 
     </div>
     </div>
