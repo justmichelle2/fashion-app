@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, Upload, Users, Star, Search, Package } from "lucide-react";
+import { Upload, Users, Star, Search, Package } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { getUserOrders } from "../utils/orderUtils";
 import { getUnreadCount } from "../services/notificationsService";
-import { NotificationCenter } from "../components/NotificationCenter";
+import NotificationBell from "../components/NotificationBell";
 import ImageWithFallback from "../components/figma/ImageWithFallback";
 
 export default function Home() {
@@ -12,7 +12,6 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
-  const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -101,18 +100,7 @@ export default function Home() {
               {userProfile?.name || "Customer"}
             </h1>
           </div>
-          <button 
-            onClick={() => setNotificationOpen(true)}
-            className="p-2 hover:bg-gray-50 rounded-xl transition-all relative" 
-            aria-label="Notifications"
-          >
-            <Bell size={24} className="text-[#2D2D2D]" />
-            {unreadCount > 0 && (
-              <div className="absolute top-1 right-1 w-5 h-5 bg-[#E76F51] rounded-full border-2 border-white flex items-center justify-center">
-                <span className="text-white text-xs font-bold">{Math.min(unreadCount, 9)}</span>
-              </div>
-            )}
-          </button>
+          <NotificationBell unreadCount={unreadCount} />
         </div>
 
         <div className="relative">
@@ -124,18 +112,6 @@ export default function Home() {
           />
         </div>
       </div>
-
-      {/* Notification Center */}
-      {auth.currentUser && (
-        <NotificationCenter 
-          userId={auth.currentUser.uid}
-          isOpen={notificationOpen}
-          onClose={() => {
-            setNotificationOpen(false);
-            loadUnreadCount(); // Refresh count when closed
-          }}
-        />
-      )}
 
       <div className="px-6 py-6 space-y-6">
         {/* Quick Actions */}
