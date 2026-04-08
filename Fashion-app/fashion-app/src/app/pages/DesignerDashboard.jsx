@@ -376,41 +376,49 @@ export default function DesignerDashboard() {
               </div>
 
               <div className="space-y-3">
-                {incomingOrders.map((order, index) => (
-                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
-                          {order.customer}
-                        </p>
-                        <p className="text-[#4B5563] text-sm">{order.style}</p>
-                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
-                          GH₵{order.amount}
-                        </p>
-                        <p className="text-[#4B5563] text-xs">{order.date}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button className="flex-1 py-2 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition-all flex items-center justify-center gap-2">
-                        <CheckCircle size={16} />
-                        <span style={{ fontWeight: "600" }}>Accept</span>
-                      </button>
-                      <button className="flex-1 py-2 bg-white border border-[#EF4444]/20 text-[#EF4444] rounded-xl hover:bg-[#EF4444]/5 transition-all flex items-center justify-center gap-2">
-                        <XCircle size={16} />
-                        <span style={{ fontWeight: "600" }}>Decline</span>
-                      </button>
-                    </div>
+                {incomingOrders.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <Package size={40} className="text-[#D1D5DB] mx-auto mb-3" />
+                    <p className="text-[#4B5563] text-sm">No new orders yet</p>
+                    <p className="text-[#9CA3AF] text-xs mt-1">When customers book your services, they'll appear here</p>
                   </div>
-                ))}
+                ) : (
+                  incomingOrders.map((order, index) => (
+                    <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                            {order.customer}
+                          </p>
+                          <p className="text-[#4B5563] text-sm">{order.style}</p>
+                          <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                            GH₵{order.amount}
+                          </p>
+                          <p className="text-[#4B5563] text-xs">{order.date}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button className="flex-1 py-2 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition-all flex items-center justify-center gap-2">
+                          <CheckCircle size={16} />
+                          <span style={{ fontWeight: "600" }}>Accept</span>
+                        </button>
+                        <button className="flex-1 py-2 bg-white border border-[#EF4444]/20 text-[#EF4444] rounded-xl hover:bg-[#EF4444]/5 transition-all flex items-center justify-center gap-2">
+                          <XCircle size={16} />
+                          <span style={{ fontWeight: "600" }}>Decline</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -421,56 +429,64 @@ export default function DesignerDashboard() {
               </h3>
 
               <div className="space-y-3">
-                {activeOrders.map((order, index) => (
-                  <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
-                          {order.customer}
-                        </p>
-                        <p className="text-[#4B5563] text-sm">{order.style}</p>
-                        <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className={`px-3 py-1 rounded-full text-xs mb-1 inline-block ${
-                          order.status === "Ready"
-                            ? "bg-[#10B981]/10 text-[#10B981]"
-                            : order.status === "Sewing"
-                            ? "bg-[#F4A261]/10 text-[#F4A261]"
-                            : "bg-[#E76F51]/10 text-[#E76F51]"
-                        }`} style={{ fontWeight: "600" }}>
-                          {order.status}
-                        </span>
-                        <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
-                          GH₵{order.amount}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="mb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[#4B5563] text-xs">Progress</span>
-                        <span className="text-[#2D2D2D] text-xs" style={{ fontWeight: "600" }}>{order.progress}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] transition-all"
-                          style={{ width: `${order.progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <button className="w-full py-2 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all" style={{ fontWeight: "600" }}>
-                      Update Status
-                    </button>
+                {activeOrders.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <CheckCircle size={40} className="text-[#D1D5DB] mx-auto mb-3" />
+                    <p className="text-[#4B5563] text-sm">No active orders</p>
+                    <p className="text-[#9CA3AF] text-xs mt-1">Orders you accept will appear here</p>
                   </div>
-                ))}
+                ) : (
+                  activeOrders.map((order, index) => (
+                    <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
+                            {order.customer}
+                          </p>
+                          <p className="text-[#4B5563] text-sm">{order.style}</p>
+                          <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className={`px-3 py-1 rounded-full text-xs mb-1 inline-block ${
+                            order.status === "Ready"
+                              ? "bg-[#10B981]/10 text-[#10B981]"
+                              : order.status === "Sewing"
+                              ? "bg-[#F4A261]/10 text-[#F4A261]"
+                              : "bg-[#E76F51]/10 text-[#E76F51]"
+                          }`} style={{ fontWeight: "600" }}>
+                            {order.status}
+                          </span>
+                          <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                            GH₵{order.amount}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[#4B5563] text-xs">Progress</span>
+                          <span className="text-[#2D2D2D] text-xs" style={{ fontWeight: "600" }}>{order.progress}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] transition-all"
+                            style={{ width: `${order.progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <button className="w-full py-2 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all" style={{ fontWeight: "600" }}>
+                        Update Status
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </>
