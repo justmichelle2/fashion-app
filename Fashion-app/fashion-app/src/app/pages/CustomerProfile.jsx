@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import { getCustomerProfile, updateCustomerProfile, getFavoriteDesigners } from "../utils/customerUtils";
 import { handleLogout } from "../utils/authUtils";
 import { uploadProfilePicture } from "../utils/storageService";
+import NotificationBell from "../components/NotificationBell";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -160,19 +161,22 @@ export default function CustomerProfile() {
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center">
+          <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center gap-3">
             <div>
               <h1 className="text-3xl font-bold">My Profile</h1>
               <p className="text-white/80 mt-1">Customer Account</p>
             </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-              >
-                <Edit2 size={18} /> Edit
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              {!isEditing && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+                >
+                  <Edit2 size={18} /> Edit
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Profile Content */}
