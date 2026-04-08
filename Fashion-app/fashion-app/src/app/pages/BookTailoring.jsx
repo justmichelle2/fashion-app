@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, AlertCircle, Upload, Image as ImageIcon, X } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { getDesignerById } from "../services/designerService";
+import { createNotification, NOTIFICATION_TYPES } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { uploadImage } from "../utils/storageService";

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Bell, Upload, Users, Star, Search, Package } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { getUserOrders } from "../utils/orderUtils";
+import { getUnreadCount } from "../services/notificationsService";
+import { NotificationCenter } from "../components/NotificationCenter";
 import ImageWithFallback from "../components/figma/ImageWithFallback";
 
 export default function Home() {
@@ -10,6 +12,8 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     // Load user profile and orders
@@ -19,6 +23,11 @@ export default function Home() {
         email: auth.currentUser.email,
       });
       loadOrders();
+      loadUnreadCount();
+
+      // Refresh unread count every 30 seconds
+      const interval = setInterval(() => loadUnreadCount(), 30000);
+      return () => clearInterval(interval);
     } else {
       navigate("/login");
     }
@@ -34,6 +43,17 @@ export default function Home() {
       console.error("Failed to load orders:", err);
     } finally {
       setLoadingOrders(false);
+    }
+  };
+
+  const loadUnreadCount = async () => {
+    try {
+      if (auth.currentUser) {
+        const count = await getUnreadCount(auth.currentUser.uid);
+        setUnreadCount(count);
+      }
+    } catch (err) {
+      console.error("Failed to load unread count:", err);
     }
   };
 
@@ -81,9 +101,17 @@ export default function Home() {
               {userProfile?.name || "Customer"}
             </h1>
           </div>
-          <button type="button" className="p-2 hover:bg-gray-50 rounded-xl transition-all relative" aria-label="Notifications">
+          <button 
+            onClick={() => setNotificationOpen(true)}
+            className="p-2 hover:bg-gray-50 rounded-xl transition-all relative" 
+            aria-label="Notifications"
+          >
             <Bell size={24} className="text-[#2D2D2D]" />
-            <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E76F51] rounded-full border-2 border-white" />
+            {unreadCount > 0 && (
+              <div className="absolute top-1 right-1 w-5 h-5 bg-[#E76F51] rounded-full border-2 border-white flex items-center justify-center">
+                <span className="text-white text-xs font-bold">{Math.min(unreadCount, 9)}</span>
+              </div>
+            )}
           </button>
         </div>
 
@@ -96,6 +124,18 @@ export default function Home() {
           />
         </div>
       </div>
+
+      {/* Notification Center */}
+      {auth.currentUser && (
+        <NotificationCenter 
+          userId={auth.currentUser.uid}
+          isOpen={notificationOpen}
+          onClose={() => {
+            setNotificationOpen(false);
+            loadUnreadCount(); // Refresh count when closed
+          }}
+        />
+      )}
 
       <div className="px-6 py-6 space-y-6">
         {/* Quick Actions */}
