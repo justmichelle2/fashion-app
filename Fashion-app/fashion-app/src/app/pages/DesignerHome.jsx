@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, TrendingUp, Package, MessageCircle, Star, Clock, Settings, ChevronRight, LogOut } from "lucide-react";
+import { Bell, TrendingUp, Package, MessageCircle, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, MessageSquare, Sparkles } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
@@ -17,8 +17,6 @@ export default function DesignerHome() {
     }
   };
 
-  const firstName = (userProfile?.name || userProfile?.businessName || "Designer").split(" ")[0];
-
   return (
     <div className="min-h-screen bg-[#F7F5F2] pb-20">
       <div className="mx-auto max-w-2xl px-5 py-6">
@@ -26,7 +24,7 @@ export default function DesignerHome() {
           <div className="mb-5 flex items-start justify-between">
             <div>
               <p className="text-sm text-white/70">Studio Home</p>
-              <h1 className="mt-1 text-3xl font-semibold">Welcome, {firstName}</h1>
+              <h1 className="mt-1 text-3xl font-semibold">Welcome, {(userProfile?.name || userProfile?.businessName || "Designer").split(" ")[0]}</h1>
             </div>
             <Link to="/designer/messages" className="relative rounded-xl bg-white/10 p-2 hover:bg-white/20 transition-all">
               <Bell size={20} />
