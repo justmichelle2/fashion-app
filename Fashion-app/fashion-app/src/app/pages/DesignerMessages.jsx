@@ -109,7 +109,7 @@ export default function DesignerMessages() {
               {filteredConversations.map((conv) => (
                 <Link
                   key={conv.id}
-                  to={`/chat/${conv.id}`}
+                  to={`/designer/chat/${conv.id}`}
                   className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#E76F51]/30 hover:bg-[#FFF9F5] transition-all"
                 >
                   <div className="relative flex-shrink-0">

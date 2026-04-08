@@ -35,39 +35,72 @@ export default function Conversation() {
 
     const initializeConversation = async () => {
       try {
-        // Fetch designer info from Firestore
-        const designerRef = doc(db, "users", id);
-        const designerSnap = await getDoc(designerRef);
+        // First, check if id is a conversation ID (contains underscore) or a user ID
+        const isConversationId = id.includes("_");
+        let otherParticipantId = null;
+        let conversationId = null;
+
+        if (isConversationId) {
+          // id is a conversation ID - fetch the conversation to get the other participant
+          conversationId = id;
+          const convRef = doc(db, "conversations", conversationId);
+          const convSnap = await getDoc(convRef);
+
+          if (!convSnap.exists()) {
+            setError("Conversation not found");
+            setLoading(false);
+            return;
+          }
+
+          const convData = convSnap.data();
+          otherParticipantId = convData.participants?.find(p => p !== currentUser.uid);
+
+          if (!otherParticipantId) {
+            setError("Invalid conversation");
+            setLoading(false);
+            return;
+          }
+        } else {
+          // id is a user ID - create/get conversation with this user
+          otherParticipantId = id;
+          const [sortedId1, sortedId2] = [currentUser.uid, otherParticipantId].sort();
+          conversationId = `${sortedId1}_${sortedId2}`;
+        }
+
+        // Fetch the other participant's info from Firestore
+        const userRef = doc(db, "users", otherParticipantId);
+        const userSnap = await getDoc(userRef);
         
-        if (!designerSnap.exists()) {
-          setError("Designer not found");
+        if (!userSnap.exists()) {
+          setError("User not found");
           setLoading(false);
           return;
         }
 
-        const designerData = designerSnap.data();
+        const userData = userSnap.data();
         setDesigner({
-          id: id,
-          name: designerData.name || designerData.businessName || "Designer",
-          avatar: designerData.avatar || designerData.profilePicture || "",
-          bio: designerData.bio || "",
-          rating: designerData.rating || 4.5,
-          location: designerData.location || ""
+          id: otherParticipantId,
+          name: userData.name || userData.businessName || "Designer",
+          avatar: userData.avatar || userData.profilePicture || "",
+          bio: userData.bio || "",
+          rating: userData.rating || 4.5,
+          location: userData.location || ""
         });
         
-        // Create or get conversation with real designer name
+        // Create or get conversation with the correct participant info
         const convResult = await createConversation(
           currentUser.uid,
-          id,
+          otherParticipantId,
           userProfile.name || currentUser.displayName || "Customer",
-          designerData.name || designerData.businessName || "Designer"
+          userData.name || userData.businessName || "Designer"
         );
 
         if (convResult.success) {
-          setConversationId(convResult.conversationId);
+          const finalConversationId = convResult.conversationId;
+          setConversationId(finalConversationId);
 
           // Subscribe to real-time messages after conversation is created
-          const unsubscribeFn = subscribeToMessages(convResult.conversationId, (result) => {
+          const unsubscribeFn = subscribeToMessages(finalConversationId, (result) => {
             setLoading(false);
             if (result.success) {
               setMessages(result.messages);

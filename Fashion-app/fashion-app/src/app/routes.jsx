@@ -74,6 +74,7 @@ export const router = createBrowserRouter([
   { path: "/designer/order/:orderId", element: designerRoute(<DesignerOrderDetail />) },
   { path: "/designer/progress", element: designerRoute(<DesignerProgress />) },
   { path: "/designer/messages", element: designerRoute(<DesignerMessages />) },
+  { path: "/designer/chat/:id", element: designerRoute(<Conversation />) },
   { path: "/designer/notifications", element: designerRoute(<DesignerNotifications />) },
   { path: "/designer/measurements", element: designerRoute(<DesignerMeasurements />) },
   { path: "/designer/settings", element: designerRoute(<DesignerDashboard />) },
