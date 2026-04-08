@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { User, Mail, Phone, MapPin, Edit2, Save, X, LogOut, Heart, Upload } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { User, Mail, Phone, MapPin, Edit2, Save, X, LogOut, Heart, Upload, Settings } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { useAuth } from "../hooks/useAuth";
 import { getCustomerProfile, updateCustomerProfile, getFavoriteDesigners } from "../utils/customerUtils";
@@ -10,6 +10,7 @@ import NotificationBell from "../components/NotificationBell";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [favorites, setFavorites] = useState([]);
@@ -19,6 +20,7 @@ export default function CustomerProfile() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const isSettingsView = location.pathname.includes("/settings");
 
   const [formData, setFormData] = useState({
     displayName: "",
@@ -163,10 +165,21 @@ export default function CustomerProfile() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center gap-3">
             <div>
-              <h1 className="text-3xl font-bold">My Profile</h1>
+              <h1 className="text-3xl font-bold flex items-center gap-2">
+                <Settings size={28} /> {isSettingsView ? "Settings" : "My Profile"}
+              </h1>
               <p className="text-white/80 mt-1">Customer Account</p>
             </div>
             <div className="flex items-center gap-2">
+              {!isSettingsView && (
+                <Link
+                  to="/customer/settings"
+                  className="p-2 rounded-lg bg-white text-[#E76F51] hover:bg-gray-100 transition"
+                  aria-label="Open settings"
+                >
+                  <Settings size={18} />
+                </Link>
+              )}
               <NotificationBell />
               {!isEditing && (
                 <button
