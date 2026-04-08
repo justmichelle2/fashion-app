@@ -145,6 +145,7 @@ export default function Chat() {
         </div>
       )}
 
+    import BottomNav from "../components/BottomNav";
       <BottomNav />
     </div>
   );

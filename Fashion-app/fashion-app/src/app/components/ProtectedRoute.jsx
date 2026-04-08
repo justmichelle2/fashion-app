@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-export function ProtectedRoute({ children, allowedRole }) {
+export function ProtectedRoute({ children, allowedRole, loginPath = "/login", fallbackPath }) {
   const { currentUser, userProfile, loading } = useAuth();
 
   if (loading) {
@@ -16,19 +16,20 @@ export function ProtectedRoute({ children, allowedRole }) {
   }
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={loginPath} replace />;
   }
 
   if (allowedRole && userProfile?.userType !== allowedRole) {
-    const fallbackPath =
-      userProfile?.userType === "designer"
-        ? "/designer/dashboard"
+    const roleFallback =
+      fallbackPath ||
+      (userProfile?.userType === "designer"
+        ? "/designer/home"
         : userProfile?.userType === "admin"
         ? "/admin"
         : userProfile?.userType === "customer"
         ? "/customer/home"
-        : "/customer/login";
-    return <Navigate to={fallbackPath} replace />;
+        : loginPath);
+    return <Navigate to={roleFallback} replace />;
   }
 
   return children;

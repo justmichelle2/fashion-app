@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, MessageSquare, AlertCircle, CheckCircle } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { getDesignerProfile, createBookingInquiry } from "../utils/customerUtils";
-import BottomNav from "../components/BottomNav";
 
 export default function BookTailoring() {
   const { designerId } = useParams();
@@ -283,7 +282,6 @@ export default function BookTailoring() {
             </div>
           </div>
         </div>
-        <BottomNav />
       </div>
     );
   }
@@ -358,7 +356,6 @@ export default function BookTailoring() {
             </div>
           </div>
         </div>
-        <BottomNav />
       </div>
     );
   }

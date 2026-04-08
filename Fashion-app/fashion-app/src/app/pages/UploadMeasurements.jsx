@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Upload, Save, ArrowLeft, AlertCircle } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { uploadCustomerMeasurements } from "../utils/customerUtils";
-import BottomNav from "../components/BottomNav";
 
 export default function UploadMeasurements() {
   const navigate = useNavigate();
@@ -213,7 +212,6 @@ export default function UploadMeasurements() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
   );
 }

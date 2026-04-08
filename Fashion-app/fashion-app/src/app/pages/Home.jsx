@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Bell, Upload, Users, Star, Search, Package } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { getUserOrders } from "../utils/orderUtils";
-import BottomNav from "../components/BottomNav";
 import ImageWithFallback from "../components/figma/ImageWithFallback";
 
 export default function Home() {
@@ -247,7 +246,6 @@ export default function Home() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
   );
 }

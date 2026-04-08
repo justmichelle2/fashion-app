@@ -6,7 +6,6 @@ import { useAuth } from "../hooks/useAuth";
 import { getCustomerProfile, updateCustomerProfile, getFavoriteDesigners } from "../utils/customerUtils";
 import { handleLogout } from "../utils/authUtils";
 import { uploadProfilePicture } from "../utils/storageService";
-import BottomNav from "../components/BottomNav";
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -396,7 +395,6 @@ export default function CustomerProfile() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
   );
 }

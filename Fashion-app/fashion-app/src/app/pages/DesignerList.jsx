@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Star, Filter, Search, TrendingUp, Award, Clock, ChevronDown, X } from "lucide-react";
-import { BottomNav } from "../components/BottomNav";
 import { useState, useEffect } from "react";
 import { 
   getAllDesigners, 
@@ -434,7 +433,6 @@ export default function DesignerList() {
         </div>
       )}
 
-      <BottomNav />
     </div>
     </div>
   );
