@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerProgress() {
   const navigate = useNavigate();
@@ -117,7 +116,6 @@ export default function DesignerProgress() {
           </div>
         </div>
       </div>
-      <BottomNav />
     </div>
   );
 }

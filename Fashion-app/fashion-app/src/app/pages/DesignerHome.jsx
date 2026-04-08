@@ -3,7 +3,6 @@ import { Bell, TrendingUp, Package, MessageCircle, Star, Clock, CheckCircle, Che
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerHome() {
   const navigate = useNavigate();

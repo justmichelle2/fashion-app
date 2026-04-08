@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload, Trash2, AlertCircle, CheckCircle } from "lucide-react";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerPortfolio() {
   const navigate = useNavigate();
@@ -253,7 +252,6 @@ export default function DesignerPortfolio() {
         )}
       </div>
 
-      <BottomNav />
     </div>
   );
 }

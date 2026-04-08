@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Edit2, Trash2 } from "lucide-react";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerMeasurements() {
   const navigate = useNavigate();
@@ -126,7 +125,6 @@ export default function DesignerMeasurements() {
           </div>
         </div>
       </div>
-      <BottomNav />
     </div>
   );
 }

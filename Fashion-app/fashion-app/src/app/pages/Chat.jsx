@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import { BottomNav } from "../components/BottomNav";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { getUserConversations, searchConversations } from "../utils/chatService";
 import { mockMessages } from "../data/mockData";
@@ -145,8 +144,6 @@ export default function Chat() {
         </div>
       )}
 
-    import BottomNav from "../components/BottomNav";
-      <BottomNav />
     </div>
   );
 }

@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Search } from "lucide-react";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerMessages() {
   const navigate = useNavigate();
@@ -132,7 +131,6 @@ export default function DesignerMessages() {
           )}
         </div>
       </div>
-      <BottomNav />
     </div>
   );
 }

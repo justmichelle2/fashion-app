@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Star, MessageCircle, Heart } from "lucide-react";
-import { BottomNav } from "../components/BottomNav";
 import { mockDesigners } from "../data/mockData";
 
 export default function DesignerProfile() {
@@ -166,7 +165,6 @@ export default function DesignerProfile() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
     </div>
   );

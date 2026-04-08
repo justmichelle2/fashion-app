@@ -134,7 +134,7 @@ export default function DesignerDashboard() {
       {/* Clean Header */}
       <div className="bg-white px-6 py-6 border-b border-gray-100">
         <div className="flex items-center justify-between mb-6">
-          <Link to="/home" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
+          <Link to="/designer/home" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
             <ArrowLeft size={24} className="text-[#2D2D2D]" />
           </Link>
           <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>

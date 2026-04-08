@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import BottomNav from "../components/BottomNav";
 
 export default function DesignerOrders() {
   const navigate = useNavigate();
@@ -134,7 +133,6 @@ export default function DesignerOrders() {
           </div>
         </div>
       </div>
-      <BottomNav />
     </div>
   );
 }
