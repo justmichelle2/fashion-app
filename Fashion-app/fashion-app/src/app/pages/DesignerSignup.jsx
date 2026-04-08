@@ -1,8 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, Briefcase, MapPin, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, Phone, Briefcase, MapPin, ArrowLeft, Check } from "lucide-react";
 import { useState } from "react";
 import logo from "../../assets/logo.png";
 import { signupDesigner } from "../services/signupApi";
+
+const SPECIALTY_OPTIONS = [
+  "Wedding Dress",
+  "Casual Wear",
+  "Formal Wear",
+  "Evening Gown",
+  "Saree",
+  "Kurti",
+  "Lehenga",
+  "Suits",
+  "Bridal",
+  "Kids Fashion",
+  "Menswear",
+  "Tailoring"
+];
 
 export default function DesignerSignup() {
   const navigate = useNavigate();
@@ -12,6 +27,7 @@ export default function DesignerSignup() {
     email: "",
     phone: "",
     location: "",
+    specialties: [],
     password: "",
     confirmPassword: "",
     terms: false,
@@ -27,12 +43,26 @@ export default function DesignerSignup() {
     }));
   };
 
+  const toggleSpecialty = (specialty) => {
+    setFormData((prev) => {
+      const specialties = prev.specialties.includes(specialty)
+        ? prev.specialties.filter(s => s !== specialty)
+        : [...prev.specialties, specialty];
+      return { ...prev, specialties };
+    });
+  };
+
   const handleDesignerSignup = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!formData.businessName || !formData.fullName || !formData.email || !formData.password) {
       setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (formData.specialties.length === 0) {
+      setError("Please select at least one specialty.");
       return;
     }
 
@@ -62,6 +92,7 @@ export default function DesignerSignup() {
         businessName: formData.businessName,
         phone: formData.phone,
         location: formData.location,
+        specialties: formData.specialties,
       });
       console.log("Designer signup backend response:", response);
 
@@ -196,6 +227,31 @@ export default function DesignerSignup() {
                     disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
+                </div>
+              </div>
+
+              {/* Specialties */}
+              <div>
+                <label className="block text-[#2D2D2D] mb-3 text-sm font-semibold">
+                  Specialties (Select at least one)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {SPECIALTY_OPTIONS.map((specialty) => (
+                    <button
+                      key={specialty}
+                      type="button"
+                      onClick={() => toggleSpecialty(specialty)}
+                      disabled={loading}
+                      className={`p-3 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                        formData.specialties.includes(specialty)
+                          ? "bg-[#E76F51] text-white border border-[#E76F51]"
+                          : "bg-[#FAFAF8] text-[#2D2D2D] border border-[#E76F51]/20 hover:border-[#E76F51]/50"
+                      } disabled:opacity-60 disabled:cursor-not-allowed`}
+                    >
+                      {formData.specialties.includes(specialty) && <Check size={16} />}
+                      {specialty}
+                    </button>
+                  ))}
                 </div>
               </div>
 

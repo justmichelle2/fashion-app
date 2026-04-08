@@ -83,6 +83,7 @@ export default function DesignerList() {
           results = data.designers;
         }
 
+        console.log("[DesignerList] Loaded designers:", results.length, results);
         setDesigners(results);
       } catch (err) {
         console.error("Error loading designers:", err);

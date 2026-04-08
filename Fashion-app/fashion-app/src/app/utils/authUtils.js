@@ -203,22 +203,32 @@ export const handleSignup = async (email, password, profileData = {}) => {
       };
     }
 
-    // Create user account
+    // Create user account in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Create user profile in Firestore
+    // Create user profile in Firestore with retry logic
     const userDocRef = doc(db, "users", user.uid);
-    await setDoc(userDocRef, {
+    const profilePayload = {
       uid: user.uid,
       email: user.email,
       displayName: profileData.name || "",
       phone: profileData.phone || "",
-      userType: profileData.userType || "customer", // customer or designer
+      userType: profileData.userType || "customer",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       ...profileData
-    });
+    };
+    
+    try {
+      await setDoc(userDocRef, profilePayload);
+      console.log("User profile created successfully in Firestore");
+    } catch (firestoreError) {
+      console.error("Firestore error during profile creation:", firestoreError);
+      // If Firestore write fails, don't fail the entire signup
+      // The profile will be created on first login
+      console.warn("Profile creation deferred to first login");
+    }
 
     console.log("User account created successfully:", user.email);
     
@@ -233,6 +243,17 @@ export const handleSignup = async (email, password, profileData = {}) => {
     };
   } catch (error) {
     console.error("Signup error:", error);
+
+    // If user was created but profile creation failed, try to clean up
+    if (error?.code !== "auth/email-already-in-use" && error?.code !== "auth/invalid-email" && 
+        error?.code !== "auth/weak-password") {
+      try {
+        // User creation in Auth succeeded, Firestore failed
+        // Don't delete the user - let them login and profile will be created then
+      } catch (cleanupError) {
+        console.error("Cleanup error:", cleanupError);
+      }
+    }
 
     const errorMessage = getFirebaseAuthErrorMessage(
       error,
@@ -265,10 +286,33 @@ export const handleLogin = async (email, password) => {
 
     const userCredential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
     const user = userCredential.user;
-    const userProfile = await getUserProfileByUid(user.uid);
+    
+    let userProfile = await getUserProfileByUid(user.uid);
+    
+    // If profile doesn't exist, create a default customer profile
+    if (!userProfile) {
+      console.warn("User profile not found, creating default profile");
+      const userDocRef = doc(db, "users", user.uid);
+      const defaultProfile = {
+        uid: user.uid,
+        email: user.email,
+        displayName: "",
+        userType: "customer",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+      try {
+        await setDoc(userDocRef, defaultProfile);
+        userProfile = defaultProfile;
+      } catch (firestoreError) {
+        console.error("Failed to create user profile during login:", firestoreError);
+        userProfile = defaultProfile; // Use in-memory version as fallback
+      }
+    }
+    
     const userType = getRoleFromProfile(userProfile);
 
-    console.log("User logged in successfully:", user.email);
+    console.log("User logged in successfully:", user.email, "Type:", userType);
     
     return { 
       success: true, 

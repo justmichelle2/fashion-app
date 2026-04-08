@@ -20,19 +20,24 @@ export default function Login() {
       const result = await handleLogin(email, password);
       
       if (result.success) {
-        if (result.user?.userType !== "customer") {
+        console.log("Login result:", result.user);
+        
+        if (result.user?.userType && result.user.userType !== "customer") {
           await handleLogout();
           setError("This login is for customers only. Please use the designer login page.");
+          setLoading(false);
           return;
         }
-        console.log("Customer login successful");
+        
+        console.log("Customer login successful, redirecting...");
         navigate("/customer/home", { replace: true });
       } else {
-        setError(result.error || "Login failed");
+        setError(result.error || "Login failed. Please try again.");
+        setLoading(false);
       }
     } catch (err) {
-      setError(err.message || "An error occurred during login");
-    } finally {
+      console.error("Login exception:", err);
+      setError(err.message || "An unexpected error occurred during login");
       setLoading(false);
     }
   };
@@ -45,19 +50,24 @@ export default function Login() {
       const result = await handleGoogleSignIn();
       
       if (result.success) {
-        if (result.user?.userType !== "customer") {
+        console.log("Google login result:", result.user);
+        
+        if (result.user?.userType && result.user.userType !== "customer") {
           await handleLogout();
           setError("This login is for customers only. Please use the designer login page.");
+          setLoading(false);
           return;
         }
-        console.log("Customer Google login successful");
+        
+        console.log("Customer Google login successful, redirecting...");
         navigate("/customer/home", { replace: true });
       } else {
-        setError(result.error || "Google sign-in failed");
+        setError(result.error || "Google sign-in failed. Please try again.");
+        setLoading(false);
       }
     } catch (err) {
-      setError(err.message || "An error occurred during Google sign-in");
-    } finally {
+      console.error("Google login exception:", err);
+      setError(err.message || "An unexpected error occurred during Google sign-in");
       setLoading(false);
     }
   };

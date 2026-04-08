@@ -32,7 +32,7 @@ export async function signupCustomer(payload) {
 }
 
 export async function signupDesigner(payload) {
-  const { email, password, name, businessName, phone, location } = payload;
+  const { email, password, name, businessName, phone, location, specialties = [] } = payload;
 
   try {
     // Create Firebase Auth user
@@ -50,8 +50,9 @@ export async function signupDesigner(payload) {
       email,
       phone: phone || "",
       location: location || "",
+      specialties: specialties || [],
       userType: "designer",
-      rating: 0,
+      rating: 5,
       reviewCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
