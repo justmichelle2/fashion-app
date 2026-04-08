@@ -6,10 +6,10 @@ export function CustomerNav() {
 
   const navItems = [
     { icon: Home, label: "Home", path: "/customer/home" },
-    { icon: Users, label: "Designers", path: "/designers" },
-    { icon: Package, label: "Orders", path: "/orders" },
-    { icon: MessageCircle, label: "Chat", path: "/chat" },
-    { icon: User, label: "Profile", path: "/profile" },
+    { icon: Users, label: "Designers", path: "/customer/designers" },
+    { icon: Package, label: "Orders", path: "/customer/orders" },
+    { icon: MessageCircle, label: "Chat", path: "/customer/chat" },
+    { icon: User, label: "Profile", path: "/customer/profile" },
   ];
 
   return (
