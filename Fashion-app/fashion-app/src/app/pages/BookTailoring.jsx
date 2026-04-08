@@ -3,10 +3,40 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, AlertCircle, Upload, Image as ImageIcon, X } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { getDesignerById } from "../services/designerService";
-import { createNotification, NOTIFICATION_TYPES } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { uploadImage } from "../utils/storageService";
+
+const INITIAL_FORM_DATA = {
+  title: "",
+  description: "",
+  garmentType: "custom",
+  budget: "",
+  preferredDeadline: "",
+  specifications: {
+    color: "",
+    fabric: "",
+    style: "",
+    additionalNotes: "",
+  },
+};
+
+const parseBookingApiResponse = async (response) => {
+  const isJson = (response.headers.get("content-type") || "").includes("application/json");
+  const payload = isJson ? await response.json() : await response.text();
+
+  if (!response.ok) {
+    const message =
+      typeof payload === "object" && payload?.error
+        ? payload.error
+        : typeof payload === "string" && payload
+        ? payload
+        : "Booking request failed";
+    throw new Error(message);
+  }
+
+  return payload;
+};
 
 export default function BookTailoring() {
   const { designerId } = useParams();
@@ -19,23 +49,12 @@ export default function BookTailoring() {
   const [uploadingInspo, setUploadingInspo] = useState(false);
   const [designer, setDesigner] = useState(null);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [successId, setSuccessId] = useState("");
   const [inspoFiles, setInspoFiles] = useState([]);
   const [inspoPreviewNames, setInspoPreviewNames] = useState([]);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    garmentType: "custom",
-    budget: "",
-    preferredDeadline: "",
-    specifications: {
-      color: "",
-      fabric: "",
-      style: "",
-      additionalNotes: "",
-    },
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   useEffect(() => {
     if (!currentUser) {
@@ -84,6 +103,7 @@ export default function BookTailoring() {
       }));
     }
     setError("");
+    setSuccessMessage("");
   };
 
   const handleInspoFilesChange = (e) => {
@@ -98,12 +118,19 @@ export default function BookTailoring() {
     setInspoFiles(files);
     setInspoPreviewNames(files.map((file) => file.name));
     setError("");
+    setSuccessMessage("");
   };
 
   const removeInspoFile = (fileIndex) => {
     const nextFiles = inspoFiles.filter((_, index) => index !== fileIndex);
     setInspoFiles(nextFiles);
     setInspoPreviewNames(nextFiles.map((file) => file.name));
+  };
+
+  const resetBookingForm = () => {
+    setFormData(INITIAL_FORM_DATA);
+    setInspoFiles([]);
+    setInspoPreviewNames([]);
   };
 
   const uploadInspirationImages = async () => {
@@ -163,14 +190,34 @@ export default function BookTailoring() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!currentUser?.uid) {
+      setError("Please log in to submit a booking request.");
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
 
     setSubmitting(true);
     setError("");
+    setSuccessMessage("");
 
     try {
+      // Validate request against API contract before writing booking records.
+      await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: currentUser.uid,
+          designerId,
+          title: formData.title,
+          description: formData.description,
+          budget: parseFloat(formData.budget),
+          preferredDeadline: formData.preferredDeadline,
+        }),
+      }).then(parseBookingApiResponse);
+
       const uploadedInspirationImages = await uploadInspirationImages();
 
       const orderRef = collection(db, "orders");
@@ -213,6 +260,8 @@ export default function BookTailoring() {
       });
 
       setSuccessId(orderDocRef.id);
+      setSuccessMessage("Booking submitted successfully.");
+      resetBookingForm();
       setStep("success");
     } catch (err) {
       console.error("Error creating booking inquiry:", err);
@@ -259,6 +308,12 @@ export default function BookTailoring() {
             Your inquiry has been sent to {designer?.businessName || designer?.name}. 
             They will review it and respond within 24 hours.
           </p>
+
+          {successMessage && (
+            <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+              {successMessage}
+            </div>
+          )}
 
           <div className="bg-[#EAB308]/10 border border-[#EAB308] rounded-lg p-4 mb-6">
             <p className="text-sm text-[#2D2D2D] mb-1 font-semibold">Inquiry ID</p>

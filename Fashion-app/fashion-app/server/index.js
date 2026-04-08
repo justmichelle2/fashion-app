@@ -12,6 +12,11 @@ app.use(express.json());
 
 const isValidEmail = (email) => /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email);
 const hasMinPasswordLength = (password) => typeof password === "string" && password.length >= 6;
+const hasValidDate = (value) => {
+  if (!value) return false;
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime());
+};
 
 const buildValidationError = (details) => ({
   success: false,
@@ -209,6 +214,49 @@ async function signupHandler(req, res, role) {
 
 app.post("/api/customer/signup", (req, res) => signupHandler(req, res, "customer"));
 app.post("/api/designer/signup", (req, res) => signupHandler(req, res, "designer"));
+
+app.post("/api/bookings", (req, res) => {
+  try {
+    const {
+      customerId = "",
+      designerId = "",
+      title = "",
+      description = "",
+      budget,
+      preferredDeadline,
+    } = req.body || {};
+
+    const details = {};
+
+    if (!String(customerId).trim()) details.customerId = "Customer ID is required.";
+    if (!String(designerId).trim()) details.designerId = "Designer ID is required.";
+    if (!String(title).trim()) details.title = "Project title is required.";
+    if (!String(description).trim()) details.description = "Project description is required.";
+
+    const numericBudget = Number(budget);
+    if (!Number.isFinite(numericBudget) || numericBudget <= 0) {
+      details.budget = "Budget must be a valid positive number.";
+    }
+
+    if (!hasValidDate(preferredDeadline)) {
+      details.preferredDeadline = "Preferred deadline must be a valid date.";
+    }
+
+    if (Object.keys(details).length > 0) {
+      return res.status(400).json(buildValidationError(details));
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Booking request validated successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to process booking request.",
+    });
+  }
+});
 
 app.listen(port, () => {
   console.log(`API server running on http://localhost:${port}`);
