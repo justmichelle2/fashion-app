@@ -3,10 +3,23 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, AlertCircle, Upload, Image as ImageIcon, X } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { getDesignerById } from "../services/designerService";
-import { createNotification, NOTIFICATION_TYPES } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { uploadImage } from "../utils/storageService";
+
+const INITIAL_FORM_DATA = {
+  title: "",
+  description: "",
+  garmentType: "custom",
+  budget: "",
+  preferredDeadline: "",
+  specifications: {
+    color: "",
+    fabric: "",
+    style: "",
+    additionalNotes: "",
+  },
+};
 
 export default function BookTailoring() {
   const { designerId } = useParams();
@@ -19,23 +32,12 @@ export default function BookTailoring() {
   const [uploadingInspo, setUploadingInspo] = useState(false);
   const [designer, setDesigner] = useState(null);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [successId, setSuccessId] = useState("");
   const [inspoFiles, setInspoFiles] = useState([]);
   const [inspoPreviewNames, setInspoPreviewNames] = useState([]);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    garmentType: "custom",
-    budget: "",
-    preferredDeadline: "",
-    specifications: {
-      color: "",
-      fabric: "",
-      style: "",
-      additionalNotes: "",
-    },
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   useEffect(() => {
     if (!currentUser) {
@@ -84,6 +86,7 @@ export default function BookTailoring() {
       }));
     }
     setError("");
+    setSuccessMessage("");
   };
 
   const handleInspoFilesChange = (e) => {
@@ -98,6 +101,7 @@ export default function BookTailoring() {
     setInspoFiles(files);
     setInspoPreviewNames(files.map((file) => file.name));
     setError("");
+    setSuccessMessage("");
   };
 
   const removeInspoFile = (fileIndex) => {
@@ -106,32 +110,44 @@ export default function BookTailoring() {
     setInspoPreviewNames(nextFiles.map((file) => file.name));
   };
 
-  const uploadInspirationImages = async () => {
-    if (!inspoFiles.length || !currentUser?.uid) {
-      return [];
-    }
-
-    setUploadingInspo(true);
-    const uploaded = [];
-
-    try {
-      for (const file of inspoFiles) {
-        const result = await uploadImage(file, `orders/inspiration/${currentUser.uid}/${designerId}`);
-        if (!result.success) {
-          throw new Error(result.error || "Failed to upload inspiration image");
-        }
-
-        uploaded.push({
-          url: result.url,
-          fileName: result.fileName,
-        });
-      }
-
-      return uploaded;
-    } finally {
-      setUploadingInspo(false);
-    }
+  const resetBookingForm = () => {
+    setFormData(INITIAL_FORM_DATA);
+    setInspoFiles([]);
+    setInspoPreviewNames([]);
   };
+
+  // Image uploads disabled due to Firebase Storage CORS issues
+  // To be implemented with server-side backend in future
+  // const uploadInspirationImages = async () => {
+  //   if (!inspoFiles.length || !currentUser?.uid) {
+  //     return [];
+  //   }
+  //
+  //   setUploadingInspo(true);
+  //   const uploaded = [];
+  //
+  //   try {
+  //     for (const file of inspoFiles) {
+  //       try {
+  //         const result = await uploadImage(file, `orders/inspiration/${currentUser.uid}/${designerId}`);
+  //         if (result.success) {
+  //           uploaded.push({
+  //             url: result.url,
+  //             fileName: result.fileName,
+  //           });
+  //         } else {
+  //           console.warn("Failed to upload inspiration image:", result.error);
+  //         }
+  //       } catch (err) {
+  //         console.warn("Error uploading inspiration image:", err);
+  //       }
+  //     }
+  //
+  //     return uploaded;
+  //   } finally {
+  //     setUploadingInspo(false);
+  //   }
+  // };
 
   const validateForm = () => {
     if (!formData.title.trim()) {
@@ -163,16 +179,30 @@ export default function BookTailoring() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!currentUser?.uid) {
+      setError("Please log in to submit a booking request.");
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
 
     setSubmitting(true);
     setError("");
+    setSuccessMessage("");
 
     try {
-      const uploadedInspirationImages = await uploadInspirationImages();
+      console.log("Starting booking submission...");
+      
+      // Skip image uploads due to CORS issues - will implement server-side upload later
+      const uploadedInspirationImages = [];
+      if (inspoFiles.length > 0) {
+        console.log("Image uploads skipped (will implement server upload later)");
+      }
 
+      // Create order
+      console.log("Creating order in Firestore...");
       const orderRef = collection(db, "orders");
       const orderDocRef = await addDoc(orderRef, {
         customerId: currentUser.uid,
@@ -192,7 +222,10 @@ export default function BookTailoring() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      console.log("Order created with ID:", orderDocRef.id);
 
+      // Create booking inquiry
+      console.log("Creating booking inquiry...");
       const inquiryRef = collection(db, "bookingInquiries");
       await addDoc(inquiryRef, {
         customerId: currentUser.uid,
@@ -211,12 +244,15 @@ export default function BookTailoring() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      console.log("Booking inquiry created successfully");
 
       setSuccessId(orderDocRef.id);
+      setSuccessMessage("Booking submitted successfully.");
+      resetBookingForm();
       setStep("success");
     } catch (err) {
       console.error("Error creating booking inquiry:", err);
-      setError(err.message || "Failed to create booking inquiry");
+      setError(err.message || "Failed to create booking inquiry. Please check browser console for details.");
     } finally {
       setSubmitting(false);
     }
@@ -259,6 +295,12 @@ export default function BookTailoring() {
             Your inquiry has been sent to {designer?.businessName || designer?.name}. 
             They will review it and respond within 24 hours.
           </p>
+
+          {successMessage && (
+            <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+              {successMessage}
+            </div>
+          )}
 
           <div className="bg-[#EAB308]/10 border border-[#EAB308] rounded-lg p-4 mb-6">
             <p className="text-sm text-[#2D2D2D] mb-1 font-semibold">Inquiry ID</p>
