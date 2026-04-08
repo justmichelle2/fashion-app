@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, LayoutDashboard, Package } from "lucide-react";
+import { Home, LayoutGrid, LayoutDashboard, Package, MessageCircle } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export function DesignerNav() {
@@ -9,6 +9,7 @@ export function DesignerNav() {
     { icon: LayoutGrid, label: "Portfolio", path: "/designer/portfolio" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/designer/dashboard" },
     { icon: Package, label: "Orders", path: "/designer/orders" },
+    { icon: MessageCircle, label: "Messages", path: "/designer/messages" },
   ];
 
   return (
