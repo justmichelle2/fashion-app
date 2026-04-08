@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet, Ruler, LogOut } from "lucide-react";
+import { ArrowLeft, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet, Ruler, LogOut, Bell } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import CustomerMeasurements from "../components/CustomerMeasurements";
+import { NotificationCenter } from "../components/NotificationCenter";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
+import { getUnreadCount } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, getDocs, limit } from "firebase/firestore";
 
@@ -15,6 +17,8 @@ export default function DesignerDashboard() {
   const [activeOrders, setActiveOrders] = useState([]);
   const [incomingOrders, setIncomingOrders] = useState([]);
   const [customerMessages, setCustomerMessages] = useState([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogoutClick = async () => {
     try {
@@ -24,6 +28,18 @@ export default function DesignerDashboard() {
       console.error("Logout failed:", err);
     }
   };
+
+  const loadUnreadCount = async () => {
+    try {
+      if (currentUser?.uid) {
+        const count = await getUnreadCount(currentUser.uid);
+        setUnreadCount(count);
+      }
+    } catch (err) {
+      console.error("Failed to load unread count:", err);
+    }
+  };
+
   const [weeklyEarnings, setWeeklyEarnings] = useState([
     { day: "Mon", amount: 0 },
     { day: "Tue", amount: 0 },
@@ -116,6 +132,11 @@ export default function DesignerDashboard() {
     };
 
     fetchDashboardData();
+    loadUnreadCount();
+    
+    // Refresh unread count every 30 seconds
+    const interval = setInterval(() => loadUnreadCount(), 30000);
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   const maxEarnings = Math.max(...weeklyEarnings.map(e => e.amount), 1);
@@ -140,9 +161,22 @@ export default function DesignerDashboard() {
           <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>
             Dashboard
           </h1>
-          <Link to="/designer-settings" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
-            <Settings size={24} className="text-[#2D2D2D]" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setNotificationOpen(true)}
+              className="p-2 hover:bg-gray-50 rounded-xl transition-all relative"
+            >
+              <Bell size={24} className="text-[#2D2D2D]" />
+              {unreadCount > 0 && (
+                <div className="absolute top-1 right-1 w-5 h-5 bg-[#E76F51] rounded-full border-2 border-white flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{Math.min(unreadCount, 9)}</span>
+                </div>
+              )}
+            </button>
+            <Link to="/designer-settings" className="p-2 hover:bg-gray-50 rounded-xl transition-all">
+              <Settings size={24} className="text-[#2D2D2D]" />
+            </Link>
+          </div>
         </div>
 
         {/* Profile Info */}
@@ -622,6 +656,18 @@ export default function DesignerDashboard() {
           <LogOut size={20} /> Logout
         </button>
       </div>
+
+      {/* Notification Center */}
+      {currentUser && (
+        <NotificationCenter 
+          userId={currentUser.uid}
+          isOpen={notificationOpen}
+          onClose={() => {
+            setNotificationOpen(false);
+            loadUnreadCount(); // Refresh count when closed
+          }}
+        />
+      )}
     </div>
       )}
     </div>

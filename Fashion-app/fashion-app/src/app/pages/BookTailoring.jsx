@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, AlertCircle } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { getDesignerById } from "../services/designerService";
+import { createNotification, NOTIFICATION_TYPES } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { BottomNav } from "../components/BottomNav";
@@ -135,6 +136,28 @@ export default function BookTailoring() {
         status: "pending",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+      });
+
+      // Send notification to designer
+      await createNotification({
+        userId: designerId,
+        type: NOTIFICATION_TYPES.NEW_INQUIRY,
+        title: "New Booking Inquiry",
+        message: `${currentUser.displayName || "Customer"} sent you a booking inquiry: ${formData.title}`,
+        relatedId: docRef.id,
+        relatedType: "booking",
+        priority: "high"
+      });
+
+      // Send notification to customer confirming submission
+      await createNotification({
+        userId: currentUser.uid,
+        type: NOTIFICATION_TYPES.BOOKING_CONFIRMED,
+        title: "Inquiry Submitted",
+        message: `Your booking inquiry has been sent to ${designer?.businessName || designer?.name}`,
+        relatedId: docRef.id,
+        relatedType: "booking",
+        priority: "normal"
       });
 
       setSuccessId(docRef.id);
