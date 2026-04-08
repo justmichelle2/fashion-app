@@ -61,10 +61,10 @@ export default function DesignerMessages() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-50 pb-20 overflow-hidden">
+      <div className="max-w-2xl mx-auto h-[calc(100vh-5rem)] flex flex-col">
         {/* Header */}
-        <div className="bg-white border-b border-gray-100 sticky top-0 px-6 py-4">
+        <div className="bg-white border-b border-gray-100 sticky top-0 z-30 px-6 py-4 flex-shrink-0">
           <div className="flex items-center gap-3 mb-4">
             <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-lg transition">
               <ArrowLeft size={20} className="text-[#2D2D2D]" />
@@ -88,7 +88,7 @@ export default function DesignerMessages() {
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 overscroll-contain">
           {filteredConversations.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-[#4B5563]">No conversations found</p>
