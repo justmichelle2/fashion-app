@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, CheckCircle2, MessageSquare, ShoppingBag, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const DEFAULT_NOTIFICATIONS = [
   {
@@ -39,7 +40,7 @@ const getIcon = (type) => {
   }
 };
 
-export default function NotificationBell({ unreadCount, notifications, className = "" }) {
+export default function NotificationBell({ unreadCount, notifications, className = "", to = "" }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -68,25 +69,37 @@ export default function NotificationBell({ unreadCount, notifications, className
     };
   }, []);
 
+  const bellButton = (
+    <>
+      <Bell size={24} className="text-[#2D2D2D]" />
+      {badgeCount > 0 && (
+        <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white">
+          {badgeCount > 9 ? "9+" : badgeCount}
+        </span>
+      )}
+    </>
+  );
+
   return (
     <div ref={wrapperRef} className={`relative ${className}`}>
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="relative p-2 hover:bg-gray-50 rounded-xl transition-all"
-        aria-label="Notifications"
-        aria-expanded={open}
-        aria-haspopup="dialog"
-      >
-        <Bell size={24} className="text-[#2D2D2D]" />
-        {badgeCount > 0 && (
-          <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white">
-            {badgeCount > 9 ? "9+" : badgeCount}
-          </span>
-        )}
-      </button>
+      {to ? (
+        <Link to={to} className="relative block p-2 hover:bg-gray-50 rounded-xl transition-all" aria-label="Notifications">
+          {bellButton}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="relative p-2 hover:bg-gray-50 rounded-xl transition-all"
+          aria-label="Notifications"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+        >
+          {bellButton}
+        </button>
+      )}
 
-      {open && (
+      {open && !to && (
         <div className="absolute right-0 top-full z-50 mt-3 w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <div>

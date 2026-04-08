@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, TrendingUp, Package, MessageCircle, MessageSquare, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, Sparkles } from "lucide-react";
+import { TrendingUp, Package, MessageCircle, MessageSquare, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, Sparkles } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
+import NotificationBell from "../components/NotificationBell";
 
 export default function DesignerHome() {
   const navigate = useNavigate();
@@ -26,10 +27,11 @@ export default function DesignerHome() {
               <p className="text-sm text-white/70">Studio Home</p>
               <h1 className="mt-1 text-3xl font-semibold">Welcome, {(userProfile?.name || userProfile?.businessName || "Designer").split(" ")[0]}</h1>
             </div>
-            <Link to="/designer/messages" className="relative rounded-xl bg-white/10 p-2 hover:bg-white/20 transition-all">
-              <Bell size={20} />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-orange-400" />
-            </Link>
+              <NotificationBell
+                to="/designer/notifications"
+                unreadCount={1}
+                className="rounded-xl bg-white/10 hover:bg-white/20"
+              />
           </div>
 
           <p className="text-sm text-white/80">
