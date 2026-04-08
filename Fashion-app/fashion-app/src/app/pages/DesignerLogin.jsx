@@ -1,13 +1,38 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Briefcase, TrendingUp, Users, CheckCircle, ArrowLeft } from "lucide-react";
-import logo from "../../assets/drssed.jpg";
+import { useState } from "react";
+import logo from "../../assets/logo.png";
+import { handleLogin, handleLogout } from "../utils/authUtils";
 
 export default function DesignerLogin() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleDesignerLogin = async (e) => {
     e.preventDefault();
-    navigate("/designer-dashboard");
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await handleLogin(email, password);
+      if (result.success) {
+        if (result.user?.userType !== "designer") {
+          await handleLogout();
+          setError("This login is for designers only. Please use customer login.");
+          return;
+        }
+        navigate("/designer/dashboard", { replace: true });
+      } else {
+        setError(result.error || "Login failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,7 +79,12 @@ export default function DesignerLogin() {
 
           {/* Login Form */}
           <div className="bg-white rounded-2xl p-6 shadow-md mb-6">
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleDesignerLogin} className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
+                  {error}
+                </div>
+              )}
               {/* Business Email Input */}
               <div>
                 <label htmlFor="email" className="block text-[#2D2D2D] mb-2 text-sm font-semibold">
@@ -66,6 +96,9 @@ export default function DesignerLogin() {
                     id="email"
                     type="email"
                     placeholder="designer@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -82,6 +115,9 @@ export default function DesignerLogin() {
                     id="password"
                     type="password"
                     placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -104,9 +140,10 @@ export default function DesignerLogin() {
               {/* Login Button */}
               <button
                 type="submit"
-                className="w-full bg-[#2D2D2D] text-white py-3.5 rounded-lg hover:bg-[#1D1D1D] hover:shadow-lg transition-all font-semibold mt-2"
+                disabled={loading}
+                className="w-full bg-[#2D2D2D] text-white py-3.5 rounded-lg hover:bg-[#1D1D1D] hover:shadow-lg transition-all font-semibold mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Access Dashboard
+                {loading ? "Signing in..." : "Access Dashboard"}
               </button>
             </form>
 
@@ -119,7 +156,7 @@ export default function DesignerLogin() {
 
             {/* Register Link */}
             <Link 
-              to="/designer-signup"
+              to="/designer/signup"
               className="block w-full text-center py-3.5 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-lg transition-all shadow-sm font-semibold"
             >
               Register Your Business

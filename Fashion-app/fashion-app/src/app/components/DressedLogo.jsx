@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import logo from "../../assets/drssed.jpg";
+import logo from "../../assets/logo.png";
 
 const getNumericSize = (value) => (typeof value === "number" ? value : parseFloat(value) || 120);
 

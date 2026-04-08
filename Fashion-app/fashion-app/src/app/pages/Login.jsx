@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import logo from "../../assets/drssed.jpg";
-import { handleLogin, handleGoogleSignIn } from "../utils/authUtils";
+import logo from "../../assets/logo.png";
+import { handleLogin, handleGoogleSignIn, handleLogout } from "../utils/authUtils";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,8 +20,13 @@ export default function Login() {
       const result = await handleLogin(email, password);
       
       if (result.success) {
-        console.log("Login successful");
-        navigate("/home");
+        if (result.user?.userType !== "customer") {
+          await handleLogout();
+          setError("This login is for customers only. Please use the designer login page.");
+          return;
+        }
+        console.log("Customer login successful");
+        navigate("/customer/home", { replace: true });
       } else {
         setError(result.error || "Login failed");
       }
@@ -40,8 +45,13 @@ export default function Login() {
       const result = await handleGoogleSignIn();
       
       if (result.success) {
-        console.log("Google login successful");
-        navigate("/home");
+        if (result.user?.userType !== "customer") {
+          await handleLogout();
+          setError("This login is for customers only. Please use the designer login page.");
+          return;
+        }
+        console.log("Customer Google login successful");
+        navigate("/customer/home", { replace: true });
       } else {
         setError(result.error || "Google sign-in failed");
       }
@@ -148,7 +158,7 @@ export default function Login() {
           {/* Sign Up Link */}
           <div className="text-center mt-8">
             <span className="text-[#6B6B6B] font-medium">Don't have an account? </span>
-            <Link to="/signup" className="text-[#E76F51] font-semibold hover:underline">
+            <Link to="/customer/signup" className="text-[#E76F51] font-semibold hover:underline">
               Sign Up
             </Link>
           </div>

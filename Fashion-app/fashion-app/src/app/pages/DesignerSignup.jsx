@@ -1,13 +1,77 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Phone, Briefcase, MapPin, ArrowLeft } from "lucide-react";
-import logo from "../../assets/drssed.jpg";
+import { useState } from "react";
+import logo from "../../assets/logo.png";
+import { signupDesigner } from "../services/signupApi";
 
 export default function DesignerSignup() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    businessName: "",
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    password: "",
+    confirmPassword: "",
+    terms: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSignup = (e) => {
+  const handleInputChange = (e) => {
+    const { id, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleDesignerSignup = async (e) => {
     e.preventDefault();
-    navigate("/designer-dashboard");
+    setError("");
+
+    if (!formData.businessName || !formData.fullName || !formData.email || !formData.password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+    if (!emailPattern.test(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (!formData.terms) {
+      setError("Please accept the terms and privacy policy.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await signupDesigner({
+        email: formData.email,
+        password: formData.password,
+        name: formData.fullName,
+        businessName: formData.businessName,
+        phone: formData.phone,
+        location: formData.location,
+      });
+      console.log("Designer signup backend response:", response);
+
+      navigate("/designer/dashboard", { replace: true });
+    } catch (err) {
+      console.error("Designer signup failed:", err);
+      setError(err.message || "An error occurred during signup");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,7 +98,12 @@ export default function DesignerSignup() {
 
           {/* Registration Form */}
           <div className="bg-white rounded-2xl p-6 shadow-md mb-6">
-            <form onSubmit={handleSignup} className="space-y-4">
+            <form onSubmit={handleDesignerSignup} className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
+                  {error}
+                </div>
+              )}
               {/* Business Name */}
               <div>
                 <label htmlFor="businessName" className="block text-[#2D2D2D] mb-2 text-sm font-semibold">
@@ -46,6 +115,9 @@ export default function DesignerSignup() {
                     id="businessName"
                     type="text"
                     placeholder="Your fashion business name"
+                    value={formData.businessName}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -62,6 +134,9 @@ export default function DesignerSignup() {
                     id="fullName"
                     type="text"
                     placeholder="Your full name"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -78,6 +153,9 @@ export default function DesignerSignup() {
                     id="email"
                     type="email"
                     placeholder="business@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -94,6 +172,9 @@ export default function DesignerSignup() {
                     id="phone"
                     type="tel"
                     placeholder="+233 XX XXX XXXX"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -110,6 +191,9 @@ export default function DesignerSignup() {
                     id="location"
                     type="text"
                     placeholder="City, Region"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -126,6 +210,9 @@ export default function DesignerSignup() {
                     id="password"
                     type="password"
                     placeholder="Create a strong password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -142,6 +229,9 @@ export default function DesignerSignup() {
                     id="confirmPassword"
                     type="password"
                     placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
@@ -152,6 +242,9 @@ export default function DesignerSignup() {
                 <input
                   type="checkbox"
                   id="terms"
+                  checked={formData.terms}
+                  onChange={handleInputChange}
+                  disabled={loading}
                   className="w-4 h-4 mt-1 rounded border-gray-300 text-[#2D2D2D] focus:ring-[#2D2D2D] cursor-pointer"
                 />
                 <label htmlFor="terms" className="text-xs text-[#6B6B6B] font-medium leading-relaxed">
@@ -163,9 +256,10 @@ export default function DesignerSignup() {
               {/* Register Button */}
               <button
                 type="submit"
-                className="w-full bg-[#2D2D2D] text-white py-3.5 rounded-lg hover:bg-[#1D1D1D] hover:shadow-lg transition-all mt-2 font-semibold"
+                disabled={loading}
+                className="w-full bg-[#2D2D2D] text-white py-3.5 rounded-lg hover:bg-[#1D1D1D] hover:shadow-lg transition-all mt-2 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Create Designer Account
+                {loading ? "Creating account..." : "Create Designer Account"}
               </button>
             </form>
 
@@ -178,7 +272,7 @@ export default function DesignerSignup() {
 
             {/* Login Link */}
             <Link
-              to="/designer-login"
+              to="/designer/login"
               className="block w-full text-center py-3 bg-[#E76F51]/10 hover:bg-[#E76F51]/20 text-[#2D2D2D] rounded-lg transition-all font-semibold"
             >
               Sign In Instead

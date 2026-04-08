@@ -12,9 +12,21 @@ export default function App() {
       console.error("Error caught:", event);
       setHasError(true);
     };
+
+    const handleUnhandledRejection = (event) => {
+      console.error("Unhandled promise rejection:", event.reason);
+      setHasError(true);
+    };
+
+    console.log("App mounted");
     
     window.addEventListener("error", handleError);
-    return () => window.removeEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener("error", handleError);
+      window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+    };
   }, []);
 
   if (hasError) {

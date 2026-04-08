@@ -1,11 +1,58 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, MessageCircle, Scissors, Shirt, Sparkles, Users } from "lucide-react";
+import { ArrowRight, MessageCircle, Scissors, Shirt, Sparkles, Users, X } from "lucide-react";
 import { useState } from "react";
-import logo from "../../assets/drssed.jpg"; // Wait, pages is inside src/app/pages/ so it's ../../assets/drssed.jpg
+import logo from "../../assets/logo.png"; // Wait, pages is inside src/app/pages/ so it's ../../assets/drssed.jpg
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [showRoleSelection, setShowRoleSelection] = useState(false);
+  const [roleSelectionMode, setRoleSelectionMode] = useState(null);
+
+  const roleOptions = {
+    signup: [
+      {
+        title: "Sign up as Customer",
+        description: "Create a customer account to browse and order custom designs",
+        to: "/customer/signup",
+        icon: Shirt,
+        iconBg: "bg-[#E76F51]",
+        iconText: "text-white",
+        chevronText: "text-[#E76F51]",
+        borderClass: "border-[#E76F51]",
+      },
+      {
+        title: "Sign up as Designer",
+        description: "Create a designer account to manage orders and grow your business",
+        to: "/designer/signup",
+        icon: Scissors,
+        iconBg: "bg-[#2D2D2D]",
+        iconText: "text-white",
+        chevronText: "text-[#2D2D2D]",
+        borderClass: "border-[#2D2D2D]",
+      },
+    ],
+    login: [
+      {
+        title: "Sign in as Customer",
+        description: "Continue to your customer home and track your orders",
+        to: "/customer/login",
+        icon: Shirt,
+        iconBg: "bg-[#E76F51]",
+        iconText: "text-white",
+        chevronText: "text-[#E76F51]",
+        borderClass: "border-[#E76F51]",
+      },
+      {
+        title: "Sign in as Designer",
+        description: "Continue to your designer dashboard and manage your business",
+        to: "/designer/login",
+        icon: Scissors,
+        iconBg: "bg-[#2D2D2D]",
+        iconText: "text-white",
+        chevronText: "text-[#2D2D2D]",
+        borderClass: "border-[#2D2D2D]",
+      },
+    ],
+  };
 
   const features = [
     {
@@ -70,77 +117,82 @@ export default function Landing() {
         </div>
 
         <div className="w-full space-y-3 mb-4 mt-auto">
-          {!showRoleSelection ? (
+          {!roleSelectionMode ? (
             <>
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => setRoleSelectionMode("signup")}
                 className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
               >
-                Get Started
+                Sign Up
               </button>
               <button
-                onClick={() => setShowRoleSelection(true)}
+                onClick={() => setRoleSelectionMode("login")}
                 className="w-full h-14 border-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D]/5 rounded-full text-[16px] font-semibold transition-colors"
               >
                 Sign In
               </button>
             </>
           ) : (
-            <div className="space-y-3 animate-fade-in w-full">
-              <p className="text-center text-[#6B6B6B] mb-4 text-[14px]">
-                Choose your account type
-              </p>
-              
-              <button
-                onClick={() => navigate("/login")}
-                className="w-full bg-white border-2 border-[#E76F51] rounded-2xl p-5 hover:bg-[#E76F51]/5 transition-all shadow-sm hover:shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#E76F51] rounded-full flex items-center justify-center">
-                      <Shirt className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="text-[#2D2D2D] mb-1 text-[16px] font-semibold">
-                        I'm a Customer
-                      </h3>
-                      <p className="text-[#6B6B6B] text-[13px]">
-                        Browse and order custom designs
-                      </p>
-                    </div>
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl border border-[#E76F51]/10 overflow-hidden animate-fade-in">
+                <div className="flex items-start justify-between gap-4 p-5 border-b border-gray-100">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[#6B6B6B] font-semibold">
+                      Account selection
+                    </p>
+                    <h2 className="text-xl font-bold text-[#2D2D2D] mt-1">
+                      {roleSelectionMode === "signup" ? "Choose how to sign up" : "Choose how to sign in"}
+                    </h2>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-[#E76F51]" />
+                  <button
+                    onClick={() => setRoleSelectionMode(null)}
+                    className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+                    aria-label="Close role selector"
+                  >
+                    <X className="w-5 h-5 text-[#2D2D2D]" />
+                  </button>
                 </div>
-              </button>
 
-              <button
-                onClick={() => navigate("/designer-login")}
-                className="w-full bg-white border-2 border-[#2D2D2D] rounded-2xl p-5 hover:bg-[#2D2D2D]/5 transition-all shadow-sm hover:shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#2D2D2D] rounded-full flex items-center justify-center">
-                      <Scissors className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="text-[#2D2D2D] mb-1 text-[16px] font-semibold">
-                        I'm a Designer
-                      </h3>
-                      <p className="text-[#6B6B6B] text-[13px]">
-                        Manage orders and grow your business
-                      </p>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-[#2D2D2D]" />
+                <div className="space-y-3 p-4">
+                  {roleOptions[roleSelectionMode].map((option) => {
+                    const Icon = option.icon;
+
+                    return (
+                      <button
+                        key={option.to}
+                        onClick={() => navigate(option.to)}
+                        className={`w-full bg-white border-2 ${option.borderClass} rounded-2xl p-4 hover:bg-gray-50 transition-all shadow-sm hover:shadow-md`}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-12 h-12 ${option.iconBg} rounded-full flex items-center justify-center shrink-0`}>
+                              <Icon className={`w-6 h-6 ${option.iconText}`} />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="text-[#2D2D2D] mb-1 text-[16px] font-semibold">
+                                {option.title}
+                              </h3>
+                              <p className="text-[#6B6B6B] text-[13px] leading-relaxed">
+                                {option.description}
+                              </p>
+                            </div>
+                          </div>
+                          <ArrowRight className={`w-5 h-5 ${option.chevronText} shrink-0`} />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-              </button>
 
-              <button
-                onClick={() => setShowRoleSelection(false)}
-                className="w-full text-[#6B6B6B] hover:text-[#2D2D2D] text-[14px] py-2 mt-2 font-semibold"
-              >
-                Back
-              </button>
+                <div className="px-4 pb-4">
+                  <button
+                    onClick={() => setRoleSelectionMode(null)}
+                    className="w-full text-[#6B6B6B] hover:text-[#2D2D2D] text-[14px] py-2 font-semibold"
+                  >
+                    Back
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

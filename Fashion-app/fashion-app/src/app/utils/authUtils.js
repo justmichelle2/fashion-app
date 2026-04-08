@@ -3,13 +3,128 @@ import {
   signInWithEmailAndPassword, 
   signOut as firebaseSignOut,
   GoogleAuthProvider,
-  signInWithPopup,
-  validatePassword
+  signInWithPopup
 } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
+
+const FALLBACK_PASSWORD_POLICY = {
+  minLength: 6,
+  requiresLowercase: false,
+  requiresUppercase: false,
+  requiresNumber: false,
+  requiresSpecialCharacter: false,
+};
+
+let cachedPasswordPolicy = null;
+let passwordPolicyRequestPromise = null;
+
+const getUserProfileByUid = async (uid) => {
+  const userDocRef = doc(db, "users", uid);
+  const userDocSnap = await getDoc(userDocRef);
+  return userDocSnap.exists() ? userDocSnap.data() : null;
+};
+
+const validatePasswordWithRules = (password, rules) => {
+  const issues = [];
+  const effectiveRules = rules || FALLBACK_PASSWORD_POLICY;
+
+  if ((password || "").length < effectiveRules.minLength) {
+    issues.push(`Password must be at least ${effectiveRules.minLength} characters long`);
+  }
+  if (effectiveRules.requiresLowercase && !/[a-z]/.test(password)) {
+    issues.push("Password must contain a lowercase letter (a-z)");
+  }
+  if (effectiveRules.requiresUppercase && !/[A-Z]/.test(password)) {
+    issues.push("Password must contain an uppercase letter (A-Z)");
+  }
+  if (effectiveRules.requiresNumber && !/[0-9]/.test(password)) {
+    issues.push("Password must contain a number (0-9)");
+  }
+  if (effectiveRules.requiresSpecialCharacter && !/[^A-Za-z0-9]/.test(password)) {
+    issues.push("Password must contain a special character (!@#$%^&*)");
+  }
+
+  return {
+    isValid: issues.length === 0,
+    issues,
+  };
+};
+
+const getQuotaFallbackMessage = () =>
+  "Password policy could not be loaded because Firebase quota was exceeded. Using fallback rule: password must be at least 6 characters long.";
+
+export const loadPasswordPolicy = async () => {
+  if (cachedPasswordPolicy) {
+    return {
+      success: true,
+      policy: cachedPasswordPolicy,
+      source: "fallback",
+      message: null,
+    };
+  }
+
+  if (!passwordPolicyRequestPromise) {
+    // Keep validation local because this Firebase SDK build does not expose getPasswordPolicy.
+    passwordPolicyRequestPromise = Promise.resolve()
+      .then(() => {
+        cachedPasswordPolicy = { ...FALLBACK_PASSWORD_POLICY };
+        return {
+          success: true,
+          policy: cachedPasswordPolicy,
+          source: "fallback",
+          message: null,
+        };
+      })
+      .finally(() => {
+        passwordPolicyRequestPromise = null;
+      });
+  }
+
+  return passwordPolicyRequestPromise;
+};
+
+const getFirebaseAuthErrorMessage = (error, fallbackMessage) => {
+  if (error?.code === "auth/quota-exceeded") {
+    return "Firebase request quota has been exceeded. Please try again later or check Firebase Usage & Quotas.";
+  }
+
+  if (error?.code === "auth/network-request-failed") {
+    return "Firebase Authentication could not reach the network. Check your internet connection, firewall/proxy, and make sure localhost is authorized in Firebase Authentication settings.";
+  }
+
+  if (error?.code === "auth/email-already-in-use") {
+    return "This email is already registered";
+  }
+
+  if (error?.code === "auth/invalid-email") {
+    return "Invalid email address";
+  }
+
+  if (error?.code === "auth/weak-password") {
+    return "Password is too weak";
+  }
+
+  if (error?.code === "auth/user-not-found") {
+    return "User not found. Please check your email";
+  }
+
+  if (error?.code === "auth/wrong-password") {
+    return "Incorrect password";
+  }
+
+  if (error?.code === "auth/user-disabled") {
+    return "This account has been disabled";
+  }
+
+  if (error?.code === "auth/popup-closed-by-user") {
+    return "Sign-in was cancelled";
+  }
+
+  return error?.message || fallbackMessage;
+};
 
 /**
  * Validate password strength
@@ -25,36 +140,27 @@ export const handleValidatePassword = async (password) => {
       };
     }
 
-    const status = await validatePassword(auth, password);
-    
-    if (!status.isValid) {
-      const issues = [];
-      
-      if (status.containsLowercaseLetter !== true) {
-        issues.push("Password must contain a lowercase letter (a-z)");
-      }
-      if (status.containsUppercaseLetter !== true) {
-        issues.push("Password must contain an uppercase letter (A-Z)");
-      }
-      if (status.containsNumericCharacter !== true) {
-        issues.push("Password must contain a number (0-9)");
-      }
-      if (status.containsNonAlphanumericCharacter !== true) {
-        issues.push("Password must contain a special character (!@#$%^&*)");
-      }
-      if (status.meetsMinPasswordLength !== true) {
-        issues.push("Password must be at least 6 characters long");
-      }
-      
-      return { isValid: false, issues };
-    }
-    
-    return { isValid: true, issues: [] };
+    const policyResult = await loadPasswordPolicy();
+    return validatePasswordWithRules(password, policyResult.policy);
   } catch (error) {
     console.error("Password validation error:", error);
+
+    if (error?.code === "auth/quota-exceeded") {
+      return {
+        isValid: (password || "").length >= FALLBACK_PASSWORD_POLICY.minLength,
+        issues:
+          (password || "").length >= FALLBACK_PASSWORD_POLICY.minLength
+            ? []
+            : [`Password must be at least ${FALLBACK_PASSWORD_POLICY.minLength} characters long`],
+      };
+    }
+
     return { 
-      isValid: false, 
-      issues: [error.message || "Error validating password"] 
+      isValid: (password || "").length >= FALLBACK_PASSWORD_POLICY.minLength,
+      issues:
+        (password || "").length >= FALLBACK_PASSWORD_POLICY.minLength
+          ? []
+          : [`Password must be at least ${FALLBACK_PASSWORD_POLICY.minLength} characters long`],
     };
   }
 };
@@ -109,20 +215,17 @@ export const handleSignup = async (email, password, profileData = {}) => {
       user: {
         uid: user.uid,
         email: user.email,
-        displayName: profileData.name || ""
+        displayName: profileData.name || "",
+        userType: profileData.userType || "customer",
       }
     };
   } catch (error) {
     console.error("Signup error:", error);
-    
-    let errorMessage = error.message;
-    if (error.code === "auth/email-already-in-use") {
-      errorMessage = "This email is already registered";
-    } else if (error.code === "auth/invalid-email") {
-      errorMessage = "Invalid email address";
-    } else if (error.code === "auth/weak-password") {
-      errorMessage = "Password is too weak";
-    }
+
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error,
+      "Unable to create your account right now. Please try again."
+    );
     
     return { 
       success: false, 
@@ -148,6 +251,8 @@ export const handleLogin = async (email, password) => {
 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    const userProfile = await getUserProfileByUid(user.uid);
+    const userType = userProfile?.userType || "customer";
 
     console.log("User logged in successfully:", user.email);
     
@@ -155,22 +260,17 @@ export const handleLogin = async (email, password) => {
       success: true, 
       user: {
         uid: user.uid,
-        email: user.email
+        email: user.email,
+        userType,
       }
     };
   } catch (error) {
     console.error("Login error:", error);
-    
-    let errorMessage = error.message;
-    if (error.code === "auth/user-not-found") {
-      errorMessage = "User not found. Please check your email";
-    } else if (error.code === "auth/wrong-password") {
-      errorMessage = "Incorrect password";
-    } else if (error.code === "auth/invalid-email") {
-      errorMessage = "Invalid email address";
-    } else if (error.code === "auth/user-disabled") {
-      errorMessage = "This account has been disabled";
-    }
+
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error,
+      "Unable to sign in right now. Please try again."
+    );
     
     return { 
       success: false, 
@@ -190,7 +290,7 @@ export const handleGoogleSignIn = async () => {
 
     // Check if user profile exists, if not create it
     const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await import("firebase/firestore").then(m => m.getDoc(userDocRef));
+    const userDocSnap = await getDoc(userDocRef);
     
     if (!userDocSnap.exists()) {
       await setDoc(userDocRef, {
@@ -204,6 +304,9 @@ export const handleGoogleSignIn = async () => {
       });
     }
 
+    const userProfile = userDocSnap.exists() ? userDocSnap.data() : await getUserProfileByUid(user.uid);
+    const userType = userProfile?.userType || "customer";
+
     console.log("User signed in with Google:", user.email);
     
     return { 
@@ -211,16 +314,17 @@ export const handleGoogleSignIn = async () => {
       user: {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName
+        displayName: user.displayName,
+        userType,
       }
     };
   } catch (error) {
     console.error("Google sign-in error:", error);
-    
-    let errorMessage = error.message;
-    if (error.code === "auth/popup-closed-by-user") {
-      errorMessage = "Sign-in was cancelled";
-    }
+
+    const errorMessage = getFirebaseAuthErrorMessage(
+      error,
+      "Unable to complete Google sign-in right now. Please try again."
+    );
     
     return { 
       success: false, 

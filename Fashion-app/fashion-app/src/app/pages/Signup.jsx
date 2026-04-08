@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Phone, ArrowLeft, AlertCircle } from "lucide-react";
-import { useState } from "react";
-import logo from "../../assets/drssed.jpg";
-import { handleSignup, handleValidatePassword } from "../utils/authUtils";
+import { useEffect, useRef, useState } from "react";
+import logo from "../../assets/logo.png";
+import { handleValidatePassword, loadPasswordPolicy } from "../utils/authUtils";
+import { signupCustomer } from "../services/signupApi";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const validationRequestIdRef = useRef(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,6 +17,28 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [passwordErrors, setPasswordErrors] = useState([]);
+  const [passwordPolicyNotice, setPasswordPolicyNotice] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Load Firebase password policy once to avoid repeated network calls during typing.
+    loadPasswordPolicy().then((result) => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (result?.source === "fallback" && result?.message) {
+        setPasswordPolicyNotice(result.message);
+      } else {
+        setPasswordPolicyNotice("");
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -26,6 +50,7 @@ export default function Signup() {
 
   const handlePasswordChange = async (e) => {
     const password = e.target.value;
+    const requestId = ++validationRequestIdRef.current;
     setFormData(prev => ({
       ...prev,
       password
@@ -33,8 +58,11 @@ export default function Signup() {
 
     if (password) {
       const validation = await handleValidatePassword(password);
-      setPasswordErrors(validation.issues);
+      if (requestId === validationRequestIdRef.current) {
+        setPasswordErrors(validation.issues);
+      }
     } else {
+      validationRequestIdRef.current += 1;
       setPasswordErrors([]);
     }
   };
@@ -45,32 +73,36 @@ export default function Signup() {
 
     // Validate all fields
     if (!formData.name || !formData.email || !formData.password) {
-      setError("Please fill in all required fields");
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+    if (!emailPattern.test(formData.email)) {
+      setError("Please enter a valid email address.");
       return;
     }
 
     // Check password validation
     if (passwordErrors.length > 0) {
-      setError("Please fix password requirements");
+      setError("Please fix password requirements.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const result = await handleSignup(formData.email, formData.password, {
+      const response = await signupCustomer({
+        email: formData.email,
+        password: formData.password,
         name: formData.name,
         phone: formData.phone,
-        userType: "customer"
       });
+      console.log("Customer signup backend response:", response);
 
-      if (result.success) {
-        console.log("Signup successful");
-        navigate("/home");
-      } else {
-        setError(result.error || "Signup failed");
-      }
+      navigate("/customer/home", { replace: true });
     } catch (err) {
+      console.error("Customer signup failed:", err);
       setError(err.message || "An error occurred during signup");
     } finally {
       setLoading(false);
@@ -102,6 +134,14 @@ export default function Signup() {
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
               <AlertCircle className="text-red-700 flex-shrink-0" size={18} />
               <p className="text-red-700 text-sm font-medium">{error}</p>
+            </div>
+          )}
+
+          {/* Password policy fallback notice */}
+          {passwordPolicyNotice && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex gap-2">
+              <AlertCircle className="text-amber-700 flex-shrink-0" size={18} />
+              <p className="text-amber-700 text-sm font-medium">{passwordPolicyNotice}</p>
             </div>
           )}
 
@@ -209,7 +249,7 @@ export default function Signup() {
                 </p>
               </div>
               <p className="text-xs text-[#6B6B6B] mt-3 text-center font-medium">
-                Designer? <Link to="/signup/designer" className="text-[#E76F51] font-bold hover:underline">Register as designer</Link>
+                Designer? <Link to="/designer/signup" className="text-[#E76F51] font-bold hover:underline">Register as designer</Link>
               </p>
             </div>
 
@@ -226,7 +266,7 @@ export default function Signup() {
           {/* Login Link */}
           <div className="text-center mt-8">
             <span className="text-[#6B6B6B] font-medium">Already have an account? </span>
-            <Link to="/login/customer" className="text-[#E76F51] font-semibold hover:underline">
+            <Link to="/customer/login" className="text-[#E76F51] font-semibold hover:underline">
               Sign In
             </Link>
           </div>

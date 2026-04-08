@@ -19,7 +19,7 @@ export default function NotFound() {
             Back to Landing
           </Link>
           <Link
-            to="/home"
+            to="/designers"
             className="block h-12 rounded-full border-2 border-[#E76F51] text-[#E76F51] font-['Raleway'] font-semibold leading-[2.75rem]"
           >
             Browse Designers

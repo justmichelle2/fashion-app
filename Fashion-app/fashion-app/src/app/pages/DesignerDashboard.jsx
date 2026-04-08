@@ -3,7 +3,7 @@ import { ArrowLeft, Upload, Package, CheckCircle, XCircle, DollarSign, Star, Tre
 import { useState } from "react";
 
 export default function DesignerDashboard() {
-  const [activeTab, setActiveTab] = useState<"progress" | "orders" | "messages">("progress");
+  const [activeTab, setActiveTab] = useState("progress");
 
   const portfolioImages = [
     "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",

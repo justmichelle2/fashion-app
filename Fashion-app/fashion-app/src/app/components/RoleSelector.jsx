@@ -5,8 +5,8 @@ const ACTIONS = {
   signup: {
     title: "Choose your account type",
     subtitle: "Select how you want to continue.",
-    customerPath: "/signup/customer",
-    designerPath: "/signup/designer",
+    customerPath: "/customer/signup",
+    designerPath: "/designer/signup",
     customerLabel: "Customer",
     designerLabel: "Designer",
     customerDescription: "Browse and order custom designs",
@@ -15,8 +15,8 @@ const ACTIONS = {
   login: {
     title: "Sign in as",
     subtitle: "Choose the account that matches you.",
-    customerPath: "/login/customer",
-    designerPath: "/login/designer",
+    customerPath: "/customer/login",
+    designerPath: "/designer/login",
     customerLabel: "Customer",
     designerLabel: "Designer",
     customerDescription: "Access your orders and profile",
