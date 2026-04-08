@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { browserSessionPersistence, getAuth, setPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const envConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -27,6 +28,7 @@ const firebaseConfig = {
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 const authPersistenceReady = setPersistence(auth, browserSessionPersistence).catch((error) => {
   console.error("Auth persistence setup error:", error);
