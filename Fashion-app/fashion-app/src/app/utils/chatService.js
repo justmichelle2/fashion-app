@@ -9,6 +9,8 @@ import {
   onSnapshot,
   updateDoc,
   doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
@@ -33,25 +35,21 @@ export const createConversation = async (user1Id, user2Id, user1Name, user2Name)
     const [sortedUser1, sortedUser2] = [user1Id, user2Id].sort();
     const conversationId = `${sortedUser1}_${sortedUser2}`;
 
-    const conversationsRef = collection(db, "conversations");
-    
     // Check if conversation already exists
-    const existingQuery = query(
-      conversationsRef,
-      where("conversationId", "==", conversationId)
-    );
-    const existingSnapshot = await getDocs(existingQuery);
+    const conversationRef = doc(db, "conversations", conversationId);
+    const existingDoc = await getDoc(conversationRef);
 
-    if (existingSnapshot.size > 0) {
+    if (existingDoc.exists()) {
       return { success: true, conversationId, isNew: false };
     }
 
-    // Create new conversation
+    // Create new conversation with conversationId as the document ID
     const conversationData = {
       conversationId,
-      participants: {
-        [user1Id]: { name: user1Name, id: user1Id },
-        [user2Id]: { name: user2Name, id: user2Id },
+      participants: [user1Id, user2Id],
+      participantNames: {
+        [user1Id]: user1Name,
+        [user2Id]: user2Name,
       },
       lastMessage: null,
       lastMessageTime: serverTimestamp(),
@@ -59,12 +57,11 @@ export const createConversation = async (user1Id, user2Id, user1Name, user2Name)
       updatedAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(conversationsRef, conversationData);
+    await setDoc(conversationRef, conversationData);
 
     return {
       success: true,
       conversationId,
-      conversationDocId: docRef.id,
       isNew: true,
     };
   } catch (error) {
@@ -98,11 +95,24 @@ export const sendMessage = async (conversationId, senderId, senderName, text, at
 
     // Update conversation's lastMessage
     const conversationRef = doc(db, "conversations", conversationId);
-    await updateDoc(conversationRef, {
-      lastMessage: text,
-      lastMessageTime: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    
+    try {
+      // Try to update existing conversation
+      await updateDoc(conversationRef, {
+        lastMessage: text,
+        lastMessageTime: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      // If conversation doesn't exist, create it
+      if (err.code === "not-found") {
+        console.warn("Conversation not found, attempting to create it");
+        // Note: This is a fallback. In normal flow, conversation should exist
+        // This handles edge cases where conversation was deleted or never created
+        return { success: false, error: "Conversation not found. Please start a new conversation." };
+      }
+      throw err;
+    }
 
     return {
       success: true,

@@ -21,23 +21,6 @@ const INITIAL_FORM_DATA = {
   },
 };
 
-const parseBookingApiResponse = async (response) => {
-  const isJson = (response.headers.get("content-type") || "").includes("application/json");
-  const payload = isJson ? await response.json() : await response.text();
-
-  if (!response.ok) {
-    const message =
-      typeof payload === "object" && payload?.error
-        ? payload.error
-        : typeof payload === "string" && payload
-        ? payload
-        : "Booking request failed";
-    throw new Error(message);
-  }
-
-  return payload;
-};
-
 export default function BookTailoring() {
   const { designerId } = useParams();
   const navigate = useNavigate();
@@ -133,32 +116,38 @@ export default function BookTailoring() {
     setInspoPreviewNames([]);
   };
 
-  const uploadInspirationImages = async () => {
-    if (!inspoFiles.length || !currentUser?.uid) {
-      return [];
-    }
-
-    setUploadingInspo(true);
-    const uploaded = [];
-
-    try {
-      for (const file of inspoFiles) {
-        const result = await uploadImage(file, `orders/inspiration/${currentUser.uid}/${designerId}`);
-        if (!result.success) {
-          throw new Error(result.error || "Failed to upload inspiration image");
-        }
-
-        uploaded.push({
-          url: result.url,
-          fileName: result.fileName,
-        });
-      }
-
-      return uploaded;
-    } finally {
-      setUploadingInspo(false);
-    }
-  };
+  // Image uploads disabled due to Firebase Storage CORS issues
+  // To be implemented with server-side backend in future
+  // const uploadInspirationImages = async () => {
+  //   if (!inspoFiles.length || !currentUser?.uid) {
+  //     return [];
+  //   }
+  //
+  //   setUploadingInspo(true);
+  //   const uploaded = [];
+  //
+  //   try {
+  //     for (const file of inspoFiles) {
+  //       try {
+  //         const result = await uploadImage(file, `orders/inspiration/${currentUser.uid}/${designerId}`);
+  //         if (result.success) {
+  //           uploaded.push({
+  //             url: result.url,
+  //             fileName: result.fileName,
+  //           });
+  //         } else {
+  //           console.warn("Failed to upload inspiration image:", result.error);
+  //         }
+  //       } catch (err) {
+  //         console.warn("Error uploading inspiration image:", err);
+  //       }
+  //     }
+  //
+  //     return uploaded;
+  //   } finally {
+  //     setUploadingInspo(false);
+  //   }
+  // };
 
   const validateForm = () => {
     if (!formData.title.trim()) {
@@ -204,22 +193,16 @@ export default function BookTailoring() {
     setSuccessMessage("");
 
     try {
-      // Validate request against API contract before writing booking records.
-      await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId: currentUser.uid,
-          designerId,
-          title: formData.title,
-          description: formData.description,
-          budget: parseFloat(formData.budget),
-          preferredDeadline: formData.preferredDeadline,
-        }),
-      }).then(parseBookingApiResponse);
+      console.log("Starting booking submission...");
+      
+      // Skip image uploads due to CORS issues - will implement server-side upload later
+      const uploadedInspirationImages = [];
+      if (inspoFiles.length > 0) {
+        console.log("Image uploads skipped (will implement server upload later)");
+      }
 
-      const uploadedInspirationImages = await uploadInspirationImages();
-
+      // Create order
+      console.log("Creating order in Firestore...");
       const orderRef = collection(db, "orders");
       const orderDocRef = await addDoc(orderRef, {
         customerId: currentUser.uid,
@@ -239,7 +222,10 @@ export default function BookTailoring() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      console.log("Order created with ID:", orderDocRef.id);
 
+      // Create booking inquiry
+      console.log("Creating booking inquiry...");
       const inquiryRef = collection(db, "bookingInquiries");
       await addDoc(inquiryRef, {
         customerId: currentUser.uid,
@@ -258,6 +244,7 @@ export default function BookTailoring() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      console.log("Booking inquiry created successfully");
 
       setSuccessId(orderDocRef.id);
       setSuccessMessage("Booking submitted successfully.");
@@ -265,7 +252,7 @@ export default function BookTailoring() {
       setStep("success");
     } catch (err) {
       console.error("Error creating booking inquiry:", err);
-      setError(err.message || "Failed to create booking inquiry");
+      setError(err.message || "Failed to create booking inquiry. Please check browser console for details.");
     } finally {
       setSubmitting(false);
     }

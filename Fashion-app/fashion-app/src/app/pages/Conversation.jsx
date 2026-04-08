@@ -4,7 +4,7 @@ import { ArrowLeft, Send, Image as ImageIcon, Paperclip, MoreVertical } from "lu
 import { useAuth } from "../hooks/useAuth";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { mockDesigners } from "../data/mockData";
-import { sendMessage, subscribeToMessages } from "../utils/chatService";
+import { sendMessage, subscribeToMessages, createConversation } from "../utils/chatService";
 import { uploadImage } from "../utils/storageService";
 
 export default function Conversation() {
@@ -35,24 +35,48 @@ export default function Conversation() {
       return;
     }
 
-    // For now, use mock designer - in production, fetch from Firestore
-    setDesigner(mockDesigner);
-    setConversationId(`${currentUser.uid}_${id}`);
+    const initializeConversation = async () => {
+      try {
+        // For now, use mock designer - in production, fetch from Firestore
+        setDesigner(mockDesigner);
+        
+        // Create or get conversation
+        const convResult = await createConversation(
+          currentUser.uid,
+          id,
+          userProfile.name || currentUser.displayName || "Customer",
+          mockDesigner.name
+        );
 
-    // Subscribe to real-time messages
-    const unsubscribeFn = subscribeToMessages(`${currentUser.uid}_${id}`, (result) => {
-      setLoading(false);
-      if (result.success) {
-        setMessages(result.messages);
-      } else {
-        setError(result.error);
+        if (convResult.success) {
+          setConversationId(convResult.conversationId);
+
+          // Subscribe to real-time messages after conversation is created
+          const unsubscribeFn = subscribeToMessages(convResult.conversationId, (result) => {
+            setLoading(false);
+            if (result.success) {
+              setMessages(result.messages);
+            } else {
+              setError(result.error);
+            }
+          });
+
+          setUnsubscribe(() => unsubscribeFn);
+        } else {
+          setError("Failed to initialize conversation");
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Error initializing conversation:", err);
+        setError(err.message);
+        setLoading(false);
       }
-    });
+    };
 
-    setUnsubscribe(() => unsubscribeFn);
+    initializeConversation();
 
     return () => {
-      if (unsubscribeFn) unsubscribeFn();
+      if (unsubscribe) unsubscribe();
     };
   }, [id, currentUser, userProfile, navigate]);
 
