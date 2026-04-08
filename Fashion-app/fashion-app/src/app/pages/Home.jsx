@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Upload, Users, Star, Search, Package } from "lucide-react";
+import { Upload, Users, Star, Search, Package, Settings } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { getUserOrders } from "../utils/orderUtils";
 import { getUnreadCount } from "../services/notificationsService";
@@ -100,7 +100,16 @@ export default function Home() {
               {userProfile?.name || "Customer"}
             </h1>
           </div>
-          <NotificationBell unreadCount={unreadCount} />
+          <div className="flex items-center gap-2">
+            <Link
+              to="/customer/settings"
+              className="p-2 hover:bg-gray-50 rounded-xl transition-all"
+              aria-label="Settings"
+            >
+              <Settings size={22} className="text-[#2D2D2D]" />
+            </Link>
+            <NotificationBell unreadCount={unreadCount} />
+          </div>
         </div>
 
         <div className="relative">
