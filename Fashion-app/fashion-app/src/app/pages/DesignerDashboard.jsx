@@ -147,7 +147,7 @@ export default function DesignerDashboard() {
                 {userProfile?.businessName || userProfile?.name || "Dashboard"}
               </h1>
             </div>
-            <Link to="/designer/messages" className="p-2 hover:bg-gray-50 rounded-xl transition-all relative">
+            <Link to="/designer/notifications" className="p-2 hover:bg-gray-50 rounded-xl transition-all relative">
               <Bell size={24} className="text-[#2D2D2D]" />
               {unreadCount > 0 && (
                 <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#F97316] rounded-full border-2 border-white"></div>

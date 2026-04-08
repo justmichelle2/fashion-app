@@ -9,7 +9,7 @@ export function DesignerNav() {
     { icon: LayoutGrid, label: "Portfolio", path: "/designer/portfolio" },
     { icon: LayoutDashboard, label: "Dashboard", path: "/designer/dashboard" },
     { icon: Package, label: "Orders", path: "/designer/orders" },
-    { icon: MessageCircle, label: "Messages", path: "/designer/messages" },
+    { icon: MessageCircle, label: "Chat", path: "/designer/messages" },
   ];
 
   return (
