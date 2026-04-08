@@ -27,6 +27,14 @@ const getUserProfileByUid = async (uid) => {
   return userDocSnap.exists() ? userDocSnap.data() : null;
 };
 
+const getRoleFromProfile = (profile) => {
+  if (!profile || typeof profile !== "object") {
+    return "customer";
+  }
+
+  return profile.userType || profile.role || "customer";
+};
+
 const validatePasswordWithRules = (password, rules) => {
   const issues = [];
   const effectiveRules = rules || FALLBACK_PASSWORD_POLICY;
@@ -117,6 +125,10 @@ const getFirebaseAuthErrorMessage = (error, fallbackMessage) => {
 
   if (error?.code === "auth/user-disabled") {
     return "This account has been disabled";
+  }
+
+  if (error?.code === "auth/invalid-credential") {
+    return "Invalid email or password. Double-check your credentials and try again.";
   }
 
   if (error?.code === "auth/popup-closed-by-user") {
@@ -242,17 +254,19 @@ export const handleSignup = async (email, password, profileData = {}) => {
  */
 export const handleLogin = async (email, password) => {
   try {
-    if (!email || !password) {
+    const normalizedEmail = String(email || "").trim();
+
+    if (!normalizedEmail || !password) {
       return { 
         success: false, 
         error: "Email and password are required" 
       };
     }
 
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
     const user = userCredential.user;
     const userProfile = await getUserProfileByUid(user.uid);
-    const userType = userProfile?.userType || "customer";
+    const userType = getRoleFromProfile(userProfile);
 
     console.log("User logged in successfully:", user.email);
     
@@ -305,7 +319,7 @@ export const handleGoogleSignIn = async () => {
     }
 
     const userProfile = userDocSnap.exists() ? userDocSnap.data() : await getUserProfileByUid(user.uid);
-    const userType = userProfile?.userType || "customer";
+    const userType = getRoleFromProfile(userProfile);
 
     console.log("User signed in with Google:", user.email);
     
