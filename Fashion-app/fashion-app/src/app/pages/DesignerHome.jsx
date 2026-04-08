@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, TrendingUp, Package, MessageCircle, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, MessageSquare, Sparkles } from "lucide-react";
+import { Bell, TrendingUp, Package, MessageCircle, MessageSquare, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, Sparkles } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { handleLogout } from "../utils/authUtils";
