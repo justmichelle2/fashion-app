@@ -18,6 +18,7 @@ import DesignerProgress from "./pages/DesignerProgress";
 import DesignerOrders from "./pages/DesignerOrders";
 import DesignerOrderDetail from "./pages/DesignerOrderDetail";
 import DesignerMessages from "./pages/DesignerMessages";
+import DesignerNotifications from "./pages/DesignerNotifications";
 import DesignerMeasurements from "./pages/DesignerMeasurements";
 import UploadMeasurements from "./pages/UploadMeasurements.jsx";
 import BookTailoring from "./pages/BookTailoring";
@@ -73,6 +74,7 @@ export const router = createBrowserRouter([
   { path: "/designer/order/:orderId", element: designerRoute(<DesignerOrderDetail />) },
   { path: "/designer/progress", element: designerRoute(<DesignerProgress />) },
   { path: "/designer/messages", element: designerRoute(<DesignerMessages />) },
+  { path: "/designer/notifications", element: designerRoute(<DesignerNotifications />) },
   { path: "/designer/measurements", element: designerRoute(<DesignerMeasurements />) },
   { path: "/designer/settings", element: designerRoute(<DesignerDashboard />) },
   { path: "/designer-home", element: <Navigate to="/designer/home" replace /> },
@@ -81,6 +83,7 @@ export const router = createBrowserRouter([
   { path: "/designer-progress", element: <Navigate to="/designer/progress" replace /> },
   { path: "/designer-orders", element: <Navigate to="/designer/orders" replace /> },
   { path: "/designer-messages", element: <Navigate to="/designer/messages" replace /> },
+  { path: "/designer-notifications", element: <Navigate to="/designer/notifications" replace /> },
   { path: "/designer-measurements", element: <Navigate to="/designer/measurements" replace /> },
   { path: "/designer-settings", element: <Navigate to="/designer/settings" replace /> },
   { path: "/designers", element: customerRoute(<DesignerList />) },
