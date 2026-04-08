@@ -1,60 +1,63 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronRight, Search } from "lucide-react";
-import { useState, useContext } from "react";
+import { ArrowLeft, ChevronRight, Search, MessageCircle } from "lucide-react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { db } from "../firebaseConfig";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export default function DesignerMessages() {
   const navigate = useNavigate();
-  const { currentUser, userProfile } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const conversations = [
-    {
-      id: "1",
-      customer: "Akosua Owusu",
-      lastMessage: "When will my dress be ready?",
-      time: "1 hour ago",
-      unread: true,
-      unreadCount: 2,
-      avatar: "A",
-    },
-    {
-      id: "2",
-      customer: "Ama Boateng",
-      lastMessage: "Can you add some beads to the dress?",
-      time: "3 hours ago",
-      unread: true,
-      unreadCount: 1,
-      avatar: "A",
-    },
-    {
-      id: "3",
-      customer: "Efua Mensah",
-      lastMessage: "Thank you for the update!",
-      time: "1 day ago",
-      unread: false,
-      unreadCount: 0,
-      avatar: "E",
-    },
-    {
-      id: "4",
-      customer: "Kofi Asante",
-      lastMessage: "Your work is amazing!",
-      time: "2 days ago",
-      unread: false,
-      unreadCount: 0,
-      avatar: "K",
-    },
-    {
-      id: "5",
-      customer: "Yaw Boateng",
-      lastMessage: "I'll pick up tomorrow",
-      time: "1 week ago",
-      unread: false,
-      unreadCount: 0,
-      avatar: "Y",
-    },
-  ];
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    try {
+      const conversationsRef = collection(db, "conversations");
+      const conversationsQuery = query(
+        conversationsRef,
+        where("participants", "array-contains", currentUser.uid)
+      );
+
+      // Use real-time listener instead of one-time fetch
+      const unsubscribe = onSnapshot(conversationsQuery, (snapshot) => {
+        const convs = snapshot.docs.map(doc => {
+          const data = doc.data();
+          const otherParticipant = data.participants?.find(p => p !== currentUser.uid);
+          return {
+            id: doc.id,
+            customer: data.participantNames?.[otherParticipant] || "Unknown",
+            lastMessage: data.lastMessage || "No messages yet",
+            time: data.updatedAt?.toDate?.()?.toLocaleTimeString() || "just now",
+            unread: (data.unreadCount?.[currentUser.uid] || 0) > 0,
+            unreadCount: data.unreadCount?.[currentUser.uid] || 0,
+            avatar: (data.participantNames?.[otherParticipant] || "?").charAt(0).toUpperCase(),
+          };
+        });
+
+        // Sort by most recent first
+        convs.sort((a, b) => {
+          const timeA = a.time === "just now" ? 0 : new Date(a.time);
+          const timeB = b.time === "just now" ? 0 : new Date(b.time);
+          return timeB - timeA;
+        });
+
+        setConversations(convs);
+        setLoading(false);
+      }, (error) => {
+        console.error("Error fetching conversations:", error);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Error setting up listener:", error);
+      setLoading(false);
+    }
+  }, [currentUser]);
 
   const filteredConversations = conversations.filter((conv) =>
     conv.customer.toLowerCase().includes(searchTerm.toLowerCase())
@@ -89,9 +92,17 @@ export default function DesignerMessages() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4 overscroll-contain">
-          {filteredConversations.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin">
+                <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+              </div>
+            </div>
+          ) : filteredConversations.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-[#4B5563]">No conversations found</p>
+              <MessageCircle size={40} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-[#4B5563]">No conversations yet</p>
+              <p className="text-[#9CA3AF] text-sm mt-1">Messages from customers will appear here</p>
             </div>
           ) : (
             <div className="space-y-2">
