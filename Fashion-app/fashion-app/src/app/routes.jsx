@@ -11,6 +11,11 @@ import Home from "./pages/Home";
 import DesignerHome from "./pages/DesignerHome";
 import DesignerList from "./pages/DesignerList";
 import DesignerProfile from "./pages/DesignerProfile";
+import DesignerPortfolio from "./pages/DesignerPortfolio";
+import DesignerProgress from "./pages/DesignerProgress";
+import DesignerOrders from "./pages/DesignerOrders";
+import DesignerMessages from "./pages/DesignerMessages";
+import DesignerMeasurements from "./pages/DesignerMeasurements";
 import UploadMeasurements from "./pages/UploadMeasurements.jsx";
 import BookTailoring from "./pages/BookTailoring";
 import Payment from "./pages/Payment";
@@ -48,6 +53,11 @@ export const router = createBrowserRouter([
   { path: "/settings", element: <ProtectedRoute allowedRole="customer"><CustomerProfile /></ProtectedRoute> },
   { path: "/designer/dashboard", element: <ProtectedRoute allowedRole="designer"><DesignerDashboard /></ProtectedRoute> },
   { path: "/designer-dashboard", element: <Navigate to="/designer/dashboard" replace /> },
+  { path: "/designer-portfolio", element: <ProtectedRoute allowedRole="designer"><DesignerPortfolio /></ProtectedRoute> },
+  { path: "/designer-progress", element: <ProtectedRoute allowedRole="designer"><DesignerProgress /></ProtectedRoute> },
+  { path: "/designer-orders", element: <ProtectedRoute allowedRole="designer"><DesignerOrders /></ProtectedRoute> },
+  { path: "/designer-messages", element: <ProtectedRoute allowedRole="designer"><DesignerMessages /></ProtectedRoute> },
+  { path: "/designer-measurements", element: <ProtectedRoute allowedRole="designer"><DesignerMeasurements /></ProtectedRoute> },
   { path: "/designer-settings", element: <ProtectedRoute allowedRole="designer"><DesignerDashboard /></ProtectedRoute> },
   { path: "/admin", element: <ProtectedRoute allowedRole="admin"><AminDashboard /></ProtectedRoute> },
   { path: "*", element: <NotFound /> },

@@ -30,20 +30,19 @@ export async function getAllDesigners(options = {}) {
   } = options;
 
   try {
+    // Fetch from both designers collection and users collection (designers)
     const designersRef = collection(db, "designers");
-    const constraints = [where("verified", "==", true)];
+    const usersRef = collection(db, "users");
 
-    // Add specialty filter if provided
+    // Query designers collection
+    const designersConstraints = [];
     if (specialty) {
-      constraints.push(where("specialties", "array-contains", specialty));
+      designersConstraints.push(where("specialties", "array-contains", specialty));
     }
-
-    // Add rating filter if provided
     if (minRating > 0) {
-      constraints.push(where("rating", ">=", minRating));
+      designersConstraints.push(where("rating", ">=", minRating));
     }
 
-    // Add sorting
     const sortMap = {
       rating: ["rating", "desc"],
       name: ["name", "asc"],
@@ -52,29 +51,77 @@ export async function getAllDesigners(options = {}) {
     };
 
     const [sortField, sortDir] = sortMap[sortBy] || ["rating", "desc"];
-    constraints.push(orderBy(sortField, sortDir));
-    constraints.push(limit(pageLimit));
+    designersConstraints.push(orderBy(sortField, sortDir));
+    designersConstraints.push(limit(pageLimit));
 
-    const q = query(designersRef, ...constraints);
-    const snapshot = await getDocs(q);
+    const designersQuery = designersConstraints.length > 0 
+      ? query(designersRef, ...designersConstraints)
+      : query(designersRef, orderBy(sortField, sortDir), limit(pageLimit));
 
-    let designers = snapshot.docs.map(doc => ({
+    const designersSnapshot = await getDocs(designersQuery);
+    let designers = designersSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Query users collection for designers (userType: "designer")
+    const usersConstraints = [where("userType", "==", "designer")];
+    if (minRating > 0) {
+      usersConstraints.push(where("rating", ">=", minRating));
+    }
+    usersConstraints.push(orderBy(sortField === "name" ? "businessName" : sortField, sortDir));
+    usersConstraints.push(limit(pageLimit));
+
+    const usersQuery = query(usersRef, ...usersConstraints);
+    const usersSnapshot = await getDocs(usersQuery);
+    
+    const userDesigners = usersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.businessName || data.name || "Designer",
+        location: data.location || "",
+        rating: data.rating || 5,
+        reviewCount: data.reviewCount || 0,
+        verified: true,
+        specialties: data.specialties || [],
+        profilePicture: data.profilePicture || "",
+        phone: data.phone || "",
+        businessName: data.businessName || ""
+      };
+    });
+
+    // Combine both results
+    designers = [...designers, ...userDesigners];
+
+    // Remove duplicates by id
+    const seen = new Set();
+    designers = designers.filter(d => {
+      if (seen.has(d.id)) return false;
+      seen.add(d.id);
+      return true;
+    });
 
     // Client-side search filter
     if (search) {
       const searchLower = search.toLowerCase();
       designers = designers.filter(designer =>
         designer.name?.toLowerCase().includes(searchLower) ||
-        designer.specialties?.some(s => s.toLowerCase().includes(searchLower)) ||
+        designer.businessName?.toLowerCase().includes(searchLower) ||
+        designer.specialties?.some(s => s?.toLowerCase().includes(searchLower)) ||
         designer.location?.toLowerCase().includes(searchLower)
       );
     }
 
+    // Sort by selected field
+    designers.sort((a, b) => {
+      const aVal = a[sortField] || 0;
+      const bVal = b[sortField] || 0;
+      return sortDir === "desc" ? bVal - aVal : aVal - bVal;
+    });
+
     return {
-      designers,
+      designers: designers.slice(0, pageLimit),
       total: designers.length
     };
   } catch (err) {
@@ -90,6 +137,33 @@ export async function getAllDesigners(options = {}) {
  */
 export async function getDesignerById(designerId) {
   try {
+    // First try to get from users collection (new designers)
+    const userDocRef = doc(db, "users", designerId);
+    const userSnapshot = await getDoc(userDocRef);
+
+    if (userSnapshot.exists() && userSnapshot.data().userType === "designer") {
+      const data = userSnapshot.data();
+      return {
+        id: userSnapshot.id,
+        name: data.businessName || data.name || "Designer",
+        businessName: data.businessName || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        location: data.location || "",
+        rating: data.rating || 5,
+        reviewCount: data.reviewCount || 0,
+        verified: true,
+        specialties: data.specialties || [],
+        profilePicture: data.profilePicture || "",
+        yearsExperience: data.yearsExperience || 0,
+        hourlyRate: data.hourlyRate || 0,
+        portfolio: data.portfolio || [],
+        description: data.description || "",
+        createdAt: data.createdAt
+      };
+    }
+
+    // Fall back to designers collection (legacy designers)
     const docRef = doc(db, "designers", designerId);
     const snapshot = await getDoc(docRef);
 
@@ -97,14 +171,10 @@ export async function getDesignerById(designerId) {
       throw new Error("Designer not found");
     }
 
-    const designer = {
+    return {
       id: snapshot.id,
       ...snapshot.data()
     };
-
-    // Could fetch portfolio images, project count, etc.
-    // For now, return basic designer info
-    return designer;
   } catch (err) {
     console.error("Error fetching designer:", err);
     throw err;
@@ -139,23 +209,22 @@ export async function searchDesigners(filters = {}) {
   } = filters;
 
   try {
+    // Query both collections
     const designersRef = collection(db, "designers");
-    const constraints = [where("verified", "==", true)];
+    const usersRef = collection(db, "users");
 
-    // Server-side filters
+    // Legacy designers from designers collection
+    const constraints = [where("verified", "==", true)];
     if (specialty) {
       constraints.push(where("specialties", "array-contains", specialty));
     }
-
     if (minRating > 0) {
       constraints.push(where("rating", ">=", minRating));
     }
-
     if (minExperience > 0) {
       constraints.push(where("yearsExperience", ">=", minExperience));
     }
 
-    // Sorting
     const sortMap = {
       rating: ["rating", "desc"],
       name: ["name", "asc"],
@@ -175,10 +244,53 @@ export async function searchDesigners(filters = {}) {
       ...doc.data()
     }));
 
-    // Client-side filters (for fields that Firestore can't efficiently filter)
+    // New designers from users collection
+    const userConstraints = [where("userType", "==", "designer")];
+    if (minRating > 0) {
+      userConstraints.push(where("rating", ">=", minRating));
+    }
+    userConstraints.push(orderBy(sortField === "name" ? "businessName" : sortField, sortDir));
+    userConstraints.push(limit(pageLimit));
+
+    const usersQuery = query(usersRef, ...userConstraints);
+    const usersSnapshot = await getDocs(usersQuery);
+
+    const userDesigners = usersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.businessName || data.name || "Designer",
+        businessName: data.businessName || "",
+        location: data.location || "",
+        rating: data.rating || 5,
+        reviewCount: data.reviewCount || 0,
+        verified: true,
+        specialties: data.specialties || [],
+        profilePicture: data.profilePicture || "",
+        hourlyRate: data.hourlyRate || 0,
+        yearsExperience: data.yearsExperience || 0
+      };
+    });
+
+    designers = [...designers, ...userDesigners];
+
+    // Remove duplicates
+    const seen = new Set();
+    designers = designers.filter(d => {
+      if (seen.has(d.id)) return false;
+      seen.add(d.id);
+      return true;
+    });
+
+    // Client-side filters
     designers = designers.filter(designer => {
+      // Specialty filter
+      if (specialty && !designer.specialties?.some(s => s?.toLowerCase() === specialty.toLowerCase())) {
+        return false;
+      }
+
       // Price range filter
-      if (designer.hourlyRate < minPrice || designer.hourlyRate > maxPrice) {
+      if (designer.hourlyRate && (designer.hourlyRate < minPrice || designer.hourlyRate > maxPrice)) {
         return false;
       }
 
@@ -187,23 +299,22 @@ export async function searchDesigners(filters = {}) {
         const searchLower = keyword.toLowerCase();
         const matchesKeyword =
           designer.name?.toLowerCase().includes(searchLower) ||
-          designer.specialties?.some(s => s.toLowerCase().includes(searchLower)) ||
+          designer.businessName?.toLowerCase().includes(searchLower) ||
+          designer.specialties?.some(s => s?.toLowerCase().includes(searchLower)) ||
           designer.bio?.toLowerCase().includes(searchLower);
         if (!matchesKeyword) return false;
       }
 
       // Location filter
       if (location) {
-        const locationMatch = designer.location
-          ?.toLowerCase()
-          .includes(location.toLowerCase());
+        const locationMatch = designer.location?.toLowerCase().includes(location.toLowerCase());
         if (!locationMatch) return false;
       }
 
       return true;
     });
 
-    return designers;
+    return designers.slice(0, pageLimit);
   } catch (err) {
     console.error("Error searching designers:", err);
     return [];
@@ -218,6 +329,7 @@ export async function searchDesigners(filters = {}) {
  */
 export async function getDesignersBySpecialty(specialty, pageLimit = 20) {
   try {
+    // Query from designers collection
     const designersRef = collection(db, "designers");
     const q = query(
       designersRef,
@@ -228,10 +340,52 @@ export async function getDesignersBySpecialty(specialty, pageLimit = 20) {
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    let designers = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Query from users collection
+    const usersRef = collection(db, "users");
+    const usersQuery = query(
+      usersRef,
+      where("userType", "==", "designer"),
+      orderBy("rating", "desc"),
+      limit(pageLimit)
+    );
+
+    const usersSnapshot = await getDocs(usersQuery);
+    const userDesigners = usersSnapshot.docs
+      .filter(doc => {
+        const data = doc.data();
+        return data.specialties?.some(s => s?.toLowerCase() === specialty?.toLowerCase());
+      })
+      .map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.businessName || data.name || "Designer",
+          businessName: data.businessName || "",
+          location: data.location || "",
+          rating: data.rating || 5,
+          reviewCount: data.reviewCount || 0,
+          verified: true,
+          specialties: data.specialties || [],
+          profilePicture: data.profilePicture || ""
+        };
+      });
+
+    designers = [...designers, ...userDesigners];
+
+    // Remove duplicates
+    const seen = new Set();
+    designers = designers.filter(d => {
+      if (seen.has(d.id)) return false;
+      seen.add(d.id);
+      return true;
+    });
+
+    return designers.slice(0, pageLimit);
   } catch (err) {
     console.error("Error fetching designers by specialty:", err);
     return [];
@@ -245,41 +399,62 @@ export async function getDesignersBySpecialty(specialty, pageLimit = 20) {
  */
 export async function getTopRatedDesigners(count = 10) {
   try {
-    // Only get designers with meaningful number of reviews
+    // Query from designers collection
     const designersRef = collection(db, "designers");
     const q = query(
       designersRef,
       where("verified", "==", true),
-      where("reviewCount", ">=", 5),
       orderBy("rating", "desc"),
       limit(count)
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    let designers = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    // Query from users collection
+    const usersRef = collection(db, "users");
+    const usersQuery = query(
+      usersRef,
+      where("userType", "==", "designer"),
+      orderBy("rating", "desc"),
+      limit(count)
+    );
+
+    const usersSnapshot = await getDocs(usersQuery);
+    const userDesigners = usersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.businessName || data.name || "Designer",
+        businessName: data.businessName || "",
+        location: data.location || "",
+        rating: data.rating || 5,
+        reviewCount: data.reviewCount || 0,
+        verified: true,
+        specialties: data.specialties || [],
+        profilePicture: data.profilePicture || ""
+      };
+    });
+
+    designers = [...designers, ...userDesigners];
+
+    // Remove duplicates and sort by rating
+    const seen = new Set();
+    designers = designers.filter(d => {
+      if (seen.has(d.id)) return false;
+      seen.add(d.id);
+      return true;
+    });
+
+    designers.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+    return designers.slice(0, count);
   } catch (err) {
     console.error("Error fetching top-rated designers:", err);
-    // Fallback: get by rating without review count filter
-    try {
-      const designersRef = collection(db, "designers");
-      const q = query(
-        designersRef,
-        where("verified", "==", true),
-        orderBy("rating", "desc"),
-        limit(count)
-      );
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-    } catch (fallbackErr) {
-      console.error("Fallback error:", fallbackErr);
-      return [];
-    }
+    return [];
   }
 }
 
@@ -324,17 +499,34 @@ export async function getDesignersByPriceRange(minPrice, maxPrice, pageLimit = 2
  */
 export async function getAvailableSpecialties() {
   try {
+    const specialties = new Set();
+
+    // Get from designers collection
     const designersRef = collection(db, "designers");
     const q = query(
       designersRef,
       where("verified", "==", true),
-      limit(100) // Get enough to find all specialties
+      limit(100)
     );
 
     const snapshot = await getDocs(q);
-    const specialties = new Set();
-
     snapshot.docs.forEach(doc => {
+      const designer = doc.data();
+      if (Array.isArray(designer.specialties)) {
+        designer.specialties.forEach(spec => specialties.add(spec));
+      }
+    });
+
+    // Get from users collection
+    const usersRef = collection(db, "users");
+    const usersQuery = query(
+      usersRef,
+      where("userType", "==", "designer"),
+      limit(100)
+    );
+
+    const usersSnapshot = await getDocs(usersQuery);
+    usersSnapshot.docs.forEach(doc => {
       const designer = doc.data();
       if (Array.isArray(designer.specialties)) {
         designer.specialties.forEach(spec => specialties.add(spec));

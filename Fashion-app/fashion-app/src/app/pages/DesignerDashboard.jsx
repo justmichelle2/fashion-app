@@ -1,9 +1,38 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft, Upload, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet } from "lucide-react";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Package, CheckCircle, XCircle, DollarSign, Star, TrendingUp, Clock, Settings, MessageCircle, ChevronRight, Users, Wallet, Ruler, LogOut } from "lucide-react";
+import { useState, useEffect, useContext } from "react";
+import CustomerMeasurements from "../components/CustomerMeasurements";
+import { AuthContext } from "../context/AuthContext";
+import { handleLogout } from "../utils/authUtils";
+import { db } from "../firebaseConfig";
+import { collection, query, where, orderBy, getDocs, limit } from "firebase/firestore";
 
 export default function DesignerDashboard() {
+  const navigate = useNavigate();
+  const { currentUser, userProfile } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("progress");
+  const [loading, setLoading] = useState(true);
+  const [activeOrders, setActiveOrders] = useState([]);
+  const [incomingOrders, setIncomingOrders] = useState([]);
+  const [customerMessages, setCustomerMessages] = useState([]);
+
+  const handleLogoutClick = async () => {
+    try {
+      await handleLogout();
+      navigate("/landing");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+  const [weeklyEarnings, setWeeklyEarnings] = useState([
+    { day: "Mon", amount: 0 },
+    { day: "Tue", amount: 0 },
+    { day: "Wed", amount: 0 },
+    { day: "Thu", amount: 0 },
+    { day: "Fri", amount: 0 },
+    { day: "Sat", amount: 0 },
+    { day: "Sun", amount: 0 },
+  ]);
 
   const portfolioImages = [
     "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
@@ -11,59 +40,96 @@ export default function DesignerDashboard() {
     "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
   ];
 
-  const weeklyEarnings = [
-    { day: "Mon", amount: 350 },
-    { day: "Tue", amount: 520 },
-    { day: "Wed", amount: 280 },
-    { day: "Thu", amount: 650 },
-    { day: "Fri", amount: 420 },
-    { day: "Sat", amount: 180 },
-    { day: "Sun", amount: 0 },
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!currentUser?.uid) return;
 
-  const incomingOrders = [
-    { id: "ORD004", customer: "Efua Mensah", style: "Ankara Dress", amount: 280, date: "2026-03-05" },
-    { id: "ORD005", customer: "Yaw Ofori", style: "Custom Suit", amount: 520, date: "2026-03-06" },
-    { id: "ORD006", customer: "Ama Boateng", style: "Kente Gown", amount: 450, date: "2026-03-07" },
-  ];
+      try {
+        setLoading(true);
 
-  const activeOrders = [
-    { id: "ORD001", customer: "Akosua Owusu", style: "Kente Dress", status: "Sewing", amount: 350, progress: 60 },
-    { id: "ORD002", customer: "Kofi Asante", style: "Traditional Wear", status: "Ready", amount: 420, progress: 100 },
-    { id: "ORD003", customer: "Abena Mensah", style: "Ankara Suit", status: "Measuring", amount: 380, progress: 25 },
-  ];
+        // Fetch orders assigned to this designer
+        const ordersRef = collection(db, "orders");
+        const ordersQuery = query(
+          ordersRef,
+          where("designerId", "==", currentUser.uid),
+          orderBy("createdAt", "desc"),
+          limit(20)
+        );
+        const ordersSnap = await getDocs(ordersQuery);
+        
+        const orders = ordersSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
 
-  const customerMessages = [
-    { 
-      id: "1", 
-      customer: "Akosua Owusu", 
-      lastMessage: "When will my dress be ready?", 
-      timestamp: "2h ago", 
-      unread: 2,
-      orderId: "ORD001"
-    },
-    { 
-      id: "2", 
-      customer: "Kofi Asante", 
-      lastMessage: "Thank you for the quick response!", 
-      timestamp: "5h ago", 
-      unread: 0,
-      orderId: "ORD002"
-    },
-    { 
-      id: "3", 
-      customer: "Efua Mensah", 
-      lastMessage: "Can we adjust the measurements?", 
-      timestamp: "1d ago", 
-      unread: 1,
-      orderId: "ORD004"
-    },
-  ];
+        // Separate into pending and active
+        const pending = orders.filter(o => o.status === "pending").slice(0, 3);
+        const active = orders.filter(o => ["confirmed", "in-progress"].includes(o.status)).slice(0, 3);
+        
+        setIncomingOrders(pending.map(o => ({
+          id: o.id,
+          customer: o.customerName || "Unknown Customer",
+          style: o.designDescription || "Custom Design",
+          amount: o.totalAmount || 0,
+          date: o.createdAt?.toDate?.()?.toLocaleDateString() || new Date().toLocaleDateString()
+        })));
+
+        setActiveOrders(active.map(o => ({
+          id: o.id,
+          customer: o.customerName || "Unknown Customer",
+          style: o.designDescription || "Custom Design",
+          status: o.status === "in-progress" ? "Sewing" : "Confirmed",
+          amount: o.totalAmount || 0,
+          progress: o.status === "confirmed" ? 25 : o.status === "in-progress" ? 60 : 100
+        })));
+
+        // Fetch conversations
+        const conversationsRef = collection(db, "conversations");
+        const convQuery = query(
+          conversationsRef,
+          where("participants", "array-contains", currentUser.uid),
+          orderBy("updatedAt", "desc"),
+          limit(5)
+        );
+        const convSnap = await getDocs(convQuery);
+        
+        const messages = convSnap.docs.map((doc, idx) => {
+          const data = doc.data();
+          const otherParticipant = data.participants?.find(p => p !== currentUser.uid);
+          return {
+            id: doc.id,
+            customer: data.participantNames?.[otherParticipant] || "Customer",
+            lastMessage: data.lastMessage || "No messages yet",
+            timestamp: data.updatedAt?.toDate?.()?.toLocaleTimeString() || "just now",
+            unread: data.unreadCount?.[currentUser.uid] || 0,
+            orderId: data.orderId || ""
+          };
+        });
+        
+        setCustomerMessages(messages);
+
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [currentUser]);
 
   const maxEarnings = Math.max(...weeklyEarnings.map(e => e.amount), 1);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      {!currentUser ? (
+        <div className="w-full max-w-md bg-white rounded-3xl p-12 text-center shadow-lg">
+          <p className="text-[#4B5563] mb-4">Please log in as a designer to view your dashboard</p>
+          <Link to="/designer/login" className="px-6 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D35F41] transition-all">
+            Go to Login
+          </Link>
+        </div>
+      ) : (
       <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden h-[90vh] sm:h-auto pb-4 overflow-y-auto w-full relative">
       {/* Clean Header */}
       <div className="bg-white px-6 py-6 border-b border-gray-100">
@@ -84,16 +150,16 @@ export default function DesignerDashboard() {
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-white flex-shrink-0">
               <img
-                src="https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200"
+                src={currentUser?.photoURL || "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200"}
                 alt="Designer"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1">
               <h2 className="text-white mb-1" style={{ fontSize: "20px", fontWeight: "700" }}>
-                Akosua Mensah
+                {userProfile?.businessName || userProfile?.name || "Designer"}
               </h2>
-              <p className="text-white/90 text-sm">Designer • Accra, Ghana</p>
+              <p className="text-white/90 text-sm">Designer • {userProfile?.location || "Location"}</p>
             </div>
           </div>
           
@@ -101,19 +167,19 @@ export default function DesignerDashboard() {
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
               <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                8
+                {activeOrders.length}
               </p>
               <p className="text-white/90 text-xs">Active</p>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
               <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                4.8
+                {userProfile?.rating?.toFixed(1) || "0.0"}
               </p>
               <p className="text-white/90 text-xs">Rating</p>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-3 text-center">
               <p className="text-white font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
-                3.2K
+                GH₵0
               </p>
               <p className="text-white/90 text-xs">This Month</p>
             </div>
@@ -121,10 +187,10 @@ export default function DesignerDashboard() {
         </div>
 
         {/* Tab Pills */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveTab("progress")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
               activeTab === "progress"
                 ? "bg-[#E76F51] text-white"
                 : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
@@ -133,9 +199,16 @@ export default function DesignerDashboard() {
           >
             Progress
           </button>
+          <Link
+            to="/designer-portfolio"
+            className="px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+            style={{ fontWeight: "600" }}
+          >
+            Portfolio
+          </Link>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
               activeTab === "orders"
                 ? "bg-[#E76F51] text-white"
                 : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
@@ -146,7 +219,7 @@ export default function DesignerDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("messages")}
-            className={`px-6 py-2.5 rounded-full text-sm transition-all ${
+            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
               activeTab === "messages"
                 ? "bg-[#E76F51] text-white"
                 : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
@@ -154,6 +227,17 @@ export default function DesignerDashboard() {
             style={{ fontWeight: "600" }}
           >
             Messages
+          </button>
+          <button
+            onClick={() => setActiveTab("measurements")}
+            className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
+              activeTab === "measurements"
+                ? "bg-[#E76F51] text-white"
+                : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+            }`}
+            style={{ fontWeight: "600" }}
+          >
+            Measurements
           </button>
         </div>
       </div>
@@ -264,27 +348,20 @@ export default function DesignerDashboard() {
             </div>
 
             {/* Portfolio Showcase */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
-                  Portfolio
-                </h3>
-                <button className="text-[#E76F51] text-sm" style={{ fontWeight: "600" }}>
-                  View all →
-                </button>
+            <Link
+              to="/designer-portfolio"
+              className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:border-[#E76F51] transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
+                    Portfolio
+                  </h3>
+                  <p className="text-[#4B5563] text-sm mt-1">Upload and manage your designs</p>
+                </div>
+                <ChevronRight size={24} className="text-[#E76F51]" />
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {portfolioImages.map((image, index) => (
-                  <div key={index} className="aspect-square rounded-2xl overflow-hidden bg-gray-100">
-                    <img
-                      src={image}
-                      alt={`Portfolio ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            </Link>
           </>
         )}
 
@@ -507,8 +584,46 @@ export default function DesignerDashboard() {
             </div>
           </>
         )}
+
+        {/* Measurements Tab */}
+        {activeTab === "measurements" && (
+          <div className="bg-white rounded-3xl p-0 shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <h3 className="text-[#2D2D2D] flex items-center gap-2" style={{ fontSize: "18px", fontWeight: "700" }}>
+                <Ruler size={20} />
+                Customer Measurements
+              </h3>
+              <p className="text-[#4B5563] text-sm mt-2">
+                View and manage measurements from your assigned orders
+              </p>
+            </div>
+            <div className="p-6">
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin">
+                    <div className="w-8 h-8 border-3 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+                  </div>
+                </div>
+              ) : (
+                <CustomerMeasurements 
+                  designerId={currentUser?.uid}
+                  onMeasurementsLoad={(count) => console.log(`Loaded ${count} customer measurements`)}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogoutClick}
+          className="w-full mt-6 flex items-center justify-center gap-2 bg-red-50 text-red-600 p-4 rounded-lg font-semibold hover:bg-red-100 transition"
+        >
+          <LogOut size={20} /> Logout
+        </button>
       </div>
     </div>
+      )}
     </div>
   );
 }
