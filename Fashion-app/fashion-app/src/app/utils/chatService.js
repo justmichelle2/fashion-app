@@ -136,7 +136,7 @@ export const getConversationMessages = async (conversationId, limit = 50) => {
     }
 
     const messagesRef = collection(db, "conversations", conversationId, "messages");
-    const q = query(messagesRef, orderBy("createdAt", "desc"));
+    const q = query(messagesRef);
 
     const snapshot = await getDocs(q);
     const messages = snapshot.docs
@@ -144,7 +144,11 @@ export const getConversationMessages = async (conversationId, limit = 50) => {
         id: doc.id,
         ...doc.data(),
       }))
-      .reverse(); // Reverse to show oldest first
+      .sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return aTime - bTime; // Sort oldest first
+      });
 
     return {
       success: true,
@@ -169,7 +173,7 @@ export const subscribeToMessages = (conversationId, callback) => {
     }
 
     const messagesRef = collection(db, "conversations", conversationId, "messages");
-    const q = query(messagesRef, orderBy("createdAt", "asc"));
+    const q = query(messagesRef);
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const messages = snapshot.docs.map((doc) => ({
@@ -205,7 +209,7 @@ export const getUserConversations = async (userId) => {
     }
 
     const conversationsRef = collection(db, "conversations");
-    const q = query(conversationsRef, orderBy("updatedAt", "desc"));
+    const q = query(conversationsRef);
 
     const snapshot = await getDocs(q);
     const conversations = snapshot.docs
@@ -214,14 +218,15 @@ export const getUserConversations = async (userId) => {
         ...doc.data(),
       }))
       .filter((conversation) => {
-        const participantIds = conversation.participantIds || [];
-        const participants = conversation.participants || {};
-
-        if (Array.isArray(participantIds) && participantIds.includes(userId)) {
-          return true;
-        }
-
-        return Boolean(participants?.[userId]);
+        const participants = conversation.participants || [];
+        // participants is an array of user IDs
+        return Array.isArray(participants) && participants.includes(userId);
+      })
+      .sort((a, b) => {
+        // Sort by updatedAt descending
+        const aTime = a.updatedAt?.toMillis?.() || 0;
+        const bTime = b.updatedAt?.toMillis?.() || 0;
+        return bTime - aTime;
       });
 
     return {
@@ -280,10 +285,10 @@ export const searchConversations = async (userId, searchTerm) => {
 
     // Filter by search term (case-insensitive)
     const filtered = allConversations.filter((conv) => {
-      const otherUserId = Object.keys(conv.participants).find((id) => id !== userId);
-      const otherUser = conv.participants[otherUserId];
-      const matchesName = otherUser?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesMessage = conv.lastMessage?.toLowerCase().includes(searchTerm.toLowerCase());
+      const otherUserId = (conv.participants || []).find((id) => id !== userId);
+      const otherUserName = conv.participantNames?.[otherUserId] || "";
+      const matchesName = otherUserName.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesMessage = (conv.lastMessage || "").toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesName || matchesMessage;
     });

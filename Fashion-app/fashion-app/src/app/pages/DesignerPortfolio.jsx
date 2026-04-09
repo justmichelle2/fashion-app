@@ -1,19 +1,71 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, Trash2, AlertCircle, CheckCircle } from "lucide-react";
-import { useState, useContext } from "react";
+import { ArrowLeft, Upload, Trash2, AlertCircle, CheckCircle, Loader } from "lucide-react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { uploadPortfolioImage, deleteImage } from "../services/imageUploadService";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function DesignerPortfolio() {
   const navigate = useNavigate();
   const { currentUser, userProfile } = useContext(AuthContext);
-  const [portfolioImages, setPortfolioImages] = useState([
-    "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-    "https://images.unsplash.com/photo-1763823132521-72f373850de2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-    "https://images.unsplash.com/photo-1733324961705-97bd6cd7f4ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-  ]);
+  const [portfolioImages, setPortfolioImages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [uploadingDesign, setUploadingDesign] = useState(false);
   const [designError, setDesignError] = useState("");
   const [designSuccess, setDesignSuccess] = useState("");
+  const [deleting, setDeleting] = useState(null);
+
+  // Load portfolio from Firestore on mount
+  useEffect(() => {
+    if (!currentUser?.uid) {
+      setLoading(false);
+      return;
+    }
+
+    const loadPortfolio = async () => {
+      try {
+        setLoading(true);
+        const portfolioRef = doc(db, "designerPortfolios", currentUser.uid);
+        const portfolioDoc = await getDoc(portfolioRef);
+        
+        if (portfolioDoc.exists()) {
+          const items = portfolioDoc.data().items || [];
+          setPortfolioImages(items);
+          console.log(`Loaded ${items.length} portfolio images`);
+        } else {
+          setPortfolioImages([]);
+        }
+      } catch (err) {
+        console.error("Error loading portfolio:", err);
+        setDesignError("Failed to load portfolio");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPortfolio();
+  }, [currentUser?.uid]);
+
+  // Save portfolio to Firestore
+  const savePortfolioToFirestore = async (updatedImages) => {
+    if (!currentUser?.uid) {
+      throw new Error("User ID is required to save portfolio");
+    }
+
+    try {
+      const portfolioRef = doc(db, "designerPortfolios", currentUser.uid);
+      await setDoc(portfolioRef, {
+        designerId: currentUser.uid,
+        items: updatedImages,
+        updatedAt: new Date(),
+      }, { merge: true });
+      console.log("✓ Portfolio saved to Firestore");
+    } catch (err) {
+      console.error("✗ Error saving portfolio:", err);
+      throw new Error(`Failed to save portfolio: ${err.message}`);
+    }
+  };
 
   if (!currentUser) {
     return (
@@ -53,36 +105,73 @@ export default function DesignerPortfolio() {
     try {
       setUploadingDesign(true);
       setDesignError("");
+      console.log("Starting portfolio image upload...");
 
-      // Create a preview URL (in production, would upload to Firebase Storage)
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageUrl = event.target?.result;
-        
-        // Add to portfolio
-        setPortfolioImages([...portfolioImages, imageUrl]);
-        setDesignSuccess(`Design "${file.name}" uploaded successfully!`);
-        setTimeout(() => setDesignSuccess(""), 3000);
-        
-        // Reset file inputs
-        const mainInput = document.getElementById("design-upload-main");
-        const emptyInput = document.getElementById("design-upload-empty");
-        if (mainInput) mainInput.value = "";
-        if (emptyInput) emptyInput.value = "";
+      // Upload to Firebase Storage
+      console.log("Uploading to Firebase Storage...");
+      const result = await uploadPortfolioImage(file, currentUser.uid);
+      console.log("Upload successful:", result);
+      
+      // Add to portfolio
+      const newItem = {
+        id: result.fileName,
+        url: result.url,
+        path: result.path,
+        uploadedAt: new Date().toISOString(),
       };
-      reader.readAsDataURL(file);
+      
+      console.log("Adding item to portfolio:", newItem);
+      const updatedPortfolio = [newItem, ...portfolioImages];
+      setPortfolioImages(updatedPortfolio);
+      
+      // Save to Firestore
+      console.log("Saving to Firestore...");
+      await savePortfolioToFirestore(updatedPortfolio);
+      console.log("Firestore save successful");
+      
+      setDesignSuccess(`Design uploaded successfully!`);
+      setTimeout(() => setDesignSuccess(""), 3000);
+      
+      // Reset file inputs
+      const mainInput = document.getElementById("design-upload-main");
+      const emptyInput = document.getElementById("design-upload-empty");
+      if (mainInput) mainInput.value = "";
+      if (emptyInput) emptyInput.value = "";
 
       setUploadingDesign(false);
+      console.log("Upload complete");
     } catch (error) {
-      setDesignError("Failed to upload design. Please try again.");
+      console.error("Upload error:", error);
+      setDesignError(error.message || "Failed to upload design. Please try again.");
       setUploadingDesign(false);
     }
   };
 
-  const handleDeleteDesign = (index) => {
-    setPortfolioImages(portfolioImages.filter((_, i) => i !== index));
-    setDesignSuccess("Design deleted successfully!");
-    setTimeout(() => setDesignSuccess(""), 3000);
+  const handleDeleteDesign = async (index) => {
+    const item = portfolioImages[index];
+    setDeleting(index);
+    
+    try {
+      // Delete from Firebase Storage
+      if (item.path) {
+        await deleteImage(item.path);
+      }
+      
+      // Update state
+      const updated = portfolioImages.filter((_, i) => i !== index);
+      setPortfolioImages(updated);
+      
+      // Save to Firestore
+      await savePortfolioToFirestore(updated);
+      
+      setDesignSuccess("Design deleted successfully!");
+      setTimeout(() => setDesignSuccess(""), 3000);
+    } catch (error) {
+      setDesignError(error.message || "Failed to delete design");
+      setTimeout(() => setDesignError(""), 3000);
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -182,13 +271,18 @@ export default function DesignerPortfolio() {
             My Designs ({portfolioImages.length})
           </h2>
 
-          {portfolioImages.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="w-8 h-8 border-4 border-[#E63946]/30 border-t-[#E63946] rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-[#2D3436]">Loading portfolio...</p>
+            </div>
+          ) : portfolioImages.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {portfolioImages.map((image, index) => (
-                <div key={index} className="relative group">
+              {portfolioImages.map((item, index) => (
+                <div key={item.id || index} className="relative group">
                   <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
                     <img
-                      src={image}
+                      src={item.url || item}
                       alt={`Design ${index + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -198,9 +292,18 @@ export default function DesignerPortfolio() {
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <button
                       onClick={() => handleDeleteDesign(index)}
-                      className="bg-red-600 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-red-700 transition flex items-center gap-2"
+                      disabled={deleting === index}
+                      className="bg-red-600 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-red-700 transition flex items-center gap-2 disabled:opacity-50"
                     >
-                      <Trash2 size={16} /> Delete
+                      {deleting === index ? (
+                        <>
+                          <Loader size={16} className="animate-spin" /> Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 size={16} /> Delete
+                        </>
+                      )}
                     </button>
                   </div>
 

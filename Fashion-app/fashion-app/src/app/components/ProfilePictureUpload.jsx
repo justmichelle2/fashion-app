@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Camera, X } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import { uploadProfilePicture } from "../services/imageUploadService";
+import { db } from "../firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
 
 export function ProfilePictureUpload({ userId, currentImage, onUploadSuccess, className = "" }) {
   const [showUploader, setShowUploader] = useState(false);
@@ -9,6 +11,21 @@ export function ProfilePictureUpload({ userId, currentImage, onUploadSuccess, cl
   const [error, setError] = useState("");
 
   const handleUploadSuccess = async (result) => {
+    try {
+      // Save image URL to user profile in Firestore
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        profilePicture: result.url,
+        updatedAt: new Date(),
+      });
+      console.log("Profile picture saved to Firestore");
+    } catch (err) {
+      console.error("Error saving profile picture:", err);
+      setError("Failed to save profile picture");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+    
     setShowUploader(false);
     setUploading(false);
     onUploadSuccess?.(result);

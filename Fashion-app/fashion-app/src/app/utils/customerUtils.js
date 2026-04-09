@@ -59,8 +59,16 @@ export const updateCustomerProfile = async (profileData) => {
     }
 
     const userRef = doc(db, "users", auth.currentUser.uid);
+    
+    // Map form field names to Firestore field names
     const updateData = {
-      ...profileData,
+      name: profileData.displayName,
+      email: profileData.email,
+      phone: profileData.phone,
+      address: profileData.address,
+      city: profileData.city,
+      country: profileData.country,
+      profilePicture: profileData.profilePicture,
       updatedAt: serverTimestamp(),
     };
 

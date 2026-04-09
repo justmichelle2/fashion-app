@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2, Loader } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import { uploadPortfolioImage, deleteImage } from "../services/imageUploadService";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "" }) {
   const [portfolio, setPortfolio] = useState([]);
@@ -9,21 +11,78 @@ export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load portfolio from Firestore on mount
+  useEffect(() => {
+    if (!designerId) {
+      setLoading(false);
+      return;
+    }
+
+    const loadPortfolio = async () => {
+      try {
+        setLoading(true);
+        const portfolioRef = doc(db, "designerPortfolios", designerId);
+        const portfolioDoc = await getDoc(portfolioRef);
+        
+        if (portfolioDoc.exists()) {
+          const items = portfolioDoc.data().items || [];
+          setPortfolio(items);
+          console.log(`Loaded ${items.length} portfolio items for designer ${designerId}`);
+        } else {
+          console.log("No portfolio found, starting fresh");
+          setPortfolio([]);
+        }
+      } catch (err) {
+        console.error("Error loading portfolio:", err);
+        setError("Failed to load portfolio");
+        setTimeout(() => setError(""), 3000);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPortfolio();
+  }, [designerId]);
+
+  // Save portfolio to Firestore
+  const savePortfolioToFirestore = async (updatedPortfolio) => {
+    if (!designerId) return;
+
+    try {
+      const portfolioRef = doc(db, "designerPortfolios", designerId);
+      await setDoc(portfolioRef, {
+        designerId,
+        items: updatedPortfolio,
+        updatedAt: new Date(),
+      }, { merge: true });
+      console.log("Portfolio saved to Firestore");
+    } catch (err) {
+      console.error("Error saving portfolio:", err);
+      setError("Failed to save portfolio");
+      setTimeout(() => setError(""), 3000);
+    }
+  };
 
   const handleUploadSuccess = async (result) => {
     const newItem = {
       id: result.fileName,
       url: result.url,
       path: result.path,
-      uploadedAt: new Date(),
+      uploadedAt: new Date().toISOString(),
       title: "",
       description: "",
     };
     
-    setPortfolio([newItem, ...portfolio]);
+    const updatedPortfolio = [newItem, ...portfolio];
+    setPortfolio(updatedPortfolio);
     setShowUploader(false);
     setUploading(false);
-    onPortfolioUpdate?.([newItem, ...portfolio]);
+    
+    // Save to Firestore
+    await savePortfolioToFirestore(updatedPortfolio);
+    onPortfolioUpdate?.(updatedPortfolio);
   };
 
   const handleDelete = async (item) => {
@@ -32,6 +91,9 @@ export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "
       await deleteImage(item.path);
       const updated = portfolio.filter(p => p.id !== item.id);
       setPortfolio(updated);
+      
+      // Save to Firestore
+      await savePortfolioToFirestore(updated);
       onPortfolioUpdate?.(updated);
     } catch (err) {
       setError(err.message);
@@ -41,18 +103,24 @@ export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "
     }
   };
 
-  const updateItemTitle = (id, title) => {
+  const updateItemTitle = async (id, title) => {
     const updated = portfolio.map(p => 
       p.id === id ? { ...p, title } : p
     );
     setPortfolio(updated);
+    
+    // Save to Firestore
+    await savePortfolioToFirestore(updated);
   };
 
-  const updateItemDescription = (id, description) => {
+  const updateItemDescription = async (id, description) => {
     const updated = portfolio.map(p => 
       p.id === id ? { ...p, description } : p
     );
     setPortfolio(updated);
+    
+    // Save to Firestore
+    await savePortfolioToFirestore(updated);
   };
 
   return (
@@ -61,7 +129,8 @@ export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "
         <h2 className="text-[#2D2D2D] text-2xl font-semibold">Portfolio</h2>
         <button
           onClick={() => setShowUploader(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D35F41] transition-all font-semibold"
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D35F41] transition-all font-semibold disabled:opacity-50"
         >
           <Plus size={20} />
           Add Work
@@ -74,8 +143,13 @@ export function PortfolioUploader({ designerId, onPortfolioUpdate, className = "
         </div>
       )}
 
-      {/* Portfolio Grid */}
-      {portfolio.length > 0 ? (
+      {/* Loading State */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-4 border-[#E76F51]/30 border-t-[#E76F51] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#4B5563]">Loading portfolio...</p>
+        </div>
+      ) : portfolio.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {portfolio.map((item) => (
             <div key={item.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
