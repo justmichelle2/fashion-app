@@ -96,38 +96,38 @@ export default function DesignerOrders() {
               {loading ? (
                 <div className="flex justify-center py-8">
                   <div className="animate-spin">
-                    <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+                    <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E63946] rounded-full"></div>
                   </div>
                 </div>
               ) : activeOrders.length === 0 ? (
                 <div className="p-8 text-center">
                   <Package size={40} className="text-gray-300 mx-auto mb-3" />
-                  <p className="text-[#4B5563] text-sm">No active orders</p>
+                  <p className="text-[#2D3436] text-sm">No active orders</p>
                 </div>
               ) : (
                 activeOrders.map((order) => (
                   <button
                     key={order.id}
                     onClick={() => navigate(`/designer/order/${order.id}`)}
-                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 hover:border-[#E76F51] hover:bg-[#FFF9F6] transition-all text-left"
+                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 hover:border-[#E63946] hover:bg-[#FFF9F6] transition-all text-left"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <p className="text-[#2D2D2D] font-semibold">{order.customer}</p>
-                        <p className="text-[#4B5563] text-sm">{order.item}</p>
+                        <p className="text-[#2D3436] text-sm">{order.item}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[#E76F51] font-semibold">GH₵{order.amount}</p>
+                        <p className="text-[#E63946] font-semibold">GH₵{order.amount}</p>
                       </div>
                     </div>
                     <div className="mb-2">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-[#4B5563]">Progress</span>
-                        <span className="text-xs font-semibold text-[#E76F51]">{order.progress}%</span>
+                        <span className="text-xs text-[#2D3436]">Progress</span>
+                        <span className="text-xs font-semibold text-[#E63946]">{order.progress}%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261] rounded-full"
+                          className="h-full bg-gradient-to-r from-[#E63946] to-[#D4AF37] rounded-full"
                           style={{ width: `${order.progress}%` }}
                         ></div>
                       </div>
@@ -135,12 +135,12 @@ export default function DesignerOrders() {
                     <div className="flex items-center justify-between">
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         order.status === "Ready for Pickup"
-                          ? "bg-[#10B981]/10 text-[#10B981] font-semibold"
-                          : "bg-[#F4A261]/10 text-[#F4A261] font-semibold"
+                          ? "bg-[#D4AF37]/10 text-[#D4AF37] font-semibold"
+                          : "bg-[#D4AF37]/10 text-[#D4AF37] font-semibold"
                       }`}>
                         {order.status}
                       </span>
-                      <span className="text-xs text-[#4B5563] flex items-center gap-1">
+                      <span className="text-xs text-[#2D3436] flex items-center gap-1">
                         <Clock size={14} /> {order.dueDate}
                       </span>
                     </div>
@@ -159,22 +159,22 @@ export default function DesignerOrders() {
               {upcomingOrders.length === 0 ? (
                 <div className="p-8 text-center">
                   <AlertCircle size={40} className="text-gray-300 mx-auto mb-3" />
-                  <p className="text-[#4B5563] text-sm">No upcoming orders</p>
+                  <p className="text-[#2D3436] text-sm">No upcoming orders</p>
                 </div>
               ) : (
                 upcomingOrders.map((order) => (
                   <button
                     key={order.id}
                     onClick={() => navigate(`/designer/order/${order.id}`)}
-                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 flex items-center justify-between hover:border-[#E76F51] hover:bg-[#FFF9F6] transition-all text-left"
+                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 flex items-center justify-between hover:border-[#E63946] hover:bg-[#FFF9F6] transition-all text-left"
                   >
                     <div>
                       <p className="text-[#2D2D2D] font-semibold">{order.customer}</p>
-                      <p className="text-[#4B5563] text-sm">{order.item}</p>
+                      <p className="text-[#2D3436] text-sm">{order.item}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[#E76F51] font-semibold">GH₵{order.amount}</p>
-                      <p className="text-[#4B5563] text-xs">{order.orderDate}</p>
+                      <p className="text-[#E63946] font-semibold">GH₵{order.amount}</p>
+                      <p className="text-[#2D3436] text-xs">{order.orderDate}</p>
                     </div>
                   </button>
                 ))
@@ -191,28 +191,28 @@ export default function DesignerOrders() {
               {completedOrders.length === 0 ? (
                 <div className="p-8 text-center">
                   <CheckCircle size={40} className="text-gray-300 mx-auto mb-3" />
-                  <p className="text-[#4B5563] text-sm">No completed orders yet</p>
+                  <p className="text-[#2D3436] text-sm">No completed orders yet</p>
                 </div>
               ) : (
                 completedOrders.map((order) => (
                   <button
                     key={order.id}
                     onClick={() => navigate(`/designer/order/${order.id}`)}
-                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 hover:border-[#E76F51] hover:bg-[#FFF9F6] transition-all text-left"
+                    className="w-full p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 hover:border-[#E63946] hover:bg-[#FFF9F6] transition-all text-left"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <p className="text-[#2D2D2D] font-semibold">{order.customer}</p>
-                        <p className="text-[#4B5563] text-sm">{order.item}</p>
+                        <p className="text-[#2D3436] text-sm">{order.item}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[#10B981] font-semibold flex items-center gap-1"><CheckCircle size={16} /> Completed</p>
-                        <p className="text-[#4B5563] text-xs">{order.completedDate}</p>
+                        <p className="text-[#D4AF37] font-semibold flex items-center gap-1"><CheckCircle size={16} /> Completed</p>
+                        <p className="text-[#2D3436] text-xs">{order.completedDate}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#E76F51] font-semibold">GH₵{order.amount}</span>
-                      <span className="text-[#10B981]">⭐ {order.rating}</span>
+                      <span className="text-[#E63946] font-semibold">GH₵{order.amount}</span>
+                      <span className="text-[#D4AF37]">⭐ {order.rating}</span>
                     </div>
                   </button>
                 ))

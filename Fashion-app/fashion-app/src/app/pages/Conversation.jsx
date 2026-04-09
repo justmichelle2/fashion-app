@@ -185,7 +185,7 @@ export default function Conversation() {
     return (
       <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#EAB308] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading conversation...</p>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function Conversation() {
               </div>
               <div>
                 <h2 className="text-[#111827] font-semibold">{designer?.name || "Designer"}</h2>
-                <p className="text-[#10B981] text-xs">Online</p>
+                <p className="text-[#D4AF37] text-xs">Online</p>
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function Conversation() {
               <div
                 className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                   msg.senderId === currentUser?.uid
-                    ? "bg-[#EAB308] text-white rounded-tr-sm"
+                    ? "bg-[#D4AF37] text-white rounded-tr-sm"
                     : "bg-white border border-gray-200 text-[#111827] rounded-tl-sm"
                 }`}
               >
@@ -259,7 +259,7 @@ export default function Conversation() {
                     ))}
                   </div>
                 )}
-                <p className={`text-xs mt-1 ${msg.senderId === currentUser?.uid ? "text-white/80" : "text-[#4B5563]"}`}>
+                <p className={`text-xs mt-1 ${msg.senderId === currentUser?.uid ? "text-white/80" : "text-[#2D3436]"}`}>
                   {msg.createdAt?.toDate ? new Date(msg.createdAt.toDate()).toLocaleTimeString() : "Just now"}
                 </p>
               </div>
@@ -270,7 +270,7 @@ export default function Conversation() {
 
       <div className="bg-white border-t border-gray-200 px-6 py-4">
         <form onSubmit={handleSend} className="flex items-end gap-3">
-          <label className="p-2 text-gray-400 hover:text-[#EAB308] transition-colors cursor-pointer" aria-label="Add image">
+          <label className="p-2 text-gray-400 hover:text-[#D4AF37] transition-colors cursor-pointer" aria-label="Add image">
             <ImageIcon size={24} />
             <input
               type="file"
@@ -280,7 +280,7 @@ export default function Conversation() {
               disabled={sending}
             />
           </label>
-          <button type="button" className="p-2 text-gray-400 hover:text-[#EAB308] transition-colors" aria-label="Add attachment">
+          <button type="button" className="p-2 text-gray-400 hover:text-[#D4AF37] transition-colors" aria-label="Add attachment">
             <Paperclip size={24} />
           </button>
 
@@ -291,7 +291,7 @@ export default function Conversation() {
               placeholder="Type your message..."
               rows={1}
               disabled={sending}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EAB308] focus:border-transparent resize-none disabled:bg-gray-100"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent resize-none disabled:bg-gray-100"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -304,7 +304,7 @@ export default function Conversation() {
           <button
             type="submit"
             disabled={!message.trim() || sending}
-            className="p-3 bg-[#EAB308] text-white rounded-xl hover:bg-[#CA9A04] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="p-3 bg-[#D4AF37] text-white rounded-xl hover:bg-[#B8963C] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             <Send size={20} />
           </button>

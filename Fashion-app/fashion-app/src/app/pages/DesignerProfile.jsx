@@ -74,7 +74,7 @@ export default function DesignerProfile() {
       {loading && (
         <div className="flex items-center justify-center h-[70vh]">
           <div className="text-center">
-            <p className="text-[#4B5563]">Loading designer profile...</p>
+            <p className="text-[#2D3436]">Loading designer profile...</p>
           </div>
         </div>
       )}
@@ -83,7 +83,7 @@ export default function DesignerProfile() {
         <div className="flex items-center justify-center h-[70vh]">
           <div className="text-center p-6">
             <p className="text-[#EF4444]">{error}</p>
-            <Link to="/designers" className="text-[#E76F51] mt-4 inline-block hover:underline">
+            <Link to="/designers" className="text-[#E63946] mt-4 inline-block hover:underline">
               Back to Designers
             </Link>
           </div>
@@ -94,7 +94,7 @@ export default function DesignerProfile() {
         <>
       {/* Header with Photo */}
       <div className="relative">
-        <div className="h-72 bg-gradient-to-br from-[#E76F51] to-[#F4A261]">
+        <div className="h-72 bg-gradient-to-br from-[#E63946] to-[#D4AF37]">
           <img
             src={designerPhotos[0]}
             alt={designer.name}
@@ -122,17 +122,17 @@ export default function DesignerProfile() {
           </h1>
           
           <div className="flex items-center gap-2 mb-3">
-            <MapPin size={16} className="text-[#4B5563]" />
-            <span className="text-[#4B5563]">{designer.location}</span>
+            <MapPin size={16} className="text-[#2D3436]" />
+            <span className="text-[#2D3436]">{designer.location}</span>
           </div>
 
           <div className="flex items-center gap-4 mb-3">
             <div className="flex items-center gap-1">
-              <Star size={18} className="text-[#F4A261] fill-[#F4A261]" />
+              <Star size={18} className="text-[#D4AF37] fill-[#D4AF37]" />
               <span className="text-[#111827]" style={{ fontWeight: "700", fontSize: "18px" }}>
                 {designer.rating}
               </span>
-              <span className="text-[#4B5563]">({designer.reviews} reviews)</span>
+              <span className="text-[#2D3436]">({designer.reviews} reviews)</span>
             </div>
           </div>
 
@@ -140,7 +140,7 @@ export default function DesignerProfile() {
             {designer.specialties.map((specialty) => (
               <span
                 key={specialty}
-                className="px-3 py-1 bg-[#E76F51]/10 text-[#E76F51] text-sm rounded-full"
+                className="px-3 py-1 bg-[#E63946]/10 text-[#E63946] text-sm rounded-full"
                 style={{ fontWeight: "600" }}
               >
                 {specialty}
@@ -157,7 +157,7 @@ export default function DesignerProfile() {
           <h2 className="text-[#111827] mb-3" style={{ fontSize: "20px", fontWeight: "700" }}>
             About
           </h2>
-          <p className="text-[#4B5563] leading-relaxed">{designer.bio}</p>
+          <p className="text-[#2D3436] leading-relaxed">{designer.bio}</p>
           <div className="mt-3">
             <span className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
               Price Range: {designer.priceRange}
@@ -195,7 +195,7 @@ export default function DesignerProfile() {
           </Link>
           <Link
             to={`/book/${id}`}
-            className="flex-1 py-3 bg-[#E76F51] text-white rounded-xl hover:bg-[#D55B3A] transition-colors text-center"
+            className="flex-1 py-3 bg-[#E63946] text-white rounded-xl hover:bg-[#D55B3A] transition-colors text-center"
             style={{ fontWeight: "600" }}
           >
             Book Now

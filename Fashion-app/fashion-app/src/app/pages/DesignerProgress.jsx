@@ -17,8 +17,8 @@ export default function DesignerProgress() {
   ]);
 
   const goals = [
-    { title: "Earn GH₵5,000 this month", current: 3200, target: 5000, color: "#E76F51" },
-    { title: "Maintain 4.8+ rating", current: 4.8, target: 5.0, color: "#10B981" },
+    { title: "Earn GH₵5,000 this month", current: 3200, target: 5000, color: "#E63946" },
+    { title: "Maintain 4.8+ rating", current: 4.8, target: 5.0, color: "#D4AF37" },
   ];
 
   return (
@@ -42,23 +42,23 @@ export default function DesignerProgress() {
               <h2 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
                 This Week's Revenue
               </h2>
-              <TrendingUp size={20} className="text-[#10B981]" />
+              <TrendingUp size={20} className="text-[#D4AF37]" />
             </div>
             <div className="flex items-end justify-between h-40 gap-2">
               {weeklyEarnings.map((item) => (
                 <div key={item.day} className="flex flex-col items-center gap-2 flex-1">
                   <div className="w-full bg-gray-100 rounded-lg overflow-hidden flex items-end">
                     <div
-                      className="w-full bg-gradient-to-t from-[#E76F51] to-[#F4A261] rounded-lg transition-all hover:opacity-80"
+                      className="w-full bg-gradient-to-t from-[#E63946] to-[#D4AF37] rounded-lg transition-all hover:opacity-80"
                       style={{ height: `${(item.amount / 1000) * 100}px` }}
                     ></div>
                   </div>
-                  <span className="text-[#4B5563] text-xs font-semibold">{item.day}</span>
+                  <span className="text-[#2D3436] text-xs font-semibold">{item.day}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-[#E76F51]/10 rounded-2xl">
-              <p className="text-[#E76F51] font-semibold">Total: GH₵4,600</p>
+            <div className="mt-4 p-4 bg-[#E63946]/10 rounded-2xl">
+              <p className="text-[#E63946] font-semibold">Total: GH₵4,600</p>
             </div>
           </div>
 
@@ -72,7 +72,7 @@ export default function DesignerProgress() {
                 <div key={index} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[#2D2D2D] font-semibold text-sm">{goal.title}</span>
-                    <span className="text-[#4B5563] text-xs font-semibold">
+                    <span className="text-[#2D3436] text-xs font-semibold">
                       {goal.current} / {goal.target}
                     </span>
                   </div>
@@ -97,20 +97,20 @@ export default function DesignerProgress() {
             </h2>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-center">
-                <p className="text-[#E76F51] font-['Playfair_Display'] font-bold text-2xl">12</p>
-                <p className="text-[#4B5563] text-xs mt-1">Orders This Week</p>
+                <p className="text-[#E63946] font-['Playfair_Display'] font-bold text-2xl">12</p>
+                <p className="text-[#2D3436] text-xs mt-1">Orders This Week</p>
               </div>
               <div className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-center">
-                <p className="text-[#10B981] font-['Playfair_Display'] font-bold text-2xl">4.8</p>
-                <p className="text-[#4B5563] text-xs mt-1">Average Rating</p>
+                <p className="text-[#D4AF37] font-['Playfair_Display'] font-bold text-2xl">4.8</p>
+                <p className="text-[#2D3436] text-xs mt-1">Average Rating</p>
               </div>
               <div className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-center">
-                <p className="text-[#F4A261] font-['Playfair_Display'] font-bold text-2xl">98%</p>
-                <p className="text-[#4B5563] text-xs mt-1">Completion Rate</p>
+                <p className="text-[#D4AF37] font-['Playfair_Display'] font-bold text-2xl">98%</p>
+                <p className="text-[#2D3436] text-xs mt-1">Completion Rate</p>
               </div>
               <div className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50 text-center">
-                <p className="text-[#6366F1] font-['Playfair_Display'] font-bold text-2xl">2.5h</p>
-                <p className="text-[#4B5563] text-xs mt-1">Avg Response Time</p>
+                <p className="text-[#E63946] font-['Playfair_Display'] font-bold text-2xl">2.5h</p>
+                <p className="text-[#2D3436] text-xs mt-1">Avg Response Time</p>
               </div>
             </div>
           </div>

@@ -149,7 +149,7 @@ export default function DesignerSignup() {
                     value={formData.businessName}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -168,7 +168,7 @@ export default function DesignerSignup() {
                     value={formData.fullName}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -187,7 +187,7 @@ export default function DesignerSignup() {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function DesignerSignup() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -225,7 +225,7 @@ export default function DesignerSignup() {
                     value={formData.location}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -244,8 +244,8 @@ export default function DesignerSignup() {
                       disabled={loading}
                       className={`p-3 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
                         formData.specialties.includes(specialty)
-                          ? "bg-[#E76F51] text-white border border-[#E76F51]"
-                          : "bg-[#FAFAF8] text-[#2D2D2D] border border-[#E76F51]/20 hover:border-[#E76F51]/50"
+                          ? "bg-[#E63946] text-white border border-[#E63946]"
+                          : "bg-[#FAFAF8] text-[#2D2D2D] border border-[#E63946]/20 hover:border-[#E63946]/50"
                       } disabled:opacity-60 disabled:cursor-not-allowed`}
                     >
                       {formData.specialties.includes(specialty) && <Check size={16} />}
@@ -269,7 +269,7 @@ export default function DesignerSignup() {
                     value={formData.password}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function DesignerSignup() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -321,15 +321,15 @@ export default function DesignerSignup() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-[#E76F51]/10"></div>
+              <div className="flex-1 h-px bg-[#E63946]/10"></div>
               <span className="text-[#6B6B6B] text-sm font-medium">Already registered?</span>
-              <div className="flex-1 h-px bg-[#E76F51]/10"></div>
+              <div className="flex-1 h-px bg-[#E63946]/10"></div>
             </div>
 
             {/* Login Link */}
             <Link
               to="/designer/login"
-              className="block w-full text-center py-3 bg-[#E76F51]/10 hover:bg-[#E76F51]/20 text-[#2D2D2D] rounded-lg transition-all font-semibold"
+              className="block w-full text-center py-3 bg-[#E63946]/10 hover:bg-[#E63946]/20 text-[#2D2D2D] rounded-lg transition-all font-semibold"
             >
               Sign In Instead
             </Link>

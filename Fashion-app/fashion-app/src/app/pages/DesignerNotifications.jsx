@@ -43,12 +43,12 @@ export default function DesignerNotifications() {
           {PLACEHOLDER_NOTIFICATIONS.map((item) => (
             <div key={item.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
               <div className="flex items-start gap-3">
-                <div className="rounded-full bg-[#E76F51]/10 p-2 text-[#E76F51]">
+                <div className="rounded-full bg-[#E63946]/10 p-2 text-[#E63946]">
                   <Bell size={16} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-[#2D2D2D]">{item.title}</p>
-                  <p className="mt-1 text-sm text-[#4B5563]">{item.message}</p>
+                  <p className="mt-1 text-sm text-[#2D3436]">{item.message}</p>
                   <p className="mt-2 text-xs text-gray-400">{item.time}</p>
                 </div>
               </div>

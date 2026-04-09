@@ -45,7 +45,7 @@ export default function DesignerMeasurements() {
               Measurements
             </h1>
           </div>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition bg-[#E76F51]/10 text-[#E76F51]">
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition bg-[#E63946]/10 text-[#E63946]">
             <Plus size={20} />
           </button>
         </div>
@@ -130,9 +130,9 @@ export default function DesignerMeasurements() {
           )}
 
           {/* Measurement Reference */}
-          <div className="mt-8 bg-[#E76F51]/5 rounded-2xl p-6 border border-[#E76F51]/20">
+          <div className="mt-8 bg-[#E63946]/5 rounded-2xl p-6 border border-[#E63946]/20">
             <h3 className="text-[#2D2D2D] font-semibold mb-3">Measurement Guide</h3>
-            <ul className="space-y-2 text-sm text-[#4B5563]">
+            <ul className="space-y-2 text-sm text-[#2D3436]">
               <li>• <strong>Chest:</strong> Measure across the fullest part of the chest</li>
               <li>• <strong>Waist:</strong> Measure at the natural waistline</li>
               <li>• <strong>Hips:</strong> Measure at the fullest part of the hips</li>

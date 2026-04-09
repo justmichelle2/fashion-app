@@ -83,7 +83,7 @@ export default function Chat() {
             placeholder="Search conversations..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
           />
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function Chat() {
 
       {loading ? (
         <div className="px-6 py-8 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E76F51] mx-auto mb-3"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E63946] mx-auto mb-3"></div>
           <p className="text-gray-600">Loading conversations...</p>
         </div>
       ) : conversations.length === 0 ? (
@@ -111,7 +111,7 @@ export default function Chat() {
               <Link
                 key={conversation.id}
                 to={`/chat/${otherUser?.id}`}
-                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E76F51] hover:shadow-md transition-all"
+                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E63946] hover:shadow-md transition-all"
               >
                 <div className="relative flex-shrink-0">
                   <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200">
@@ -121,13 +121,13 @@ export default function Chat() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute bottom-0 right-0 w-4 h-4 bg-[#10B981] border-2 border-white rounded-full" />
+                  <div className="absolute bottom-0 right-0 w-4 h-4 bg-[#D4AF37] border-2 border-white rounded-full" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h3 className="text-[#111827] truncate font-semibold">{otherUser?.name || "Unknown"}</h3>
-                    <span className="text-[#4B5563] text-xs flex-shrink-0">
+                    <span className="text-[#2D3436] text-xs flex-shrink-0">
                       {conversation.lastMessageTime?.toDate
                         ? new Date(conversation.lastMessageTime.toDate()).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -136,7 +136,7 @@ export default function Chat() {
                         : "now"}
                     </span>
                   </div>
-                  <p className="text-[#4B5563] text-sm truncate">{conversation.lastMessage || "No messages yet"}</p>
+                  <p className="text-[#2D3436] text-sm truncate">{conversation.lastMessage || "No messages yet"}</p>
                 </div>
               </Link>
             );

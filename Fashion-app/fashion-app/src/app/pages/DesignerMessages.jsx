@@ -79,13 +79,13 @@ export default function DesignerMessages() {
 
           {/* Search */}
           <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4B5563]" />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#2D3436]" />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-gray-50 text-[#2D2D2D] placeholder-[#4B5563]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-gray-50 text-[#2D2D2D] placeholder-[#2D3436]"
             />
           </div>
         </div>
@@ -95,13 +95,13 @@ export default function DesignerMessages() {
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin">
-                <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+                <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E63946] rounded-full"></div>
               </div>
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="text-center py-12">
               <MessageCircle size={40} className="text-gray-300 mx-auto mb-3" />
-              <p className="text-[#4B5563]">No conversations yet</p>
+              <p className="text-[#2D3436]">No conversations yet</p>
               <p className="text-[#9CA3AF] text-sm mt-1">Messages from customers will appear here</p>
             </div>
           ) : (
@@ -110,14 +110,14 @@ export default function DesignerMessages() {
                 <Link
                   key={conv.id}
                   to={`/designer/chat/${conv.id}`}
-                  className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#E76F51]/30 hover:bg-[#FFF9F5] transition-all"
+                  className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#E63946]/30 hover:bg-[#FFF9F5] transition-all"
                 >
                   <div className="relative flex-shrink-0">
-                    <div className="w-14 h-14 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center">
+                    <div className="w-14 h-14 bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-full flex items-center justify-center">
                       <span className="text-white font-['Playfair_Display'] font-bold text-lg">{conv.avatar}</span>
                     </div>
                     {conv.unread && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#F97316] rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#E63946] rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-bold">{conv.unreadCount}</span>
                       </div>
                     )}
@@ -128,14 +128,14 @@ export default function DesignerMessages() {
                       <p className={`text-sm ${conv.unread ? "font-bold text-[#2D2D2D]" : "text-[#2D2D2D]"}`}>
                         {conv.customer}
                       </p>
-                      <span className="text-xs text-[#4B5563] flex-shrink-0">{conv.time}</span>
+                      <span className="text-xs text-[#2D3436] flex-shrink-0">{conv.time}</span>
                     </div>
-                    <p className={`text-sm truncate ${conv.unread ? "text-[#4B5563] font-semibold" : "text-[#4B5563]"}`}>
+                    <p className={`text-sm truncate ${conv.unread ? "text-[#2D3436] font-semibold" : "text-[#2D3436]"}`}>
                       {conv.lastMessage}
                     </p>
                   </div>
 
-                  <ChevronRight size={20} className="text-[#4B5563] flex-shrink-0" />
+                  <ChevronRight size={20} className="text-[#2D3436] flex-shrink-0" />
                 </Link>
               ))}
             </div>

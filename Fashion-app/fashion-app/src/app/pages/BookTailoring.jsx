@@ -273,8 +273,8 @@ export default function BookTailoring() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
-          <p className="text-[#4B5563]">Loading designer profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E63946] mx-auto mb-4"></div>
+          <p className="text-[#2D3436]">Loading designer profile...</p>
         </div>
       </div>
     );
@@ -291,7 +291,7 @@ export default function BookTailoring() {
           </div>
           
           <h1 className="text-2xl font-bold text-[#2D2D2D] mb-2">Booking Inquiry Sent!</h1>
-          <p className="text-[#4B5563] mb-6">
+          <p className="text-[#2D3436] mb-6">
             Your inquiry has been sent to {designer?.businessName || designer?.name}. 
             They will review it and respond within 24 hours.
           </p>
@@ -302,21 +302,21 @@ export default function BookTailoring() {
             </div>
           )}
 
-          <div className="bg-[#EAB308]/10 border border-[#EAB308] rounded-lg p-4 mb-6">
+          <div className="bg-[#D4AF37]/10 border border-[#D4AF37] rounded-lg p-4 mb-6">
             <p className="text-sm text-[#2D2D2D] mb-1 font-semibold">Inquiry ID</p>
-            <p className="text-xs text-[#4B5563] font-mono">{successId}</p>
+            <p className="text-xs text-[#2D3436] font-mono">{successId}</p>
           </div>
 
           <div className="space-y-3">
             <button
               onClick={() => navigate("/customer/home")}
-              className="w-full bg-[#E76F51] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition"
+              className="w-full bg-[#E63946] text-white py-3 rounded-lg font-semibold hover:bg-[#D42F37] transition"
             >
               Back to Home
             </button>
             <button
               onClick={() => navigate("/customer/orders")}
-              className="w-full border-2 border-[#E76F51] text-[#E76F51] py-3 rounded-lg font-semibold hover:bg-[#E76F51]/5 transition"
+              className="w-full border-2 border-[#E63946] text-[#E63946] py-3 rounded-lg font-semibold hover:bg-[#E63946]/5 transition"
             >
               View My Orders
             </button>
@@ -330,7 +330,7 @@ export default function BookTailoring() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden pb-24">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white">
+        <div className="bg-gradient-to-r from-[#E63946] to-[#D4AF37] px-6 py-8 text-white">
           <div className="flex items-center gap-4 mb-6">
             <button
               onClick={() => navigate(-1)}
@@ -368,7 +368,7 @@ export default function BookTailoring() {
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="e.g., Wedding Dress, Business Suit"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
             </div>
 
@@ -381,7 +381,7 @@ export default function BookTailoring() {
                 name="garmentType"
                 value={formData.garmentType}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               >
                 {garmentTypes.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -402,7 +402,7 @@ export default function BookTailoring() {
                 onChange={handleInputChange}
                 placeholder="Describe the design you want in detail..."
                 rows="4"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent resize-none"
               />
             </div>
 
@@ -419,7 +419,7 @@ export default function BookTailoring() {
                 placeholder="Enter your budget"
                 min="0"
                 step="0.01"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
             </div>
 
@@ -433,7 +433,7 @@ export default function BookTailoring() {
                 name="preferredDeadline"
                 value={formData.preferredDeadline}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
             </div>
 
@@ -447,7 +447,7 @@ export default function BookTailoring() {
                 value={formData.specifications.color}
                 onChange={handleInputChange}
                 placeholder="Color preferences"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
 
               <input
@@ -456,7 +456,7 @@ export default function BookTailoring() {
                 value={formData.specifications.fabric}
                 onChange={handleInputChange}
                 placeholder="Fabric type"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
 
               <input
@@ -465,7 +465,7 @@ export default function BookTailoring() {
                 value={formData.specifications.style}
                 onChange={handleInputChange}
                 placeholder="Style or design inspiration"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent"
               />
 
               <textarea
@@ -474,16 +474,16 @@ export default function BookTailoring() {
                 onChange={handleInputChange}
                 placeholder="Any additional notes..."
                 rows="3"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent resize-none"
               />
             </div>
 
             {/* Inspiration Images */}
             <div className="space-y-3">
               <h3 className="text-[#2D2D2D] font-semibold">Upload Inspiration (Optional)</h3>
-              <label className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center gap-3 cursor-pointer hover:border-[#E76F51] transition">
-                <Upload size={18} className="text-[#E76F51]" />
-                <span className="text-sm text-[#4B5563]">Upload inspo images (max 5MB each)</span>
+              <label className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center gap-3 cursor-pointer hover:border-[#E63946] transition">
+                <Upload size={18} className="text-[#E63946]" />
+                <span className="text-sm text-[#2D3436]">Upload inspo images (max 5MB each)</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -499,7 +499,7 @@ export default function BookTailoring() {
                   {inspoPreviewNames.map((fileName, index) => (
                     <div key={`${fileName}-${index}`} className="flex items-center justify-between gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
                       <div className="flex items-center gap-2 min-w-0">
-                        <ImageIcon size={16} className="text-[#E76F51] flex-shrink-0" />
+                        <ImageIcon size={16} className="text-[#E63946] flex-shrink-0" />
                         <span className="text-sm text-[#2D2D2D] truncate">{fileName}</span>
                       </div>
                       <button
@@ -508,7 +508,7 @@ export default function BookTailoring() {
                         className="p-1 rounded hover:bg-gray-200 transition"
                         aria-label={`Remove ${fileName}`}
                       >
-                        <X size={14} className="text-[#4B5563]" />
+                        <X size={14} className="text-[#2D3436]" />
                       </button>
                     </div>
                   ))}
@@ -520,7 +520,7 @@ export default function BookTailoring() {
             <button
               type="submit"
               disabled={submitting || uploadingInspo}
-              className="w-full bg-[#E76F51] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#E63946] text-white py-4 rounded-lg font-semibold hover:bg-[#D42F37] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting || uploadingInspo ? "Sending..." : "Send Inquiry"}
             </button>

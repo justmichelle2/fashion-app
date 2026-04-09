@@ -22,7 +22,7 @@ export default function DesignerPortfolio() {
           <p className="text-gray-600 mb-4">Please log in as a designer to manage your portfolio</p>
           <button
             onClick={() => navigate("/designer-login")}
-            className="bg-[#E76F51] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A]"
+            className="bg-[#E63946] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A]"
           >
             Go to Designer Login
           </button>
@@ -98,7 +98,7 @@ export default function DesignerPortfolio() {
           </button>
           <div>
             <h1 className="text-3xl font-bold text-[#2D2D2D]">Portfolio</h1>
-            <p className="text-[#4B5563] text-sm">Manage your design collection</p>
+            <p className="text-[#2D3436] text-sm">Manage your design collection</p>
           </div>
         </div>
 
@@ -121,11 +121,11 @@ export default function DesignerPortfolio() {
           )}
 
           <label className="block cursor-pointer">
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center hover:border-[#E76F51] hover:bg-[#E76F51]/5 transition-all">
+            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center hover:border-[#E63946] hover:bg-[#E63946]/5 transition-all">
               <Upload size={48} className="text-gray-400 mx-auto mb-4" />
               <p className="text-[#2D2D2D] font-bold text-lg mb-1">Click to upload design</p>
-              <p className="text-[#4B5563] text-sm mb-3">or drag and drop</p>
-              <p className="text-[#4B5563] text-xs">JPG, PNG, or WebP (max 5MB)</p>
+              <p className="text-[#2D3436] text-sm mb-3">or drag and drop</p>
+              <p className="text-[#2D3436] text-xs">JPG, PNG, or WebP (max 5MB)</p>
               <input
                 id="design-upload-main"
                 type="file"
@@ -138,9 +138,9 @@ export default function DesignerPortfolio() {
           </label>
 
           {uploadingDesign && (
-            <div className="mt-4 flex items-center gap-2 text-[#E76F51]">
+            <div className="mt-4 flex items-center gap-2 text-[#E63946]">
               <div className="animate-spin">
-                <div className="w-5 h-5 border-2 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+                <div className="w-5 h-5 border-2 border-gray-200 border-t-[#E63946] rounded-full"></div>
               </div>
               <span className="font-semibold">Uploading...</span>
             </div>
@@ -148,29 +148,29 @@ export default function DesignerPortfolio() {
         </div>
 
         {/* Design Tips */}
-        <div className="bg-[#E76F51]/5 border border-[#E76F51]/20 rounded-3xl p-6 mb-6">
+        <div className="bg-[#E63946]/5 border border-[#E63946]/20 rounded-3xl p-6 mb-6">
           <h3 className="text-[#2D2D2D] font-bold mb-4 flex items-center gap-2">
             📸 Design Upload Guidelines
           </h3>
-          <ul className="space-y-3 text-[#4B5563] text-sm">
+          <ul className="space-y-3 text-[#2D3436] text-sm">
             <li className="flex gap-3">
-              <span className="text-[#E76F51] font-bold">•</span>
+              <span className="text-[#E63946] font-bold">•</span>
               <span>Use high-quality, well-lit photos of your work</span>
             </li>
             <li className="flex gap-3">
-              <span className="text-[#E76F51] font-bold">•</span>
+              <span className="text-[#E63946] font-bold">•</span>
               <span>Upload at least 5 designs to showcase your skills</span>
             </li>
             <li className="flex gap-3">
-              <span className="text-[#E76F51] font-bold">•</span>
+              <span className="text-[#E63946] font-bold">•</span>
               <span>Include photos from different angles when possible</span>
             </li>
             <li className="flex gap-3">
-              <span className="text-[#E76F51] font-bold">•</span>
+              <span className="text-[#E63946] font-bold">•</span>
               <span>Use consistent styling in your portfolio images</span>
             </li>
             <li className="flex gap-3">
-              <span className="text-[#E76F51] font-bold">•</span>
+              <span className="text-[#E63946] font-bold">•</span>
               <span>Make sure designs clearly show the craftsmanship and details</span>
             </li>
           </ul>
@@ -207,7 +207,7 @@ export default function DesignerPortfolio() {
                   {/* Label */}
                   <div className="mt-3">
                     <p className="text-[#2D2D2D] font-semibold text-sm">Design {index + 1}</p>
-                    <p className="text-[#4B5563] text-xs">Click to view details</p>
+                    <p className="text-[#2D3436] text-xs">Click to view details</p>
                   </div>
                 </div>
               ))}
@@ -215,9 +215,9 @@ export default function DesignerPortfolio() {
           ) : (
             <div className="py-16 text-center border-2 border-dashed border-gray-300 rounded-2xl">
               <Upload size={48} className="text-gray-400 mx-auto mb-4" />
-              <p className="text-[#4B5563] text-lg mb-4">No designs uploaded yet</p>
+              <p className="text-[#2D3436] text-lg mb-4">No designs uploaded yet</p>
               <label className="cursor-pointer inline-block">
-                <span className="bg-[#E76F51] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition inline-block">
+                <span className="bg-[#E63946] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition inline-block">
                   Upload your first design
                 </span>
                 <input
@@ -237,16 +237,16 @@ export default function DesignerPortfolio() {
         {portfolioImages.length > 0 && (
           <div className="mt-6 grid grid-cols-3 gap-4">
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-              <p className="text-[#E76F51] font-bold text-2xl">{portfolioImages.length}</p>
-              <p className="text-[#4B5563] text-xs mt-1">Designs</p>
+              <p className="text-[#E63946] font-bold text-2xl">{portfolioImages.length}</p>
+              <p className="text-[#2D3436] text-xs mt-1">Designs</p>
             </div>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-              <p className="text-[#10B981] font-bold text-2xl">{Math.min(portfolioImages.length * 20, 100)}%</p>
-              <p className="text-[#4B5563] text-xs mt-1">Profile Complete</p>
+              <p className="text-[#D4AF37] font-bold text-2xl">{Math.min(portfolioImages.length * 20, 100)}%</p>
+              <p className="text-[#2D3436] text-xs mt-1">Profile Complete</p>
             </div>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-              <p className="text-[#F4A261] font-bold text-2xl">#1</p>
-              <p className="text-[#4B5563] text-xs mt-1">Trending</p>
+              <p className="text-[#D4AF37] font-bold text-2xl">#1</p>
+              <p className="text-[#2D3436] text-xs mt-1">Trending</p>
             </div>
           </div>
         )}
