@@ -55,28 +55,28 @@ export default function DesignerHome() {
 
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Link to="/designer/dashboard" className="rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm hover:shadow-md transition-all">
-            <div className="mb-3 inline-flex rounded-xl bg-[#EEF2FF] p-2 text-[#4338CA]">
+            <div className="mb-3 inline-flex rounded-xl bg-[#E63946]/10 p-2 text-[#E63946]">
               <TrendingUp size={18} />
             </div>
             <h2 className="text-lg font-semibold text-[#111827]">Go to Dashboard</h2>
-            <p className="mt-1 text-sm text-[#4B5563]">Manage live operations, active jobs, and incoming messages.</p>
+            <p className="mt-1 text-sm text-[#2D3436]">Manage live operations, active jobs, and incoming messages.</p>
           </Link>
 
           <Link to="/designer/messages" className="rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm hover:shadow-md transition-all">
-            <div className="mb-3 inline-flex rounded-xl bg-[#ECFDF5] p-2 text-[#047857]">
+            <div className="mb-3 inline-flex rounded-xl bg-[#D4AF37]/10 p-2 text-[#D4AF37]">
               <MessageSquare size={18} />
             </div>
             <h2 className="text-lg font-semibold text-[#111827]">Client Inbox</h2>
-            <p className="mt-1 text-sm text-[#4B5563]">Reply quickly and keep customers updated without leaving flow.</p>
+            <p className="mt-1 text-sm text-[#2D3436]">Reply quickly and keep customers updated without leaving flow.</p>
           </Link>
         </div>
 
         <div className="mt-6 rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm">
           <div className="mb-2 flex items-center gap-2 text-[#111827]">
-            <Sparkles size={18} className="text-[#E76F51]" />
-            <h3 className="font-semibold">Today’s Focus</h3>
+            <Sparkles size={18} className="text-[#E63946]" />
+            <h3 className="font-semibold">Today's Focus</h3>
           </div>
-          <ul className="space-y-2 text-sm text-[#4B5563]">
+          <ul className="space-y-2 text-sm text-[#2D3436]">
             <li>Finalize fitting times for two pending clients.</li>
             <li>Upload one fresh portfolio piece.</li>
             <li>Send completion updates to active orders.</li>

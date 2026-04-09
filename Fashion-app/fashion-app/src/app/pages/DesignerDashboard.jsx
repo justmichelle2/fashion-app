@@ -142,7 +142,7 @@ export default function DesignerDashboard() {
         <div className="bg-white px-6 py-6 border-b border-gray-100 rounded-b-3xl shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[#4B5563] mb-1 text-sm">Operations Hub</p>
+              <p className="text-[#2D3436] mb-1 text-sm">Operations Hub</p>
               <h1 className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "28px", fontWeight: "700" }}>
                 {userProfile?.businessName || userProfile?.name || "Dashboard"}
               </h1>
@@ -150,13 +150,13 @@ export default function DesignerDashboard() {
             <Link to="/designer/notifications" className="p-2 hover:bg-gray-50 rounded-xl transition-all relative">
               <Bell size={24} className="text-[#2D2D2D]" />
               {unreadCount > 0 && (
-                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#F97316] rounded-full border-2 border-white"></div>
+                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E63946] rounded-full border-2 border-white"></div>
               )}
             </Link>
           </div>
 
           {/* Stats Overview */}
-          <div className="bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-3xl p-6">
+          <div className="bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-3xl p-6">
             <div className="grid grid-cols-4 gap-3">
               <div className="text-center">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
@@ -203,8 +203,8 @@ export default function DesignerDashboard() {
               onClick={() => setActiveTab("progress")}
               className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
                 activeTab === "progress"
-                  ? "bg-[#E76F51] text-white"
-                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+                  ? "bg-[#E63946] text-white"
+                  : "bg-gray-100 text-[#2D3436] hover:bg-gray-200"
               }`}
               style={{ fontWeight: "600" }}
             >
@@ -214,8 +214,8 @@ export default function DesignerDashboard() {
               onClick={() => setActiveTab("orders")}
               className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
                 activeTab === "orders"
-                  ? "bg-[#E76F51] text-white"
-                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+                  ? "bg-[#E63946] text-white"
+                  : "bg-gray-100 text-[#2D3436] hover:bg-gray-200"
               }`}
               style={{ fontWeight: "600" }}
             >
@@ -225,8 +225,8 @@ export default function DesignerDashboard() {
               onClick={() => setActiveTab("messages")}
               className={`px-6 py-2.5 rounded-full text-sm transition-all whitespace-nowrap ${
                 activeTab === "messages"
-                  ? "bg-[#E76F51] text-white"
-                  : "bg-gray-100 text-[#4B5563] hover:bg-gray-200"
+                  ? "bg-[#E63946] text-white"
+                  : "bg-gray-100 text-[#2D3436] hover:bg-gray-200"
               }`}
               style={{ fontWeight: "600" }}
             >
@@ -249,19 +249,19 @@ export default function DesignerDashboard() {
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div>
-                  <p className="text-[#4B5563] text-xs mb-1">Revenue</p>
+                  <p className="text-[#2D3436] text-xs mb-1">Revenue</p>
                   <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
                     GH₵2.4K
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#4B5563] text-xs mb-1">Orders</p>
+                  <p className="text-[#2D3436] text-xs mb-1">Orders</p>
                   <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
                     12
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#4B5563] text-xs mb-1">Avg. Value</p>
+                  <p className="text-[#2D3436] text-xs mb-1">Avg. Value</p>
                   <p className="text-[#2D2D2D] font-['Playfair_Display']" style={{ fontSize: "24px", fontWeight: "700" }}>
                     GH₵200
                   </p>
@@ -274,7 +274,7 @@ export default function DesignerDashboard() {
                   <div key={stat.day} className="flex-1 flex flex-col items-center gap-2">
                     <div className="w-full flex flex-col justify-end h-32">
                       <div
-                        className="w-full bg-gradient-to-t from-[#E76F51] to-[#F4A261] rounded-t-lg transition-all relative group"
+                        className="w-full bg-gradient-to-t from-[#E63946] to-[#D4AF37] rounded-t-lg transition-all relative group"
                         style={{ height: `${(stat.amount / maxEarnings) * 100}%`, minHeight: stat.amount > 0 ? '15%' : '0%' }}
                       >
                         {stat.amount > 0 && (
@@ -286,7 +286,7 @@ export default function DesignerDashboard() {
                         )}
                       </div>
                     </div>
-                    <p className="text-[#4B5563] text-xs">{stat.day}</p>
+                    <p className="text-[#2D3436] text-xs">{stat.day}</p>
                   </div>
                 ))}
               </div>
@@ -298,25 +298,25 @@ export default function DesignerDashboard() {
                 <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
                   Goals
                 </h3>
-                <button className="text-[#E76F51] text-sm" style={{ fontWeight: "600" }}>
+                <button className="text-[#E63946] text-sm" style={{ fontWeight: "600" }}>
                   See all →
                 </button>
               </div>
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#E76F51]/10 flex items-center justify-center flex-shrink-0">
-                    <DollarSign size={20} className="text-[#E76F51]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#E63946]/10 flex items-center justify-center flex-shrink-0">
+                    <DollarSign size={20} className="text-[#E63946]" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
                         Earn GH₵5,000 this month
                       </p>
-                      <span className="text-[#E76F51] text-sm" style={{ fontWeight: "700" }}>GH₵3.2K</span>
+                      <span className="text-[#E63946] text-sm" style={{ fontWeight: "700" }}>GH₵3.2K</span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-[#E76F51] to-[#F4A261]" style={{ width: "64%" }} />
+                      <div className="h-full bg-gradient-to-r from-[#E63946] to-[#D4AF37]" style={{ width: "64%" }} />
                     </div>
                   </div>
                 </div>
@@ -343,16 +343,16 @@ export default function DesignerDashboard() {
             {/* Portfolio Showcase */}
             <Link
               to="/designer-portfolio"
-              className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:border-[#E76F51] transition-all"
+              className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:border-[#E63946] transition-all"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
                     Portfolio
                   </h3>
-                  <p className="text-[#4B5563] text-sm mt-1">Upload and manage your designs</p>
+                  <p className="text-[#2D3436] text-sm mt-1">Upload and manage your designs</p>
                 </div>
-                <ChevronRight size={24} className="text-[#E76F51]" />
+                <ChevronRight size={24} className="text-[#E63946]" />
               </div>
             </Link>
           </>
@@ -367,7 +367,7 @@ export default function DesignerDashboard() {
                 <h3 className="text-[#2D2D2D]" style={{ fontSize: "18px", fontWeight: "700" }}>
                   New Orders
                 </h3>
-                <span className="px-3 py-1 bg-[#F97316] text-white rounded-full text-xs" style={{ fontWeight: "600" }}>
+                <span className="px-3 py-1 bg-[#E63946] text-white rounded-full text-xs" style={{ fontWeight: "600" }}>
                   {incomingOrders.length} Pending
                 </span>
               </div>
@@ -376,14 +376,14 @@ export default function DesignerDashboard() {
                 {incomingOrders.length === 0 ? (
                   <div className="p-8 text-center">
                     <Package size={40} className="text-[#D1D5DB] mx-auto mb-3" />
-                    <p className="text-[#4B5563] text-sm">No new orders yet</p>
+                    <p className="text-[#2D3436] text-sm">No new orders yet</p>
                     <p className="text-[#9CA3AF] text-xs mt-1">When customers book your services, they'll appear here</p>
                   </div>
                 ) : (
                   incomingOrders.map((order, index) => (
                     <div key={order.id} className="p-4 bg-[#FDFDFD] rounded-2xl border border-gray-50">
                       <div className="flex items-start gap-3 mb-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-white font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
                             {index + 1}
                           </span>
@@ -392,14 +392,14 @@ export default function DesignerDashboard() {
                           <p className="text-[#2D2D2D] mb-0.5" style={{ fontWeight: "600" }}>
                             {order.customer}
                           </p>
-                          <p className="text-[#4B5563] text-sm">{order.style}</p>
-                          <p className="text-[#4B5563] text-xs">Order #{order.id}</p>
+                          <p className="text-[#2D3436] text-sm">{order.style}</p>
+                          <p className="text-[#2D3436] text-xs">Order #{order.id}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
+                          <p className="text-[#E63946] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "18px" }}>
                             GH₵{order.amount}
                           </p>
-                          <p className="text-[#4B5563] text-xs">{order.date}</p>
+                          <p className="text-[#2D3436] text-xs">{order.date}</p>
                         </div>
                       </div>
 
