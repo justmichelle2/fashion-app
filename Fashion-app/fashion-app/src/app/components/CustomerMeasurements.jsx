@@ -104,7 +104,17 @@ Special Requirements: ${measurements.specialRequirements || "N/A"}
       <div className="text-center py-12">
         <Ruler size={40} className="mx-auto mb-3 text-gray-300" />
         <p className="text-[#4B5563] font-semibold">No customer measurements yet</p>
-        <p className="text-[#4B5563] text-sm mt-1">Measurements will appear here when customers upload them</p>
+        <p className="text-[#4B5563] text-sm mt-1 mb-4">
+          Measurements will appear here when customers with active orders upload them
+        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left text-sm">
+          <p className="text-blue-900 font-semibold mb-2">How this works:</p>
+          <ol className="text-blue-800 space-y-1 ml-4">
+            <li>1. Customer books you and creates an order</li>
+            <li>2. They upload their measurements &amp; body images</li>
+            <li>3. You will see them here automatically</li>
+          </ol>
+        </div>
       </div>
     );
   }

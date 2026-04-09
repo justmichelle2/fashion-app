@@ -11,6 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
+import { createNotification, NOTIFICATION_TYPES } from "../services/notificationsService";
 
 /**
  * CUSTOMER PROFILE MANAGEMENT
@@ -190,6 +191,11 @@ export const uploadCustomerMeasurements = async (measurementData) => {
       throw new Error("User must be logged in");
     }
 
+    // Get customer profile info for notification
+    const customerRef = doc(db, "users", auth.currentUser.uid);
+    const customerDoc = await getDoc(customerRef);
+    const customerName = customerDoc.data()?.name || auth.currentUser.email;
+
     const measurementRef = doc(collection(db, "customerMeasurements"));
     const measurements = {
       measurementId: measurementRef.id,
@@ -216,6 +222,48 @@ export const uploadCustomerMeasurements = async (measurementData) => {
     };
 
     await setDoc(measurementRef, measurements);
+
+    // Notify designers: Find all active orders for this customer and notify their designers
+    try {
+      const ordersRef = collection(db, "orders");
+      const ordersQuery = query(
+        ordersRef,
+        where("customerId", "==", auth.currentUser.uid),
+        where("status", "in", ["pending", "confirmed", "in-progress"])
+      );
+      
+      const ordersSnapshot = await getDocs(ordersQuery);
+      console.log(`Found ${ordersSnapshot.docs.length} active orders for customer. Notifying designers...`);
+
+      // Create notifications for each designer
+      for (const orderDoc of ordersSnapshot.docs) {
+        const order = orderDoc.data();
+        if (order.designerId) {
+          try {
+            await createNotification({
+              userId: order.designerId,
+              type: NOTIFICATION_TYPES.MEASUREMENT_UPLOADED,
+              title: "New Measurements Uploaded",
+              message: `${customerName} has uploaded their measurements for order #${orderDoc.id.substring(0, 8)}`,
+              relatedId: orderDoc.id,
+              relatedType: "order",
+              data: {
+                customerId: auth.currentUser.uid,
+                customerName: customerName,
+                orderStatus: order.status,
+              },
+              priority: "high"
+            });
+            console.log(`Notification sent to designer ${order.designerId}`);
+          } catch (notifErr) {
+            console.warn(`Failed to notify designer ${order.designerId}:`, notifErr.message);
+          }
+        }
+      }
+    } catch (notifErr) {
+      console.warn("Error notifying designers:", notifErr.message);
+      // Don't fail the measurement upload if notifications fail
+    }
 
     return {
       success: true,
