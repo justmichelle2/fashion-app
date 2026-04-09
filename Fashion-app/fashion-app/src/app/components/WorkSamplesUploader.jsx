@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, Trash2, Eye, Loader } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 import { uploadWorkSample, deleteImage } from "../services/imageUploadService";
+import { db } from "../firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, readOnly = false, className = "" }) {
   const [samples, setSamples] = useState([]);
@@ -10,21 +12,78 @@ export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, read
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load work samples from Firestore
+  useEffect(() => {
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+
+    const loadSamples = async () => {
+      try {
+        setLoading(true);
+        const samplesRef = doc(db, "orderWorkSamples", orderId);
+        const samplesDoc = await getDoc(samplesRef);
+        
+        if (samplesDoc.exists()) {
+          const samples = samplesDoc.data().samples || [];
+          setSamples(samples);
+          console.log(`Loaded ${samples.length} work samples for order ${orderId}`);
+        } else {
+          setSamples([]);
+        }
+      } catch (err) {
+        console.error("Error loading work samples:", err);
+        setError("Failed to load work samples");
+        setTimeout(() => setError(""), 3000);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSamples();
+  }, [orderId]);
+
+  // Save samples to Firestore
+  const saveSamplesToFirestore = async (updatedSamples) => {
+    if (!orderId) return;
+
+    try {
+      const samplesRef = doc(db, "orderWorkSamples", orderId);
+      await setDoc(samplesRef, {
+        orderId,
+        designerId,
+        samples: updatedSamples,
+        updatedAt: new Date(),
+      }, { merge: true });
+      console.log("Work samples saved to Firestore");
+    } catch (err) {
+      console.error("Error saving work samples:", err);
+      setError("Failed to save work samples");
+      setTimeout(() => setError(""), 3000);
+    }
+  };
 
   const handleUploadSuccess = async (result) => {
     const newSample = {
       id: result.fileName,
       url: result.url,
       path: result.path,
-      uploadedAt: new Date(),
+      uploadedAt: new Date().toISOString(),
       caption: "",
       stage: "in-progress", // or "final"
     };
     
-    setSamples([newSample, ...samples]);
+    const updatedSamples = [newSample, ...samples];
+    setSamples(updatedSamples);
     setShowUploader(false);
     setUploading(false);
-    onSamplesUpdate?.([newSample, ...samples]);
+    
+    // Save to Firestore
+    await saveSamplesToFirestore(updatedSamples);
+    onSamplesUpdate?.(updatedSamples);
   };
 
   const handleDelete = async (sample) => {
@@ -33,6 +92,9 @@ export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, read
       await deleteImage(sample.path);
       const updated = samples.filter(s => s.id !== sample.id);
       setSamples(updated);
+      
+      // Save to Firestore
+      await saveSamplesToFirestore(updated);
       onSamplesUpdate?.(updated);
     } catch (err) {
       setError(err.message);
@@ -42,18 +104,24 @@ export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, read
     }
   };
 
-  const updateCaption = (id, caption) => {
+  const updateCaption = async (id, caption) => {
     const updated = samples.map(s => 
       s.id === id ? { ...s, caption } : s
     );
     setSamples(updated);
+    
+    // Save to Firestore
+    await saveSamplesToFirestore(updated);
   };
 
-  const updateStage = (id, stage) => {
+  const updateStage = async (id, stage) => {
     const updated = samples.map(s => 
       s.id === id ? { ...s, stage } : s
     );
     setSamples(updated);
+    
+    // Save to Firestore
+    await saveSamplesToFirestore(updated);
   };
 
   return (
@@ -77,9 +145,17 @@ export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, read
         </div>
       )}
 
-      {/* Samples Grid */}
-      {samples.length > 0 ? (
-        <div className="space-y-4">
+      {/* Loading State */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-4 border-[#E76F51]/30 border-t-[#E76F51] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#4B5563]">Loading work samples...</p>
+        </div>
+      ) : (
+        <>
+          {/* Samples Grid */}
+          {samples.length > 0 ? (
+            <div className="space-y-4">
           {samples.map((sample) => (
             <div key={sample.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 p-4">
               <div className="flex gap-4">
@@ -158,6 +234,8 @@ export function WorkSamplesUploader({ designerId, orderId, onSamplesUpdate, read
           <p className="text-[#4B5563] font-semibold">No updates yet</p>
           <p className="text-[#4B5563] text-sm">Share work in progress or final samples</p>
         </div>
+      )}
+        </>
       )}
 
       {/* Upload Modal */}

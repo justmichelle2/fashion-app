@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:5173", "http://localhost:*", "http://127.0.0.1:*"],
+    "method": ["GET", "HEAD", "DELETE", "POST", "PUT", "OPTIONS"],
+    "responseHeader": ["Content-Type", "x-goog-meta-goog-encryption-algorithm", "x-goog-encryption-algorithm", "x-goog-encryption-key"],
+    "maxAgeSeconds": 3600
+  }
+]

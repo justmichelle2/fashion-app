@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Upload, Users, Star, Search, Package, Settings } from "lucide-react";
 import { auth } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
+import { collection, query, limit, getDocs } from "firebase/firestore";
 import { getUserOrders } from "../utils/orderUtils";
 import { getUnreadCount } from "../services/notificationsService";
 import NotificationBell from "../components/NotificationBell";
@@ -13,6 +15,8 @@ export default function Home() {
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [featuredDesigners, setFeaturedDesigners] = useState([]);
+  const [loadingDesigners, setLoadingDesigners] = useState(true);
 
   useEffect(() => {
     // Load user profile and orders
@@ -23,6 +27,7 @@ export default function Home() {
       });
       loadOrders();
       loadUnreadCount();
+      loadFeaturedDesigners();
 
       // Refresh unread count every 30 seconds
       const interval = setInterval(() => loadUnreadCount(), 30000);
@@ -31,6 +36,30 @@ export default function Home() {
       navigate("/login");
     }
   }, [navigate]);
+
+  const loadFeaturedDesigners = async () => {
+    try {
+      const designersRef = collection(db, "users");
+      const q = query(designersRef, limit(6));
+      const snapshot = await getDocs(q);
+      
+      const designers = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          name: doc.data().name || doc.data().businessName || "Designer",
+          specialty: doc.data().specialties?.[0] || "Custom Tailoring",
+          rating: doc.data().rating || 4.5,
+          image: doc.data().profilePicture || doc.data().avatar || "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
+        }))
+        .slice(0, 3);
+      
+      setFeaturedDesigners(designers);
+    } catch (err) {
+      console.error("Failed to load featured designers:", err);
+    } finally {
+      setLoadingDesigners(false);
+    }
+  };
 
   const loadOrders = async () => {
     try {
@@ -58,30 +87,6 @@ export default function Home() {
 
   const recentOrders = orders.slice(0, 3);
   const totalSpent = orders.reduce((sum, order) => sum + (order.total || 0), 0);
-
-  const featuredDesigners = [
-    {
-      id: 1,
-      name: "Akosua Mensah",
-      specialty: "Kente & Traditional",
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
-    },
-    {
-      id: 2,
-      name: "Kwame Asante",
-      specialty: "Contemporary Fashion",
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1765910083971-aa0e3688be46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
-    },
-    {
-      id: 3,
-      name: "Ama Boateng",
-      specialty: "Wedding Attire",
-      rating: 5.0,
-      image: "https://images.unsplash.com/photo-1726142916875-814508f61e85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
-    },
-  ];
 
   const styleCategories = [
     { id: 1, name: "Traditional", count: 45, icon: "👔" },
@@ -201,23 +206,35 @@ export default function Home() {
             <Link to="/designers" className="text-[#E63946] text-sm font-semibold hover:underline">View all →</Link>
           </div>
 
-          <div className="space-y-3">
-            {featuredDesigners.map((designer) => (
-              <Link key={designer.id} to={`/designer/${designer.id}`} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E63946]/30 transition-all">
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#E63946] to-[#D4AF37] flex-shrink-0">
-                  <ImageWithFallback src={designer.image} alt={designer.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[#2D2D2D] font-semibold truncate">{designer.name}</p>
-                  <p className="text-gray-600 text-sm">{designer.specialty}</p>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Star size={14} className="text-[#D4AF37] fill-[#D4AF37]" />
-                  <span className="text-[#2D2D2D] text-sm font-semibold">{designer.rating}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {loadingDesigners ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin">
+                <div className="w-6 h-6 border-3 border-gray-200 border-t-[#E63946] rounded-full"></div>
+              </div>
+            </div>
+          ) : featuredDesigners.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>No designers available yet</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {featuredDesigners.map((designer) => (
+                <Link key={designer.id} to={`/designer/${designer.id}`} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E63946]/30 transition-all">
+                  <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#E63946] to-[#D4AF37] flex-shrink-0">
+                    <ImageWithFallback src={designer.image} alt={designer.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#2D2D2D] font-semibold truncate">{designer.name}</p>
+                    <p className="text-gray-600 text-sm">{designer.specialty}</p>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Star size={14} className="text-[#D4AF37] fill-[#D4AF37]" />
+                    <span className="text-[#2D2D2D] text-sm font-semibold">{designer.rating}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Categories */}
