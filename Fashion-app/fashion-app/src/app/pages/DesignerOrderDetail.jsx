@@ -70,8 +70,8 @@ export default function DesignerOrderDetail() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E76F51] mx-auto mb-4"></div>
-          <p className="text-[#4B5563]">Loading order details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E63946] mx-auto mb-4"></div>
+          <p className="text-[#2D3436]">Loading order details...</p>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export default function DesignerOrderDetail() {
             </h1>
           </div>
           <div className="p-6 text-center">
-            <p className="text-[#4B5563]">{error || "Order not found"}</p>
+            <p className="text-[#2D3436]">{error || "Order not found"}</p>
           </div>
         </div>
       </div>
@@ -127,32 +127,32 @@ export default function DesignerOrderDetail() {
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <p className="text-[#4B5563] text-sm mb-1">Customer</p>
+                <p className="text-[#2D3436] text-sm mb-1">Customer</p>
                 <p className="text-[#2D2D2D] font-semibold">{order.customerName || "Unknown"}</p>
               </div>
               <div>
-                <p className="text-[#4B5563] text-sm mb-1">Order ID</p>
+                <p className="text-[#2D3436] text-sm mb-1">Order ID</p>
                 <p className="text-[#2D2D2D] font-semibold">{order.id.substring(0, 8)}</p>
               </div>
             </div>
 
             <div className="space-y-3 border-t border-gray-100 pt-4">
               <div>
-                <p className="text-[#4B5563] text-sm mb-1">Title</p>
+                <p className="text-[#2D3436] text-sm mb-1">Title</p>
                 <p className="text-[#2D2D2D] font-semibold">{order.title}</p>
               </div>
               <div>
-                <p className="text-[#4B5563] text-sm mb-1">Description</p>
+                <p className="text-[#2D3436] text-sm mb-1">Description</p>
                 <p className="text-[#2D2D2D]">{order.description}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[#4B5563] text-sm mb-1">Garment Type</p>
+                  <p className="text-[#2D3436] text-sm mb-1">Garment Type</p>
                   <p className="text-[#2D2D2D] font-semibold capitalize">{order.garmentType || "Custom"}</p>
                 </div>
                 <div>
-                  <p className="text-[#4B5563] text-sm mb-1">Budget</p>
-                  <p className="text-[#E76F51] font-semibold">GH₵{order.budget || order.price || 0}</p>
+                  <p className="text-[#2D3436] text-sm mb-1">Budget</p>
+                  <p className="text-[#E63946] font-semibold">GH₵{order.budget || order.price || 0}</p>
                 </div>
               </div>
             </div>
@@ -165,16 +165,16 @@ export default function DesignerOrderDetail() {
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <Clock size={20} className="text-[#E76F51] flex-shrink-0 mt-1" />
+                <Clock size={20} className="text-[#E63946] flex-shrink-0 mt-1" />
                 <div>
-                  <p className="text-[#4B5563] text-sm">Order Placed</p>
+                  <p className="text-[#2D3436] text-sm">Order Placed</p>
                   <p className="text-[#2D2D2D] font-semibold">{createdDate}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle size={20} className="text-[#10B981] flex-shrink-0 mt-1" />
+                <CheckCircle size={20} className="text-[#D4AF37] flex-shrink-0 mt-1" />
                 <div>
-                  <p className="text-[#4B5563] text-sm">Deadline</p>
+                  <p className="text-[#2D3436] text-sm">Deadline</p>
                   <p className="text-[#2D2D2D] font-semibold">{deadline}</p>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function DesignerOrderDetail() {
                 {Object.entries(order.specifications).map(([key, value]) => (
                   value && (
                     <div key={key}>
-                      <p className="text-[#4B5563] text-sm mb-1 capitalize">{key}</p>
+                      <p className="text-[#2D3436] text-sm mb-1 capitalize">{key}</p>
                       <p className="text-[#2D2D2D] font-semibold">{value}</p>
                     </div>
                   )
@@ -232,7 +232,7 @@ export default function DesignerOrderDetail() {
           {/* Message Button */}
           <button
             onClick={() => navigate(`/chat/${order.customerId}`)}
-            className="w-full py-3 bg-[#E76F51] text-white rounded-2xl font-semibold hover:bg-[#D35F41] transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#E63946] text-white rounded-2xl font-semibold hover:bg-[#C92A2A] transition-all flex items-center justify-center gap-2"
           >
             <MessageCircle size={20} />
             Message Customer

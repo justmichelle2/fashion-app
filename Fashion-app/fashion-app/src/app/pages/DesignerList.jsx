@@ -133,20 +133,20 @@ export default function DesignerList() {
           >
             <Filter size={24} className="text-[#2D2D2D]" />
             {hasActiveFilters && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#E76F51] rounded-full"></span>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-[#E63946] rounded-full"></span>
             )}
           </button>
         </div>
 
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4B5563]" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D3436]" size={20} />
           <input
             type="text"
             placeholder="Search by name or specialty..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-[#FDFDFD] border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent text-[#2D2D2D]"
+            className="w-full pl-12 pr-4 py-3.5 bg-[#FDFDFD] border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent text-[#2D2D2D]"
           />
         </div>
       </div>
@@ -176,7 +176,7 @@ export default function DesignerList() {
                 <select
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E63946]"
                 >
                   <option value="">All Specialties</option>
                   {specialties.map((spec) => (
@@ -220,7 +220,7 @@ export default function DesignerList() {
                 <select
                   value={minRating}
                   onChange={(e) => setMinRating(Number(e.target.value))}
-                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E63946]"
                 >
                   <option value="0">Any Rating</option>
                   <option value="4">4.0+ ⭐</option>
@@ -237,7 +237,7 @@ export default function DesignerList() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#E63946]"
                 >
                   <option value="rating">Rating</option>
                   <option value="name">Name (A-Z)</option>
@@ -257,7 +257,7 @@ export default function DesignerList() {
                 </button>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="flex-1 py-3 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all"
+                  className="flex-1 py-3 bg-[#E63946] text-white rounded-xl hover:bg-[#D35F41] transition-all"
                   style={{ fontWeight: "600" }}
                 >
                   Apply Filters
@@ -279,8 +279,8 @@ export default function DesignerList() {
                 onClick={() => setActiveFilter(filter.id)}
                 className={`px-4 py-2.5 rounded-full whitespace-nowrap flex items-center gap-2 transition-all ${
                   activeFilter === filter.id
-                    ? "bg-[#E76F51] text-white"
-                    : "bg-[#FDFDFD] border border-gray-200 text-[#4B5563] hover:border-[#E76F51]/30"
+                    ? "bg-[#E63946] text-white"
+                    : "bg-[#FDFDFD] border border-gray-200 text-[#2D3436] hover:border-[#E63946]/30"
                 }`}
                 style={{ fontWeight: "600", fontSize: "14px" }}
               >
@@ -295,7 +295,7 @@ export default function DesignerList() {
       {/* Stats Bar */}
       <div className="px-6 py-4">
         <div className="flex items-center justify-between text-sm">
-          <p className="text-[#4B5563]">
+          <p className="text-[#2D3436]">
             <span className="text-[#2D2D2D]" style={{ fontWeight: "600" }}>
               {loading ? "..." : designers.length}
             </span> designers found
@@ -303,7 +303,7 @@ export default function DesignerList() {
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
-              className="text-[#E76F51] hover:text-[#D35F41] transition-all"
+              className="text-[#E63946] hover:text-[#D35F41] transition-all"
               style={{ fontWeight: "600", fontSize: "13px" }}
             >
               Clear Filters ✕
@@ -318,13 +318,13 @@ export default function DesignerList() {
           // Loading State
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin">
-              <div className="w-12 h-12 border-4 border-gray-200 border-t-[#E76F51] rounded-full"></div>
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-[#E63946] rounded-full"></div>
             </div>
           </div>
         ) : designers.length === 0 ? (
           // Empty State
           <div className="py-12 text-center">
-            <div className="text-[#4B5563] mb-4">
+            <div className="text-[#2D3436] mb-4">
               <Filter size={40} className="mx-auto mb-4 opacity-50" />
               <p style={{ fontWeight: "600" }}>No designers found</p>
               <p className="text-sm mt-2 opacity-75">Try adjusting your filters or search terms</p>
@@ -332,7 +332,7 @@ export default function DesignerList() {
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
-                className="mt-4 px-4 py-2 bg-[#E76F51] text-white rounded-lg hover:bg-[#D35F41] transition-all"
+                className="mt-4 px-4 py-2 bg-[#E63946] text-white rounded-lg hover:bg-[#D35F41] transition-all"
                 style={{ fontWeight: "600" }}
               >
                 Clear Filters
@@ -344,13 +344,13 @@ export default function DesignerList() {
             <Link
               key={designer.id}
               to={`/designer/${designer.id}`}
-              className="block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:border-[#E76F51]/30 hover:shadow-md transition-all"
+              className="block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:border-[#E63946]/30 hover:shadow-md transition-all"
             >
               {/* Designer Header */}
               <div className="p-5">
                 <div className="flex gap-4 mb-4">
                   {/* Designer Photo */}
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#E76F51] to-[#F4A261]">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#E63946] to-[#D4AF37]">
                     <img
                       src={designer.profilePicture || designerPhotos[index % designerPhotos.length]}
                       alt={designer.name}
@@ -368,24 +368,24 @@ export default function DesignerList() {
                     </h3>
                     
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin size={14} className="text-[#4B5563] flex-shrink-0" />
-                      <span className="text-[#4B5563] text-sm truncate">
+                      <MapPin size={14} className="text-[#2D3436] flex-shrink-0" />
+                      <span className="text-[#2D3436] text-sm truncate">
                         {designer.location || "Location not specified"}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1 bg-[#F4A261]/10 px-2 py-1 rounded-lg">
-                        <Star size={14} className="text-[#F4A261] fill-[#F4A261]" />
+                      <div className="flex items-center gap-1 bg-[#D4AF37]/10 px-2 py-1 rounded-lg">
+                        <Star size={14} className="text-[#D4AF37] fill-[#D4AF37]" />
                         <span className="text-[#2D2D2D] text-sm" style={{ fontWeight: "600" }}>
                           {(designer.rating || 5).toFixed(1)}
                         </span>
-                        <span className="text-[#4B5563] text-xs">
+                        <span className="text-[#2D3436] text-xs">
                           ({designer.reviewCount || designer.reviews || 0})
                         </span>
                       </div>
                       {designer.verified && (
-                        <Award size={14} className="text-[#E76F51]" />
+                        <Award size={14} className="text-[#E63946]" />
                       )}
                     </div>
                   </div>
@@ -409,12 +409,12 @@ export default function DesignerList() {
                 {/* Bottom Info */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div>
-                    <p className="text-[#4B5563] text-xs mb-0.5">Hourly Rate</p>
-                    <p className="text-[#E76F51] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
+                    <p className="text-[#2D3436] text-xs mb-0.5">Hourly Rate</p>
+                    <p className="text-[#E63946] font-['Playfair_Display']" style={{ fontWeight: "700", fontSize: "16px" }}>
                       ${designer.hourlyRate || designer.priceRange || "50-100"}
                     </p>
                   </div>
-                  <button className="px-5 py-2.5 bg-[#E76F51] text-white rounded-xl hover:bg-[#D35F41] transition-all">
+                  <button className="px-5 py-2.5 bg-[#E63946] text-white rounded-xl hover:bg-[#D35F41] transition-all">
                     <span style={{ fontWeight: "600" }}>View Profile</span>
                   </button>
                 </div>
@@ -427,7 +427,7 @@ export default function DesignerList() {
       {/* Load More */}
       {!loading && designers.length > 0 && (
         <div className="px-6 pb-6">
-          <button className="w-full py-3.5 bg-white border border-gray-200 text-[#2D2D2D] rounded-2xl hover:border-[#E76F51]/30 hover:bg-[#FDFDFD] transition-all">
+          <button className="w-full py-3.5 bg-white border border-gray-200 text-[#2D2D2D] rounded-2xl hover:border-[#E63946]/30 hover:bg-[#FDFDFD] transition-all">
             <span style={{ fontWeight: "600" }}>Load More Designers</span>
           </button>
         </div>

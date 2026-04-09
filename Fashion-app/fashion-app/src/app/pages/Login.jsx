@@ -76,7 +76,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[90vh] sm:h-auto pb-8">
         {/* Header */}
-        <div className="bg-white border-b border-[#E76F51]/10 py-6 px-6 relative flex justify-center items-center">
+        <div className="bg-white border-b border-[#E63946]/10 py-6 px-6 relative flex justify-center items-center">
           <Link to="/landing" className="absolute left-6 p-2 hover:bg-gray-50 rounded-xl transition-all">
             <ArrowLeft size={24} className="text-[#2D2D2D]" />
           </Link>
@@ -114,7 +114,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
@@ -133,14 +133,14 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent disabled:opacity-50"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent disabled:opacity-50"
                 />
               </div>
             </div>
 
             {/* Forgot Password */}
             <div className="text-right">
-              <button type="button" className="text-[#E76F51] text-sm font-medium hover:underline">
+              <button type="button" className="text-[#E63946] text-sm font-medium hover:underline">
                 Forgot Password?
               </button>
             </div>
@@ -149,7 +149,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#E76F51] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold text-[16px] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#E63946] text-white py-3.5 rounded-lg hover:bg-[#D55B3A] transition-colors shadow-sm font-semibold text-[16px] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
@@ -168,7 +168,7 @@ export default function Login() {
           {/* Sign Up Link */}
           <div className="text-center mt-8">
             <span className="text-[#6B6B6B] font-medium">Don't have an account? </span>
-            <Link to="/customer/signup" className="text-[#E76F51] font-semibold hover:underline">
+            <Link to="/customer/signup" className="text-[#E63946] font-semibold hover:underline">
               Sign Up
             </Link>
           </div>

@@ -117,7 +117,7 @@ export default function Home() {
           <input
             type="text"
             placeholder="Search designers or styles..."
-            className="w-full pl-12 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent text-[#2D2D2D]"
+            className="w-full pl-12 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent text-[#2D2D2D]"
           />
         </div>
       </div>
@@ -125,9 +125,9 @@ export default function Home() {
       <div className="px-6 py-6 space-y-6">
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link to="/measurements" className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#E76F51]/30 transition-all">
-            <div className="w-12 h-12 bg-[#E76F51]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Upload size={20} className="text-[#E76F51]" />
+          <Link to="/measurements" className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#E63946]/30 transition-all">
+            <div className="w-12 h-12 bg-[#E63946]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Upload size={20} className="text-[#E63946]" />
             </div>
             <div className="flex-1">
               <p className="text-[#2D2D2D] text-sm font-semibold">Upload</p>
@@ -135,7 +135,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link to="/orders" className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#E76F51]/30 transition-all">
+          <Link to="/orders" className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#E63946]/30 transition-all">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
               <Package size={20} className="text-[#2D2D2D]" />
             </div>
@@ -151,18 +151,18 @@ export default function Home() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[#2D2D2D] text-lg font-bold">Your Recent Orders</h3>
-              <Link to="/orders" className="text-[#E76F51] text-sm font-semibold hover:underline">View all →</Link>
+              <Link to="/orders" className="text-[#E63946] text-sm font-semibold hover:underline">View all →</Link>
             </div>
 
             <div className="space-y-3">
               {recentOrders.map((order, index) => (
                 <div 
                   key={order.orderId} 
-                  className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E76F51]/30 transition-all cursor-pointer"
+                  className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E63946]/30 transition-all cursor-pointer"
                   onClick={() => navigate(`/orders/${order.orderId}`)}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold">
                       {index + 1}
                     </div>
                     <div className="flex-1">
@@ -183,7 +183,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="text-right">
-                      <p className="text-[#E76F51] font-bold text-lg">
+                      <p className="text-[#E63946] font-bold text-lg">
                         GHS {order.total?.toFixed(2) || "0.00"}
                       </p>
                     </div>
@@ -198,13 +198,13 @@ export default function Home() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[#2D2D2D] text-lg font-bold">Featured Designers</h3>
-            <Link to="/designers" className="text-[#E76F51] text-sm font-semibold hover:underline">View all →</Link>
+            <Link to="/designers" className="text-[#E63946] text-sm font-semibold hover:underline">View all →</Link>
           </div>
 
           <div className="space-y-3">
             {featuredDesigners.map((designer) => (
-              <Link key={designer.id} to={`/designer/${designer.id}`} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E76F51]/30 transition-all">
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#E76F51] to-[#F4A261] flex-shrink-0">
+              <Link key={designer.id} to={`/designer/${designer.id}`} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E63946]/30 transition-all">
+                <div className="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#E63946] to-[#D4AF37] flex-shrink-0">
                   <ImageWithFallback src={designer.image} alt={designer.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -212,7 +212,7 @@ export default function Home() {
                   <p className="text-gray-600 text-sm">{designer.specialty}</p>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Star size={14} className="text-[#F4A261] fill-[#F4A261]" />
+                  <Star size={14} className="text-[#D4AF37] fill-[#D4AF37]" />
                   <span className="text-[#2D2D2D] text-sm font-semibold">{designer.rating}</span>
                 </div>
               </Link>
@@ -225,9 +225,9 @@ export default function Home() {
           <h3 className="text-[#2D2D2D] mb-4 text-lg font-bold">Browse by Category</h3>
           <div className="grid grid-cols-2 gap-3">
             {styleCategories.map((category) => (
-              <Link key={category.id} to="/designers" className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E76F51]/30 transition-all">
+              <Link key={category.id} to="/designers" className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#E63946]/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-lg flex items-center justify-center flex-shrink-0 text-lg">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0 text-lg">
                     {category.icon}
                   </div>
                   <div>
@@ -256,16 +256,16 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
               <span className="text-gray-600 text-sm">Total Spent</span>
-              <span className="text-[#E76F51] font-bold text-lg">GHS {totalSpent.toFixed(2)}</span>
+              <span className="text-[#E63946] font-bold text-lg">GHS {totalSpent.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* CTA Banner */}
-        <div className="bg-gradient-to-br from-[#E76F51] to-[#F4A261] rounded-2xl p-6 text-white">
+        <div className="bg-gradient-to-br from-[#E63946] to-[#D4AF37] rounded-2xl p-6 text-white">
           <h3 className="text-white mb-2 text-lg font-bold">💡 Helpful Tip</h3>
           <p className="text-white/90 text-sm mb-4">Upload your measurements now to get faster quotes from designers!</p>
-          <Link to="/measurements" className="inline-block px-6 py-2 bg-white text-[#E76F51] rounded-lg hover:bg-gray-100 transition-all font-semibold text-sm">
+          <Link to="/measurements" className="inline-block px-6 py-2 bg-white text-[#E63946] rounded-lg hover:bg-gray-100 transition-all font-semibold text-sm">
             Upload Measurements
           </Link>
         </div>

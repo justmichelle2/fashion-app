@@ -32,7 +32,7 @@ export default function UploadMeasurements() {
           <p className="text-gray-600 mb-4">Please log in to upload measurements</p>
           <button
             onClick={() => navigate("/login")}
-            className="bg-[#E76F51] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A]"
+            className="bg-[#E63946] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D42F37]"
           >
             Go to Login
           </button>
@@ -172,7 +172,7 @@ export default function UploadMeasurements() {
                       onChange={handleInputChange}
                       placeholder="0"
                       step="0.1"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946]"
                     />
                   </div>
                 ))}
@@ -196,7 +196,7 @@ export default function UploadMeasurements() {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Any special considerations or preferences..."
                 rows="4"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946]"
               />
             </div>
 
@@ -204,7 +204,7 @@ export default function UploadMeasurements() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-[#E76F51] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-[#E63946] text-white py-4 rounded-lg font-semibold hover:bg-[#D42F37] transition disabled:opacity-50"
             >
               <Save size={20} /> {loading ? "Uploading..." : "Save Measurements"}
             </button>

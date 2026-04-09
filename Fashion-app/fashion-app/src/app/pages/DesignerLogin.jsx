@@ -60,19 +60,19 @@ export default function DesignerLogin() {
           {/* Benefits Cards */}
           <div className="grid grid-cols-2 gap-3 mb-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 flex flex-col items-center sm:items-start text-center sm:text-left">
-              <Briefcase className="w-5 h-5 text-[#F4A261] mb-2" />
+              <Briefcase className="w-5 h-5 text-[#D4AF37] mb-2" />
               <p className="text-[#F5E6D3] text-xs font-medium">Manage Orders</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 flex flex-col items-center sm:items-start text-center sm:text-left">
-              <TrendingUp className="w-5 h-5 text-[#F4A261] mb-2" />
+              <TrendingUp className="w-5 h-5 text-[#D4AF37] mb-2" />
               <p className="text-[#F5E6D3] text-xs font-medium">Track Earnings</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 flex flex-col items-center sm:items-start text-center sm:text-left">
-              <Users className="w-5 h-5 text-[#F4A261] mb-2" />
+              <Users className="w-5 h-5 text-[#D4AF37] mb-2" />
               <p className="text-[#F5E6D3] text-xs font-medium">Client Management</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 flex flex-col items-center sm:items-start text-center sm:text-left">
-              <CheckCircle className="w-5 h-5 text-[#F4A261] mb-2" />
+              <CheckCircle className="w-5 h-5 text-[#D4AF37] mb-2" />
               <p className="text-[#F5E6D3] text-xs font-medium">Portfolio Builder</p>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function DesignerLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function DesignerLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E76F51]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] focus:border-transparent focus:bg-white transition-all font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-[#FAFAF8] border border-[#E63946]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent focus:bg-white transition-all font-medium"
                   />
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function DesignerLogin() {
                   />
                   <span className="text-sm text-[#6B6B6B] font-medium">Remember me</span>
                 </label>
-                <button type="button" className="text-[#E76F51] text-sm font-bold hover:underline">
+                <button type="button" className="text-[#E63946] text-sm font-bold hover:underline">
                   Forgot Password?
                 </button>
               </div>
@@ -149,15 +149,15 @@ export default function DesignerLogin() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-[#E76F51]/10"></div>
+              <div className="flex-1 h-px bg-[#E63946]/10"></div>
               <span className="text-[#6B6B6B] text-sm font-medium">New Designer?</span>
-              <div className="flex-1 h-px bg-[#E76F51]/10"></div>
+              <div className="flex-1 h-px bg-[#E63946]/10"></div>
             </div>
 
             {/* Register Link */}
             <Link 
               to="/designer/signup"
-              className="block w-full text-center py-3.5 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-lg transition-all shadow-sm font-semibold"
+              className="block w-full text-center py-3.5 bg-[#E63946] hover:bg-[#C92A2A] text-white rounded-lg transition-all shadow-sm font-semibold"
             >
               Register Your Business
             </Link>

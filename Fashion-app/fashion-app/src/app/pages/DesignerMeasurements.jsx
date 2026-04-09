@@ -53,7 +53,7 @@ export default function DesignerMeasurements() {
               Measurements
             </h1>
           </div>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition bg-[#E76F51]/10 text-[#E76F51]">
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition bg-[#E63946]/10 text-[#E63946]">
             <Plus size={20} />
           </button>
         </div>
@@ -62,8 +62,8 @@ export default function DesignerMeasurements() {
         <div className="px-6 py-6">
           {measurements.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-[#4B5563] mb-4">No measurements recorded yet</p>
-              <button className="bg-[#E76F51] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A]">
+              <p className="text-[#2D3436] mb-4">No measurements recorded yet</p>
+              <button className="bg-[#E63946] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#C91E34]">
                 Add Measurement
               </button>
             </div>
@@ -74,7 +74,7 @@ export default function DesignerMeasurements() {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <p className="text-[#2D2D2D] font-semibold">{m.customer}</p>
-                      <p className="text-[#4B5563] text-xs">
+                      <p className="text-[#2D3436] text-xs">
                         {new Date(m.date).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
@@ -83,7 +83,7 @@ export default function DesignerMeasurements() {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition text-[#4B5563]">
+                      <button className="p-2 hover:bg-gray-100 rounded-lg transition text-[#2D3436]">
                         <Edit2 size={16} />
                       </button>
                       <button
@@ -97,16 +97,16 @@ export default function DesignerMeasurements() {
 
                   <div className="grid grid-cols-3 gap-3">
                     <div className="p-3 bg-[#FDFDFD] rounded-xl text-center border border-gray-50">
-                      <p className="text-[#E76F51] font-bold text-lg">{m.chest}</p>
-                      <p className="text-[#4B5563] text-xs">Chest {m.unit}</p>
+                      <p className="text-[#E63946] font-bold text-lg">{m.chest}</p>
+                      <p className="text-[#2D3436] text-xs">Chest {m.unit}</p>
                     </div>
                     <div className="p-3 bg-[#FDFDFD] rounded-xl text-center border border-gray-50">
-                      <p className="text-[#E76F51] font-bold text-lg">{m.waist}</p>
-                      <p className="text-[#4B5563] text-xs">Waist {m.unit}</p>
+                      <p className="text-[#E63946] font-bold text-lg">{m.waist}</p>
+                      <p className="text-[#2D3436] text-xs">Waist {m.unit}</p>
                     </div>
                     <div className="p-3 bg-[#FDFDFD] rounded-xl text-center border border-gray-50">
-                      <p className="text-[#E76F51] font-bold text-lg">{m.hips}</p>
-                      <p className="text-[#4B5563] text-xs">Hips {m.unit}</p>
+                      <p className="text-[#E63946] font-bold text-lg">{m.hips}</p>
+                      <p className="text-[#2D3436] text-xs">Hips {m.unit}</p>
                     </div>
                   </div>
                 </div>
@@ -115,9 +115,9 @@ export default function DesignerMeasurements() {
           )}
 
           {/* Measurement Reference */}
-          <div className="mt-8 bg-[#E76F51]/5 rounded-2xl p-6 border border-[#E76F51]/20">
+          <div className="mt-8 bg-[#E63946]/5 rounded-2xl p-6 border border-[#E63946]/20">
             <h3 className="text-[#2D2D2D] font-semibold mb-3">Measurement Guide</h3>
-            <ul className="space-y-2 text-sm text-[#4B5563]">
+            <ul className="space-y-2 text-sm text-[#2D3436]">
               <li>• <strong>Chest:</strong> Measure across the fullest part of the chest</li>
               <li>• <strong>Waist:</strong> Measure at the natural waistline</li>
               <li>• <strong>Hips:</strong> Measure at the fullest part of the hips</li>

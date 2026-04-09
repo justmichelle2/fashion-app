@@ -163,7 +163,7 @@ export default function CustomerProfile() {
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-[#E76F51] to-[#F4A261] px-6 py-8 text-white flex justify-between items-center gap-3">
+          <div className="bg-gradient-to-r from-[#E63946] to-[#D4AF37] px-6 py-8 text-white flex justify-between items-center gap-3">
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 <Settings size={28} /> {isSettingsView ? "Settings" : "My Profile"}
@@ -174,7 +174,7 @@ export default function CustomerProfile() {
               {!isSettingsView && (
                 <Link
                   to="/customer/settings"
-                  className="p-2 rounded-lg bg-white text-[#E76F51] hover:bg-gray-100 transition"
+                  className="p-2 rounded-lg bg-white text-[#E63946] hover:bg-gray-100 transition"
                   aria-label="Open settings"
                 >
                   <Settings size={18} />
@@ -184,7 +184,7 @@ export default function CustomerProfile() {
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 bg-white text-[#E76F51] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+                  className="flex items-center gap-2 bg-white text-[#E63946] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
                 >
                   <Edit2 size={18} /> Edit
                 </button>
@@ -210,7 +210,7 @@ export default function CustomerProfile() {
               {/* Profile Picture */}
               <div className="flex justify-center mb-6">
                 <div className="relative group">
-                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#E76F51] to-[#F4A261] flex items-center justify-center text-white text-4xl font-bold">
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#E63946] to-[#D4AF37] flex items-center justify-center text-white text-4xl font-bold">
                     {formData.profilePicture ? (
                       <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
@@ -243,7 +243,7 @@ export default function CustomerProfile() {
                   value={formData.displayName}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:bg-gray-100"
                 />
               </div>
 
@@ -274,7 +274,7 @@ export default function CustomerProfile() {
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   placeholder="+233..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:bg-gray-100"
                 />
               </div>
 
@@ -290,7 +290,7 @@ export default function CustomerProfile() {
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   placeholder="Street address"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:bg-gray-100"
                 />
               </div>
 
@@ -305,7 +305,7 @@ export default function CustomerProfile() {
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     placeholder="City"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:bg-gray-100"
                   />
                 </div>
                 <div>
@@ -317,7 +317,7 @@ export default function CustomerProfile() {
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     placeholder="Country"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:bg-gray-100"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default function CustomerProfile() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#E76F51] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#E63946] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition disabled:opacity-50"
                   >
                     <Save size={18} /> {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -349,13 +349,13 @@ export default function CustomerProfile() {
         {favorites.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6 p-6">
             <h2 className="text-xl font-bold text-[#2D2D2D] mb-4 flex items-center gap-2">
-              <Heart size={24} className="text-[#E76F51] fill-[#E76F51]" /> Favorite Designers ({favorites.length})
+              <Heart size={24} className="text-[#E63946] fill-[#E63946]" /> Favorite Designers ({favorites.length})
             </h2>
             <div className="grid grid-cols-1 gap-4">
               {favorites.map((designer) => (
                 <div
                   key={designer.portfolioId}
-                  className="p-4 border border-gray-100 rounded-lg hover:border-[#E76F51]/30 transition cursor-pointer"
+                  className="p-4 border border-gray-100 rounded-lg hover:border-[#E63946]/30 transition cursor-pointer"
                   onClick={() => navigate(`/designer/${designer.designerId}`)}
                 >
                   <div className="flex justify-between items-start">
@@ -364,7 +364,7 @@ export default function CustomerProfile() {
                       <p className="text-sm text-gray-600">{designer.specialty}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[#E76F51] font-semibold">⭐ {designer.rating || "N/A"}</p>
+                      <p className="text-[#E63946] font-semibold">⭐ {designer.rating || "N/A"}</p>
                     </div>
                   </div>
                 </div>
@@ -379,21 +379,21 @@ export default function CustomerProfile() {
           <div className="space-y-3">
             <button
               onClick={() => navigate("/measurements")}
-              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E63946]/30 hover:bg-gray-50 transition"
             >
               <p className="font-semibold text-[#2D2D2D]">Upload Measurements</p>
               <p className="text-sm text-gray-600">Store your body measurements</p>
             </button>
             <button
               onClick={() => navigate("/orders")}
-              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E63946]/30 hover:bg-gray-50 transition"
             >
               <p className="font-semibold text-[#2D2D2D]">View Orders</p>
               <p className="text-sm text-gray-600">Track your design orders</p>
             </button>
             <button
               onClick={() => navigate("/chat")}
-              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E76F51]/30 hover:bg-gray-50 transition"
+              className="w-full p-4 text-left border border-gray-100 rounded-lg hover:border-[#E63946]/30 hover:bg-gray-50 transition"
             >
               <p className="font-semibold text-[#2D2D2D]">Messages</p>
               <p className="text-sm text-gray-600">Chat with designers</p>

@@ -159,7 +159,7 @@ export default function Payment() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error || "Order not found"}</p>
-          <Link to="/orders" className="text-[#E76F51] font-semibold hover:underline">
+          <Link to="/orders" className="text-[#E63946] font-semibold hover:underline">
             Back to Orders
           </Link>
         </div>
@@ -210,7 +210,7 @@ export default function Payment() {
         {step === "payment" && (
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-xl font-semibold text-[#2D2D2D] mb-6 flex items-center gap-2">
-              <CreditCard size={24} className="text-[#E76F51]" />
+              <CreditCard size={24} className="text-[#E63946]" />
               Payment Method
             </h2>
 
@@ -236,7 +236,7 @@ export default function Payment() {
                   maxLength="19"
                   disabled={processing}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:opacity-50"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export default function Payment() {
                   onChange={handleInputChange}
                   disabled={processing}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:opacity-50"
                 />
               </div>
 
@@ -271,7 +271,7 @@ export default function Payment() {
                     onChange={handleInputChange}
                     disabled={processing}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:opacity-50"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -287,7 +287,7 @@ export default function Payment() {
                     maxLength="4"
                     disabled={processing}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E76F51] disabled:opacity-50"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E63946] disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function Payment() {
               <button
                 type="submit"
                 disabled={processing}
-                className="w-full bg-[#E76F51] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-[#E63946] text-white py-4 rounded-lg font-semibold hover:bg-[#D55B3A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {processing ? "Processing..." : `Pay GHS ${order.total?.toFixed(2) || "0.00"}`}
               </button>
@@ -315,7 +315,7 @@ export default function Payment() {
         {/* Processing */}
         {step === "processing" && (
           <div className="bg-white rounded-2xl shadow p-6 text-center">
-            <div className="animate-spin h-12 w-12 border-4 border-[#E76F51] border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="animate-spin h-12 w-12 border-4 border-[#E63946] border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-[#2D2D2D] font-semibold">Processing payment...</p>
             <p className="text-gray-600 text-sm mt-2">Please do not close this window</p>
           </div>
@@ -338,7 +338,7 @@ export default function Payment() {
               </div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-600">Amount Paid:</span>
-                <span className="font-semibold text-[#2D2D2D]">GHS {paymentResult.amount?.toFixed(2)}</span>
+                <span className="font-semibold text-[#E63946]">GHS {paymentResult.amount?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Date:</span>
@@ -348,14 +348,14 @@ export default function Payment() {
 
             <button
               onClick={() => navigate(`/orders/${orderId}`)}
-              className="w-full bg-[#E76F51] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition-colors mb-3"
+              className="w-full bg-[#E63946] text-white py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition-colors mb-3"
             >
               View Order
             </button>
 
             <button
               onClick={() => navigate("/orders")}
-              className="w-full border border-[#E76F51] text-[#E76F51] py-3 rounded-lg font-semibold hover:bg-[#E76F51]/5 transition-colors"
+              className="w-full border border-[#E63946] text-[#E63946] py-3 rounded-lg font-semibold hover:bg-[#E63946]/5 transition-colors"
             >
               Back to Orders
             </button>

@@ -14,10 +14,10 @@ export default function Landing() {
         description: "Create a customer account to browse and order custom designs",
         to: "/customer/signup",
         icon: Shirt,
-        iconBg: "bg-[#E76F51]",
+        iconBg: "bg-[#E63946]",
         iconText: "text-white",
-        chevronText: "text-[#E76F51]",
-        borderClass: "border-[#E76F51]",
+        chevronText: "text-[#E63946]",
+        borderClass: "border-[#E63946]",
       },
       {
         title: "Sign up as Designer",
@@ -36,10 +36,10 @@ export default function Landing() {
         description: "Continue to your customer home and track your orders",
         to: "/customer/login",
         icon: Shirt,
-        iconBg: "bg-[#E76F51]",
+        iconBg: "bg-[#E63946]",
         iconText: "text-white",
-        chevronText: "text-[#E76F51]",
-        borderClass: "border-[#E76F51]",
+        chevronText: "text-[#E63946]",
+        borderClass: "border-[#E63946]",
       },
       {
         title: "Sign in as Designer",
@@ -79,7 +79,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col p-6 border border-[#E76F51]/10 h-[90vh] sm:h-auto overflow-y-auto">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col p-6 border border-[#E63946]/10 h-[90vh] sm:h-auto overflow-y-auto">
         <div className="flex flex-col items-center gap-6 mb-8 mt-4">
           <img src={logo} alt="Drssed Logo" className="w-[120px] h-[120px] object-cover rounded-full shadow-md" />
           <div className="text-center">
@@ -101,9 +101,9 @@ export default function Landing() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-5 shadow-sm border border-[#E76F51]/10 hover:shadow-md transition-shadow hover:border-[#E76F51]/30"
+              className="bg-white rounded-xl p-5 shadow-sm border border-[#E63946]/10 hover:shadow-md transition-shadow hover:border-[#E63946]/30"
             >
-              <div className="text-[#E76F51] mb-3">
+              <div className="text-[#E63946] mb-3">
                 {feature.icon}
               </div>
               <h3 className="mb-1 text-[14px] font-semibold text-[#2D2D2D]">
@@ -121,7 +121,7 @@ export default function Landing() {
             <>
               <button
                 onClick={() => setRoleSelectionMode("signup")}
-                className="w-full h-14 bg-[#E76F51] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
+                className="w-full h-14 bg-[#E63946] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
               >
                 Sign Up
               </button>
@@ -134,7 +134,7 @@ export default function Landing() {
             </>
           ) : (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4">
-              <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl border border-[#E76F51]/10 overflow-hidden animate-fade-in">
+              <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl border border-[#E63946]/10 overflow-hidden animate-fade-in">
                 <div className="flex items-start justify-between gap-4 p-5 border-b border-gray-100">
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-[#6B6B6B] font-semibold">
