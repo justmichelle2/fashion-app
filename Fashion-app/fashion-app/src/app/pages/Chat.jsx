@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Search } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import { useAuth } from "../hooks/useAuth";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { getUserConversations, searchConversations } from "../utils/chatService";
@@ -12,6 +14,7 @@ export default function Chat() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [participantNames, setParticipantNames] = useState({});
 
   const designerPhotos = [
     "https://images.unsplash.com/photo-1668752741330-8adc5cef7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
@@ -33,6 +36,25 @@ export default function Chat() {
       
       if (result.success) {
         setConversations(result.conversations || []);
+        
+        // Fetch actual names for other participants
+        const names = {};
+        for (const conv of (result.conversations || [])) {
+          const otherUserId = (conv.participants || []).find((id) => id !== currentUser.uid);
+          if (otherUserId && !names[otherUserId]) {
+            try {
+              const userRef = doc(db, "users", otherUserId);
+              const userDoc = await getDoc(userRef);
+              if (userDoc.exists()) {
+                names[otherUserId] = userDoc.data().name || userDoc.data().displayName || "Unknown";
+              }
+            } catch (err) {
+              console.error("Error fetching user:", err);
+              names[otherUserId] = "Unknown";
+            }
+          }
+        }
+        setParticipantNames(names);
       } else {
         setError(result.error || "Failed to load conversations");
       }
@@ -62,8 +84,14 @@ export default function Chat() {
   };
 
   const getOtherParticipant = (conversation) => {
-    const participants = Object.values(conversation.participants || {});
-    return participants.find((p) => p.id !== currentUser?.uid) || participants[0];
+    const participants = conversation.participants || [];
+    const otherUserId = participants.find((id) => id !== currentUser?.uid);
+    const name = participantNames[otherUserId] || conversation.participantNames?.[otherUserId] || "Unknown";
+    
+    return {
+      id: otherUserId,
+      name: name,
+    };
   };
 
   return (
