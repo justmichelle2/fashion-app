@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Package, CheckCircle, DollarSign, Star, TrendingUp, Clock, MessageCircle, ChevronRight, LogOut, Bell } from "lucide-react";
+import { Package, CheckCircle, DollarSign, Star, TrendingUp, Clock, MessageCircle, ChevronRight, Bell } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { handleLogout } from "../utils/authUtils";
 import { getUnreadCount } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, getDocs, limit } from "firebase/firestore";
@@ -16,15 +15,6 @@ export default function DesignerDashboard() {
   const [incomingOrders, setIncomingOrders] = useState([]);
   const [customerMessages, setCustomerMessages] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  const handleLogoutClick = async () => {
-    try {
-      await handleLogout();
-      navigate("/landing");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
 
   const loadUnreadCount = async () => {
     try {
@@ -622,14 +612,6 @@ export default function DesignerDashboard() {
             </div>
           </div>
         )}
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogoutClick}
-          className="w-full mt-6 flex items-center justify-center gap-2 bg-red-50 text-red-600 p-4 rounded-lg font-semibold hover:bg-red-100 transition"
-        >
-          <LogOut size={20} /> Logout
-        </button>
       </div>
     </div>
     </div>

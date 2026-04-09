@@ -1,22 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { TrendingUp, Package, MessageCircle, MessageSquare, Star, Clock, Settings, ChevronRight, LogOut, FolderKanban, CalendarClock, Sparkles } from "lucide-react";
+import { TrendingUp, Package, MessageCircle, MessageSquare, Star, Clock, Settings, ChevronRight, FolderKanban, CalendarClock, Sparkles } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { handleLogout } from "../utils/authUtils";
 import NotificationBell from "../components/NotificationBell";
 
 export default function DesignerHome() {
   const navigate = useNavigate();
   const { currentUser, userProfile } = useContext(AuthContext);
-
-  const handleLogoutClick = async () => {
-    try {
-      await handleLogout();
-      navigate("/landing");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#F7F5F2] pb-20">
@@ -83,12 +73,6 @@ export default function DesignerHome() {
           </ul>
         </div>
 
-        <button
-          onClick={handleLogoutClick}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-semibold text-red-700 hover:bg-red-100 transition-all"
-        >
-          <LogOut size={18} /> Logout
-        </button>
       </div>
     </div>
   );

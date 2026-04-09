@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, LayoutDashboard, Package, MessageCircle } from "lucide-react";
+import { Home, LayoutGrid, LayoutDashboard, Package, MessageCircle, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export function DesignerNav() {
@@ -10,19 +10,20 @@ export function DesignerNav() {
     { icon: LayoutDashboard, label: "Dashboard", path: "/designer/dashboard" },
     { icon: Package, label: "Orders", path: "/designer/orders" },
     { icon: MessageCircle, label: "Chat", path: "/designer/messages" },
+    { icon: Settings, label: "Settings", path: "/designer/settings" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom z-40">
-      <div className="max-w-md mx-auto flex items-center justify-around h-16 px-4">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom z-40 overflow-x-auto">
+      <div className="max-w-md mx-auto flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
 
           return (
             <Link key={item.path} to={item.path} className="flex flex-col items-center justify-center flex-1 gap-1">
-              <Icon size={24} className={isActive ? "text-[#E76F51]" : "text-gray-400"} strokeWidth={isActive ? 2.5 : 2} />
-              <span className={`text-[11px] ${isActive ? "text-[#E76F51] font-medium" : "text-gray-500"}`}>{item.label}</span>
+              <Icon size={24} className={isActive ? "text-[#E63946]" : "text-gray-400"} strokeWidth={isActive ? 2.5 : 2} />
+              <span className={`text-[11px] ${isActive ? "text-[#E63946] font-medium" : "text-gray-500"}`}>{item.label}</span>
             </Link>
           );
         })}

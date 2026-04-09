@@ -27,7 +27,9 @@ import OrderTracking from "./pages/OrderTracking";
 import Chat from "./pages/Chat";
 import Conversation from "./pages/Conversation";
 import CustomerProfile from "./pages/CustomerProfile";
+import CustomerSettings from "./pages/CustomerSettings";
 import DesignerDashboard from "./pages/DesignerDashboard";
+import DesignerSettings from "./pages/DesignerSettings";
 import AminDashboard from "./pages/AminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -65,7 +67,7 @@ export const router = createBrowserRouter([
   { path: "/customer/chat", element: customerRoute(<Chat />) },
   { path: "/customer/chat/:id", element: customerRoute(<Conversation />) },
   { path: "/customer/profile", element: customerRoute(<CustomerProfile />) },
-  { path: "/customer/settings", element: customerRoute(<CustomerProfile />) },
+  { path: "/customer/settings", element: customerRoute(<CustomerSettings />) },
   { path: "/home", element: <Navigate to="/customer/home" replace /> },
   { path: "/designer/home", element: designerRoute(<DesignerHome />) },
   { path: "/designer/dashboard", element: designerRoute(<DesignerDashboard />) },
@@ -77,7 +79,7 @@ export const router = createBrowserRouter([
   { path: "/designer/chat/:id", element: designerRoute(<Conversation />) },
   { path: "/designer/notifications", element: designerRoute(<DesignerNotifications />) },
   { path: "/designer/measurements", element: designerRoute(<DesignerMeasurements />) },
-  { path: "/designer/settings", element: designerRoute(<DesignerDashboard />) },
+  { path: "/designer/settings", element: designerRoute(<DesignerSettings />) },
   { path: "/designer-home", element: <Navigate to="/designer/home" replace /> },
   { path: "/designer-dashboard", element: <Navigate to="/designer/dashboard" replace /> },
   { path: "/designer-portfolio", element: <Navigate to="/designer/portfolio" replace /> },
@@ -96,7 +98,7 @@ export const router = createBrowserRouter([
   { path: "/chat", element: customerRoute(<Chat />) },
   { path: "/chat/:id", element: customerRoute(<Conversation />) },
   { path: "/profile", element: customerRoute(<CustomerProfile />) },
-  { path: "/settings", element: customerRoute(<CustomerProfile />) },
+  { path: "/settings", element: customerRoute(<CustomerSettings />) },
   { path: "/admin", element: <ProtectedRoute allowedRole="admin"><AminDashboard /></ProtectedRoute> },
   { path: "*", element: <NotFound /> },
 ]);
