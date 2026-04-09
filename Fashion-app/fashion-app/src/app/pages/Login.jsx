@@ -159,9 +159,15 @@ export default function Login() {
               type="button"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 bg-white border border-[#DADCE0] text-[#3C4043] py-3 rounded-xl shadow-[0_1px_2px_rgba(60,64,67,0.15)] hover:shadow-[0_2px_6px_rgba(60,64,67,0.3)] transition-shadow font-medium text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Loading..." : "Sign in with Google"}
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.6 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 6.8 2.5 2.5 6.8 2.5 12s4.3 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.1-1.1-.2-1.6H12z"/>
+                <path fill="#4285F4" d="M21.1 12.2c0-.6-.1-1.1-.2-1.6H12v3.9h5.4c-.3 1.4-1.1 2.6-2.3 3.4l3 2.3c1.8-1.7 3-4.3 3-8z"/>
+                <path fill="#FBBC05" d="M6.1 14.3c-.2-.6-.3-1.2-.3-1.8s.1-1.2.3-1.8l-3-2.3C2.6 9.5 2.3 10.7 2.3 12s.3 2.5.8 3.6l3-2.3z"/>
+                <path fill="#34A853" d="M12 21.5c2.6 0 4.8-.9 6.4-2.3l-3-2.3c-.8.6-1.9 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1l-3 2.3c1.6 3.1 4.8 5.4 8.6 5.4z"/>
+              </svg>
+              <span>{loading ? "Loading..." : "Continue with Google"}</span>
             </button>
           </form>
 
