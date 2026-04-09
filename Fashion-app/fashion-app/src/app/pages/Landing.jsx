@@ -121,7 +121,7 @@ export default function Landing() {
             <>
               <button
                 onClick={() => setRoleSelectionMode("signup")}
-                className="w-full h-14 bg-[#E63946] hover:bg-[#D55B3A] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
+                className="w-full h-14 bg-[#F97316] hover:bg-[#EA580C] text-white rounded-full shadow-lg text-[16px] font-semibold transition-colors"
               >
                 Sign Up
               </button>

@@ -45,7 +45,7 @@ module.exports = {
         sidebarring: 'oklch(0.708, 0, 0)',
         teal: '#006D5B',
         success: '#10B981',
-        error: '#EF4444',
+        error: '#ef4444',
       },
       fontFamily: {
         heading: ['Playfair Display', 'serif'],

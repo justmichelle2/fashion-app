@@ -41,7 +41,7 @@ export default function DesignerHome() {
   const designerName = (userProfile?.name || userProfile?.businessName || "Designer").split(" ")[0];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#6B6B6B] to-[#2D2D2D] pb-24">
+    <div className="relative min-h-screen overflow-hidden bg-[#ffffff] pb-24">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Monoton&display=swap');`}</style>
 
       <div className="pointer-events-none absolute inset-0">

@@ -92,33 +92,35 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-white px-6 py-6 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-gray-600 mb-1 text-sm">Welcome back,</p>
-            <h1 className="text-[#2D2D2D] text-2xl font-bold">
-              {userProfile?.name || "Customer"}
-            </h1>
+      <div className="px-6 pt-6">
+        <div className="w-full bg-[#F97316] rounded-2xl p-5 shadow-[0_8px_24px_rgba(249,115,22,0.28)]">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <p className="text-white/80 mb-1 text-sm">Welcome back,</p>
+              <h1 className="text-white text-2xl font-bold">
+                {userProfile?.name || "Customer"}
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/customer/settings"
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-all"
+                aria-label="Settings"
+              >
+                <Settings size={22} className="text-white" />
+              </Link>
+              <NotificationBell unreadCount={unreadCount} className="bg-white/20 hover:bg-white/30 text-white" />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/customer/settings"
-              className="p-2 hover:bg-gray-50 rounded-xl transition-all"
-              aria-label="Settings"
-            >
-              <Settings size={22} className="text-[#2D2D2D]" />
-            </Link>
-            <NotificationBell unreadCount={unreadCount} />
-          </div>
-        </div>
 
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-          <input
-            type="text"
-            placeholder="Search designers or styles..."
-            className="w-full pl-12 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-transparent text-[#2D2D2D]"
-          />
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80" size={20} />
+            <input
+              type="text"
+              placeholder="Search designers or styles..."
+              className="w-full pl-12 pr-4 py-3 bg-white/20 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-transparent text-white placeholder:text-white/75"
+            />
+          </div>
         </div>
       </div>
 
