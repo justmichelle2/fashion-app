@@ -177,8 +177,8 @@ export default function DesignerPortfolio() {
         </div>
 
         {/* Portfolio Gallery */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-[#2D2D2D] font-bold text-lg mb-4">
+        <div className="bg-[#2D2D2D]/70 rounded-3xl p-6 shadow-[0_8px_24px_rgba(45,45,45,0.35)] border border-[rgba(45,45,45,0.1)] backdrop-blur-lg">
+          <h2 className="text-white font-bold text-lg mb-4">
             My Designs ({portfolioImages.length})
           </h2>
 
@@ -206,8 +206,8 @@ export default function DesignerPortfolio() {
 
                   {/* Label */}
                   <div className="mt-3">
-                    <p className="text-[#2D2D2D] font-semibold text-sm">Design {index + 1}</p>
-                    <p className="text-[#2D3436] text-xs">Click to view details</p>
+                    <p className="text-white font-semibold text-sm">Design {index + 1}</p>
+                    <p className="text-white/75 text-xs">Click to view details</p>
                   </div>
                 </div>
               ))}
@@ -215,7 +215,7 @@ export default function DesignerPortfolio() {
           ) : (
             <div className="py-16 text-center border-2 border-dashed border-gray-300 rounded-2xl">
               <Upload size={48} className="text-gray-400 mx-auto mb-4" />
-              <p className="text-[#2D3436] text-lg mb-4">No designs uploaded yet</p>
+              <p className="text-white/85 text-lg mb-4">No designs uploaded yet</p>
               <label className="cursor-pointer inline-block">
                 <span className="bg-[#E63946] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#D55B3A] transition inline-block">
                   Upload your first design

@@ -166,21 +166,13 @@ export default function CustomerProfile() {
           <div className="bg-gradient-to-r from-[#E63946] to-[#D4AF37] px-6 py-8 text-white flex justify-between items-center gap-3">
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Settings size={28} /> {isSettingsView ? "Settings" : "My Profile"}
+                {isSettingsView ? <Settings size={28} /> : null}
+                {isSettingsView ? "Settings" : "My Profile"}
               </h1>
               <p className="text-white/80 mt-1">Customer Account</p>
             </div>
             <div className="flex items-center gap-2">
-              {!isSettingsView && (
-                <Link
-                  to="/customer/settings"
-                  className="p-2 rounded-lg bg-white text-[#E63946] hover:bg-gray-100 transition"
-                  aria-label="Open settings"
-                >
-                  <Settings size={18} />
-                </Link>
-              )}
-              <NotificationBell />
+              {isSettingsView && <NotificationBell />}
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
