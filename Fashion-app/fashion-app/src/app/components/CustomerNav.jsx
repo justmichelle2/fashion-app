@@ -14,7 +14,7 @@ export function CustomerNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 safe-area-bottom z-40 overflow-x-auto border-t border-white/25 bg-[#F97316] backdrop-blur-lg rounded-t-3xl shadow-[0_-8px_24px_rgba(249,115,22,0.32)]">
+    <nav className="fixed bottom-0 left-0 right-0 safe-area-bottom z-40 overflow-x-auto border-t border-white/25 bg-[#ffc7a1] backdrop-blur-lg rounded-t-3xl shadow-[0_-8px_24px_rgba(249,115,22,0.32)]">
       <div className="max-w-md mx-auto flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
