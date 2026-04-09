@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, X, Trash2, CheckCircle, AlertCircle, Info, MessageSquare, Zap } from "lucide-react";
+import { Bell, X, Trash2, CheckCircle, AlertCircle, Info, MessageSquare, Zap, Ruler } from "lucide-react";
 import { 
   getUserNotifications, 
   markAsRead, 
@@ -80,6 +80,8 @@ export function NotificationCenter({ userId, isOpen, onClose }) {
         return <AlertCircle size={18} className="text-red-600" />;
       case NOTIFICATION_TYPES.DESIGNER_VERIFIED:
         return <Zap size={18} className="text-yellow-600" />;
+      case NOTIFICATION_TYPES.MEASUREMENT_UPLOADED:
+        return <Ruler size={18} className="text-purple-600" />;
       default:
         return <Info size={18} className="text-[#E76F51]" />;
     }
@@ -94,6 +96,8 @@ export function NotificationCenter({ userId, isOpen, onClose }) {
       case NOTIFICATION_TYPES.ORDER_CONFIRMED:
       case NOTIFICATION_TYPES.BOOKING_CONFIRMED:
         return "bg-green-50 border-green-100";
+      case NOTIFICATION_TYPES.MEASUREMENT_UPLOADED:
+        return "bg-purple-50 border-purple-100";
       default:
         return "bg-orange-50 border-orange-100";
     }

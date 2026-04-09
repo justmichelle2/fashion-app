@@ -22,21 +22,36 @@ import { db } from "../firebaseConfig";
  */
 export async function getCustomerMeasurements(customerId) {
   try {
-    const measurementsRef = collection(db, "measurements");
+    const measurementsRef = collection(db, "customerMeasurements");
     const q = query(measurementsRef, where("customerId", "==", customerId));
     
+    console.log(`Fetching measurements for customer ${customerId}`);
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) {
+      console.warn(`No measurements found for customer ${customerId}`);
       return null;
     }
 
     const doc = snapshot.docs[0];
+    const docData = doc.data();
+    console.log(`Found measurements document:`, docData);
+    
     return {
       id: doc.id,
-      ...doc.data(),
-      uploadedAt: doc.data().uploadedAt?.toDate() || new Date(),
-      lastUpdated: doc.data().lastUpdated?.toDate() || new Date()
+      ...docData,
+      // Flatten the nested measurements object for easier access
+      chest: docData.measurements?.chest || docData.chest || 0,
+      waist: docData.measurements?.waist || docData.waist || 0,
+      hips: docData.measurements?.hips || docData.hips || 0,
+      shoulder: docData.measurements?.shoulder || docData.shoulder || 0,
+      sleeveLength: docData.measurements?.sleeveLength || docData.sleeveLength || 0,
+      torsoLength: docData.measurements?.torsoLength || docData.torsoLength || 0,
+      inseam: docData.measurements?.inseam || docData.inseam || 0,
+      height: docData.measurements?.height || docData.height || 0,
+      neck: docData.measurements?.neck || docData.neck || 0,
+      uploadedAt: docData.createdAt?.toDate() || new Date(),
+      lastUpdated: docData.updatedAt?.toDate() || new Date()
     };
   } catch (err) {
     console.error("Error fetching customer measurements:", err);
@@ -75,31 +90,53 @@ export async function getOrderMeasurements(orderId) {
  */
 export async function getDesignerOrdersMeasurements(designerId) {
   try {
+    if (!designerId) {
+      console.warn("No designer ID provided");
+      return [];
+    }
+
     const ordersRef = collection(db, "orders");
     const q = query(ordersRef, where("designerId", "==", designerId));
     
     const ordersSnapshot = await getDocs(q);
-    const measurementsMap = new Map();
+    console.log(`Found ${ordersSnapshot.docs.length} orders for designer ${designerId}`);
+    
+    const measurementsArray = [];
+    const processedCustomers = new Set();
 
+    // Process each order assigned to this designer
     for (const orderDoc of ordersSnapshot.docs) {
       const order = orderDoc.data();
+      const customerId = order.customerId;
+      
+      // Skip if we've already processed this customer
+      if (processedCustomers.has(customerId)) {
+        continue;
+      }
+      processedCustomers.add(customerId);
       
       try {
-        const measurements = await getCustomerMeasurements(order.customerId);
+        const measurements = await getCustomerMeasurements(customerId);
         if (measurements) {
-          measurementsMap.set(order.customerId, {
+          console.log(`Loaded measurements for customer ${customerId}`);
+          measurementsArray.push({
             ...measurements,
             orderId: orderDoc.id,
-            customerName: order.customerName || "Unknown",
-            orderStatus: order.status
+            customerName: order.customerName || measurements.customerName || "Unknown",
+            customerEmail: order.customerEmail || "",
+            orderStatus: order.status || "pending",
+            customerId: customerId
           });
+        } else {
+          console.warn(`No measurements found for customer ${customerId} in order ${orderDoc.id}`);
         }
       } catch (err) {
-        console.warn(`Could not fetch measurements for order ${orderDoc.id}:`, err);
+        console.warn(`Could not fetch measurements for order ${orderDoc.id}:`, err.message);
       }
     }
 
-    return Array.from(measurementsMap.values());
+    console.log(`Returning ${measurementsArray.length} measurements for designer`);
+    return measurementsArray;
   } catch (err) {
     console.error("Error fetching designer's order measurements:", err);
     return [];
