@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Upload, Users, Star, Search, Package, Settings } from "lucide-react";
 import { auth } from "../firebaseConfig";
 import { db } from "../firebaseConfig";
-import { collection, query, limit, getDocs } from "firebase/firestore";
+import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import { getUserOrders } from "../utils/orderUtils";
 import { getUnreadCount } from "../services/notificationsService";
 import NotificationBell from "../components/NotificationBell";
@@ -40,7 +40,11 @@ export default function Home() {
   const loadFeaturedDesigners = async () => {
     try {
       const designersRef = collection(db, "users");
-      const q = query(designersRef, limit(6));
+      const q = query(
+        designersRef,
+        where("userType", "==", "designer"),
+        limit(6)
+      );
       const snapshot = await getDocs(q);
       
       const designers = snapshot.docs
@@ -56,6 +60,7 @@ export default function Home() {
       setFeaturedDesigners(designers);
     } catch (err) {
       console.error("Failed to load featured designers:", err);
+      setFeaturedDesigners([]); // Set empty array on error
     } finally {
       setLoadingDesigners(false);
     }

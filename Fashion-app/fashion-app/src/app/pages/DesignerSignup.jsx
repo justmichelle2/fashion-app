@@ -96,7 +96,10 @@ export default function DesignerSignup() {
       });
       console.log("Designer signup backend response:", response);
 
-      navigate("/designer/dashboard", { replace: true });
+      // Wait a moment for AuthContext to load the user profile
+      setTimeout(() => {
+        navigate("/designer/dashboard", { replace: true });
+      }, 1000);
     } catch (err) {
       console.error("Designer signup failed:", err);
       setError(err.message || "An error occurred during signup");

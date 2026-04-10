@@ -24,7 +24,10 @@ export default function DesignerLogin() {
           setError("This login is for designers only. Please use customer login.");
           return;
         }
-        navigate("/designer/dashboard", { replace: true });
+        // Wait a moment for AuthContext to load the user profile
+        setTimeout(() => {
+          navigate("/designer/dashboard", { replace: true });
+        }, 1000);
       } else {
         setError(result.error || "Login failed");
       }
