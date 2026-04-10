@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getUnreadCount } from "../services/notificationsService";
 import { db } from "../firebaseConfig";
-import { collection, query, where, orderBy, getDocs, limit } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 
 export default function DesignerDashboard() {
   const navigate = useNavigate();
@@ -44,83 +44,85 @@ export default function DesignerDashboard() {
   ];
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!currentUser?.uid) return;
+    if (!currentUser?.uid) return;
 
-      try {
-        setLoading(true);
+    // Real-time listener for orders
+    const ordersRef = collection(db, "orders");
+    const ordersQuery = query(
+      ordersRef,
+      where("designerId", "==", currentUser.uid),
+      orderBy("createdAt", "desc")
+    );
 
-        // Fetch orders assigned to this designer
-        const ordersRef = collection(db, "orders");
-        const ordersQuery = query(
-          ordersRef,
-          where("designerId", "==", currentUser.uid)
-        );
-        const ordersSnap = await getDocs(ordersQuery);
-        
-        const orders = ordersSnap.docs.map(doc => ({
+    const unsubscribeOrders = onSnapshot(ordersQuery, (snapshot) => {
+      const orders = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Separate into pending and active
+      const pending = orders.filter(o => o.status === "pending").slice(0, 3);
+      const active = orders.filter(o => ["confirmed", "in-progress"].includes(o.status)).slice(0, 3);
+      
+      setIncomingOrders(pending.map(o => ({
+        id: o.id,
+        customer: o.customerName || "Unknown Customer",
+        style: o.title || o.description || "Custom Design",
+        amount: o.budget || o.price || 0,
+        date: o.createdAt?.toDate?.()?.toLocaleDateString() || new Date().toLocaleDateString()
+      })));
+
+      setActiveOrders(active.map(o => ({
+        id: o.id,
+        customer: o.customerName || "Unknown Customer",
+        style: o.title || o.description || "Custom Design",
+        status: o.status === "in-progress" ? "Sewing" : "Confirmed",
+        amount: o.budget || o.price || 0,
+        progress: o.status === "confirmed" ? 25 : o.status === "in-progress" ? 60 : 100
+      })));
+
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching orders:", error);
+      setLoading(false);
+    });
+
+    // Real-time listener for conversations
+    const conversationsRef = collection(db, "conversations");
+    const convQuery = query(
+      conversationsRef,
+      where("participants", "array-contains", currentUser.uid)
+    );
+
+    const unsubscribeConversations = onSnapshot(convQuery, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        const otherParticipant = data.participants?.find(p => p !== currentUser.uid);
+        return {
           id: doc.id,
-          ...doc.data()
-        })).sort((a, b) => (b.createdAt?.toDate?.() || new Date()) - (a.createdAt?.toDate?.() || new Date()));
+          customer: data.participantNames?.[otherParticipant] || "Customer",
+          lastMessage: data.lastMessage || "No messages yet",
+          timestamp: data.updatedAt?.toDate?.()?.toLocaleTimeString() || "just now",
+          unread: data.unreadCount?.[currentUser.uid] || 0,
+          orderId: data.orderId || "",
+          updatedAt: data.updatedAt?.toDate?.() || new Date()
+        };
+      }).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
+      
+      setCustomerMessages(messages);
+    }, (error) => {
+      console.error("Error fetching conversations:", error);
+    });
 
-        // Separate into pending and active
-        const pending = orders.filter(o => o.status === "pending").slice(0, 3);
-        const active = orders.filter(o => ["confirmed", "in-progress"].includes(o.status)).slice(0, 3);
-        
-        setIncomingOrders(pending.map(o => ({
-          id: o.id,
-          customer: o.customerName || "Unknown Customer",
-          style: o.designDescription || "Custom Design",
-          amount: o.totalAmount || 0,
-          date: o.createdAt?.toDate?.()?.toLocaleDateString() || new Date().toLocaleDateString()
-        })));
-
-        setActiveOrders(active.map(o => ({
-          id: o.id,
-          customer: o.customerName || "Unknown Customer",
-          style: o.designDescription || "Custom Design",
-          status: o.status === "in-progress" ? "Sewing" : "Confirmed",
-          amount: o.totalAmount || 0,
-          progress: o.status === "confirmed" ? 25 : o.status === "in-progress" ? 60 : 100
-        })));
-
-        // Fetch conversations
-        const conversationsRef = collection(db, "conversations");
-        const convQuery = query(
-          conversationsRef,
-          where("participants", "array-contains", currentUser.uid)
-        );
-        const convSnap = await getDocs(convQuery);
-        
-        const messages = convSnap.docs.map((doc, idx) => {
-          const data = doc.data();
-          const otherParticipant = data.participants?.find(p => p !== currentUser.uid);
-          return {
-            id: doc.id,
-            customer: data.participantNames?.[otherParticipant] || "Customer",
-            lastMessage: data.lastMessage || "No messages yet",
-            timestamp: data.updatedAt?.toDate?.()?.toLocaleTimeString() || "just now",
-            unread: data.unreadCount?.[currentUser.uid] || 0,
-            orderId: data.orderId || "",
-            updatedAt: data.updatedAt?.toDate?.() || new Date()
-          };
-        }).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
-        
-        setCustomerMessages(messages);
-
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
     loadUnreadCount();
-    
-    // Refresh unread count every 30 seconds
     const interval = setInterval(() => loadUnreadCount(), 30000);
-    return () => clearInterval(interval);
+
+    // Cleanup subscriptions
+    return () => {
+      unsubscribeOrders();
+      unsubscribeConversations();
+      clearInterval(interval);
+    };
   }, [currentUser]);
 
   const maxEarnings = Math.max(...weeklyEarnings.map(e => e.amount), 1);

@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Edit2, Trash2 } from "lucide-react";
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getDesignerOrdersMeasurements } from "../services/measurementsService";
+import { db } from "../firebaseConfig";
+import { collection, query, where, onSnapshot, doc, getDoc, getDocs } from "firebase/firestore";
 
 export default function DesignerMeasurements() {
   const navigate = useNavigate();
@@ -12,24 +13,76 @@ export default function DesignerMeasurements() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchMeasurements = async () => {
-      if (!currentUser?.uid) return;
+    if (!currentUser?.uid) return;
 
+    setLoading(true);
+
+    // Real-time listener for orders assigned to this designer
+    const ordersRef = collection(db, "orders");
+    const ordersQuery = query(ordersRef, where("designerId", "==", currentUser.uid));
+
+    const unsubscribe = onSnapshot(ordersQuery, async (ordersSnapshot) => {
       try {
-        setLoading(true);
+        const measurementsArray = [];
+        const processedCustomers = new Set();
+
+        // Process each order
+        for (const orderDoc of ordersSnapshot.docs) {
+          const order = orderDoc.data();
+          const customerId = order.customerId;
+
+          // Skip if already processed
+          if (processedCustomers.has(customerId)) {
+            continue;
+          }
+          processedCustomers.add(customerId);
+
+          try {
+            // Fetch measurements for this customer
+            const measurementsRef = collection(db, "customerMeasurements");
+            const measurementsQuery = query(measurementsRef, where("customerId", "==", customerId));
+            
+            const measurementsSnapshot = await getDocs(measurementsQuery);
+            
+            if (!measurementsSnapshot.empty) {
+              const measurementDoc = measurementsSnapshot.docs[0];
+              const docData = measurementDoc.data();
+
+              measurementsArray.push({
+                id: measurementDoc.id,
+                orderId: orderDoc.id,
+                customerName: order.customerName || "Unknown",
+                customerEmail: order.customerEmail || "",
+                orderStatus: order.status || "pending",
+                customerId: customerId,
+                chest: docData.measurements?.chest || docData.chest || 0,
+                waist: docData.measurements?.waist || docData.waist || 0,
+                hips: docData.measurements?.hips || docData.hips || 0,
+                shoulder: docData.measurements?.shoulder || docData.shoulder || 0,
+                unit: docData.unit || "cm",
+                date: docData.createdAt?.toDate?.() || new Date(),
+              });
+            }
+          } catch (err) {
+            console.warn(`Could not fetch measurements for order ${orderDoc.id}:`, err);
+          }
+        }
+
+        setMeasurements(measurementsArray);
         setError(null);
-        const data = await getDesignerOrdersMeasurements(currentUser.uid);
-        setMeasurements(data);
-        console.log("Fetched measurements:", data);
+        setLoading(false);
       } catch (err) {
-        console.error("Error fetching measurements:", err);
+        console.error("Error processing measurements:", err);
         setError("Failed to load measurements");
-      } finally {
         setLoading(false);
       }
-    };
+    }, (err) => {
+      console.error("Error listening to orders:", err);
+      setError("Failed to load measurements");
+      setLoading(false);
+    });
 
-    fetchMeasurements();
+    return () => unsubscribe();
   }, [currentUser?.uid]);
 
   return (
